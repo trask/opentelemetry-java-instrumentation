@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  cancel-old:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.4.0
+        with:
+          access_token: ${{ github.token }}
+
+  build:
+    runs-on: ubuntu-latest
+    container: datadog/dd-trace-java-docker-build:latest
+
+    env:
+      JAVA_HOME: /usr/local/openjdk-11
+
+    steps:
+      - name: Setup file system permissions
+        # this Docker file changes sets USER to circleci instead of using the default user,
+        # so we need to update file permissions for this image to work on GH Actions
+        run: sudo chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp /home/ /home/circleci
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle
+          key: ${{ hashFiles('**/*.gradle') }}
+      - name: Build project
+        run: >-
+          GRADLE_OPTS="-Dorg.gradle.jvmargs='-Xmx1G -Xms64M' -Dota.forkedMaxHeapSize=1G -Dota.forkedMinHeapSize=64M"
+          ./gradlew build shadowJar -x test --stacktrace --no-daemon
+
+  setup-test-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Get tags
+        run: git fetch --tags
+      - id: set-matrix
+        run: echo "::set-output name=matrix::{\"module\":[\"$(ls instrumentation | grep -v instrumentation.gradle | xargs echo | sed 's/ /","/g')\"]}"
+
+  test:
+    needs: setup-test-matrix
+    runs-on: ubuntu-latest
+    container: datadog/dd-trace-java-docker-build:latest
+
+    strategy:
+      matrix: ${{fromJson(needs.setup-test-matrix.outputs.matrix)}}
+      #matrix:
+      #  module: ["instrumentation/aws-sdk", "instrumentation/geode-1.4"]
+
+    env:
+      JAVA_HOME: /usr/local/openjdk-11
+
+    steps:
+      - name: Setup file system permissions
+        # this Docker file changes sets USER to circleci instead of using the default user,
+        # so we need to update file permissions for this image to work on GH Actions
+        run: sudo chmod -R 777 $GITHUB_WORKSPACE /github /__w/_temp /home/ /home/circleci
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle
+          key: ${{ hashFiles('**/*.gradle') }}
+      - name: Run tests
+        run: >-
+          GRADLE_OPTS="-Dota.forkedMaxHeapSize=4G -Dota.forkedMinHeapSize=64M"
+          ./gradlew test -p instrumentation/${{matrix.module}} --stacktrace --no-daemon

@@ -24,7 +24,7 @@ jobs:
         run: .github/scripts/deadlock-detector.sh
 
       - name: Build
-        run: ./gradlew check --stacktrace -x :smoke-tests:test
+        run: ./gradlew check --no-build-cache --stacktrace -x :smoke-tests:test
 
       - name: Upload deadlock detector artifacts
         if: always()

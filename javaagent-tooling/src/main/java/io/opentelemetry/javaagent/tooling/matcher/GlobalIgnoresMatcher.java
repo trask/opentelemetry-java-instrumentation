@@ -117,6 +117,10 @@ public class GlobalIgnoresMatcher<T extends TypeDescription>
       return true;
     }
 
+    if (name.startsWith("com.microsoft.applicationinsights.agent.")) {
+      return true;
+    }
+
     if (name.startsWith("java.")) {
       if (name.equals("java.net.URL") || name.equals("java.net.HttpURLConnection")) {
         return false;

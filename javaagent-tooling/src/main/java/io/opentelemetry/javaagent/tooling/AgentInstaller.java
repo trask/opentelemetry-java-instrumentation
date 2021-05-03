@@ -504,6 +504,10 @@ public class AgentInstaller {
       if (cl != null && cl.getClass() == AgentClassLoader.class) {
         return true;
       }
+      if (c.getName().startsWith("com.microsoft.applicationinsights.agent.")
+          || c.getName().startsWith("io.opentelemetry.javaagent.")) {
+        return true;
+      }
 
       return HelperInjector.isInjectedClass(c);
     }

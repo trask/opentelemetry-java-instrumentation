@@ -49,6 +49,8 @@ public class ReferenceCollector {
   private final Set<String> visitedClasses = new HashSet<>();
   private final InstrumentationClassPredicate instrumentationClassPredicate;
 
+  // TODO (trask) rename libraryInstrumentationPredicate and instrumentationClassPredicate
+  //  to helperClassPredicate
   public ReferenceCollector(Predicate<String> libraryInstrumentationPredicate) {
     this.instrumentationClassPredicate =
         new InstrumentationClassPredicate(libraryInstrumentationPredicate);

@@ -36,10 +36,22 @@ public final class InstrumentationClassPredicate {
    * <p>Aside from "standard" instrumentation helper class packages, instrumentation modules can
    * pass an additional predicate to include instrumentation helper classes from 3rd party packages.
    */
+  // TODO (trask) rename to isHelperClass
   public boolean isInstrumentationClass(String className) {
     return isJavaagentInstrumentationClass(className)
         || isLibraryInstrumentationClass(className)
         || additionalLibraryInstrumentationPredicate.test(className);
+  }
+
+  public boolean isProvidedByJavaOrJavaagent(String className) {
+    return className.startsWith("java.")
+        || className.startsWith(JAVAAGENT_API_PACKAGE)
+        || className.startsWith(INSTRUMENTATION_API_PACKAGE)
+        || className.startsWith("io.opentelemetry.javaagent.bootstrap.")
+        || className.startsWith("io.opentelemetry.api.")
+        || className.startsWith("io.opentelemetry.context.")
+        || className.startsWith("io.opentelemetry.semconv.")
+        || className.startsWith("org.slf4j.");
   }
 
   private static boolean isJavaagentInstrumentationClass(String className) {

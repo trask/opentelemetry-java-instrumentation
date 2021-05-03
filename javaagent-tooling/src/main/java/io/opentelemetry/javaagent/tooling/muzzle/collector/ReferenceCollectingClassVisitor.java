@@ -145,13 +145,15 @@ class ReferenceCollectingClassVisitor extends ClassVisitor {
   }
 
   private void addReference(Reference ref) {
-    if (!ref.getClassName().startsWith("java.")) {
-      Reference reference = references.get(ref.getClassName());
-      if (null == reference) {
-        references.put(ref.getClassName(), ref);
-      } else {
-        references.put(ref.getClassName(), reference.merge(ref));
-      }
+    if (instrumentationClassPredicate.isProvidedByJavaOrJavaagent(ref.getClassName())) {
+      return;
+    }
+
+    Reference reference = references.get(ref.getClassName());
+    if (null == reference) {
+      references.put(ref.getClassName(), ref);
+    } else {
+      references.put(ref.getClassName(), reference.merge(ref));
     }
     if (instrumentationClassPredicate.isInstrumentationClass(ref.getClassName())) {
       helperClasses.add(ref.getClassName());
@@ -173,16 +175,22 @@ class ReferenceCollectingClassVisitor extends ClassVisitor {
     if (!isAdviceClass) {
       String fixedSuperClassName = Utils.getClassName(superName);
 
-      addExtendsReference(
-          new Reference.Builder(fixedSuperClassName).withSource(refSourceClassName).build());
+      if (instrumentationClassPredicate.isProvidedByJavaOrJavaagent(fixedSuperClassName)) {
+        fixedSuperClassName = null;
+      } else {
+        addExtendsReference(
+            new Reference.Builder(fixedSuperClassName).withSource(refSourceClassName).build());
+      }
 
       List<String> fixedInterfaceNames = new ArrayList<>(interfaces.length);
       for (String interfaceName : interfaces) {
         String fixedInterfaceName = Utils.getClassName(interfaceName);
-        fixedInterfaceNames.add(fixedInterfaceName);
+        if (!instrumentationClassPredicate.isProvidedByJavaOrJavaagent(fixedInterfaceName)) {
+          fixedInterfaceNames.add(fixedInterfaceName);
 
-        addExtendsReference(
-            new Reference.Builder(fixedInterfaceName).withSource(refSourceClassName).build());
+          addExtendsReference(
+              new Reference.Builder(fixedInterfaceName).withSource(refSourceClassName).build());
+        }
       }
 
       addReference(

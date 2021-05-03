@@ -116,11 +116,12 @@ public final class ReferenceMatcher {
               new Mismatch.MissingClass(
                   reference.getSources().toArray(new Source[0]), reference.getClassName()));
         }
-        // helper classes get their own check: whether they implement all abstract methods
         return checkHelperClassMatch(reference, typePool);
       } else if (helperClassNames.contains(reference.getClassName())) {
         // skip muzzle check for those helper classes that are not in instrumentation packages; e.g.
         // some instrumentations inject guava types as helper classes
+        return emptyList();
+      } else if (instrumentationClassPredicate.isProvidedByJavaagent(reference.getClassName())) {
         return emptyList();
       } else {
         TypePool.Resolution resolution = typePool.describe(reference.getClassName());

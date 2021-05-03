@@ -100,11 +100,11 @@ public interface HelperReferenceWrapper {
 
     private HelperReferenceWrapper create(String className) {
       Resolution resolution = classpathPool.describe(className);
-      if (resolution.isResolved()) {
-        return new ClasspathType(resolution.resolve());
-      }
       if (helperReferences.containsKey(className)) {
         return new ReferenceType(helperReferences.get(className));
+      }
+      if (resolution.isResolved()) {
+        return new ClasspathType(resolution.resolve());
       }
       throw new IllegalStateException("Missing class " + className);
     }

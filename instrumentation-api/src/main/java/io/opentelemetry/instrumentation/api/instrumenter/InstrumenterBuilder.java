@@ -35,6 +35,7 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   final List<RequestListener> requestListeners = new ArrayList<>();
 
   SpanKindExtractor<? super REQUEST> spanKindExtractor = null;
+  ShouldStartExtractor<? super REQUEST> shouldStartExtractor = null;
   SpanStatusExtractor<? super REQUEST, ? super RESPONSE> spanStatusExtractor =
       SpanStatusExtractor.getDefault();
   ErrorCauseExtractor errorCauseExtractor = ErrorCauseExtractor.jdk();
@@ -86,6 +87,13 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   @UnstableApi
   public InstrumenterBuilder<REQUEST, RESPONSE> addRequestMetrics(RequestMetrics factory) {
     requestListeners.add(factory.create(meter));
+    return this;
+  }
+
+  /** Sets the {@link ShouldStartExtractor} to extract whether to start a span or not. */
+  public InstrumenterBuilder<REQUEST, RESPONSE> setShouldStartExtractor(
+      ShouldStartExtractor<REQUEST> shouldStartExtractor) {
+    this.shouldStartExtractor = shouldStartExtractor;
     return this;
   }
 
@@ -170,6 +178,9 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
       InstrumenterConstructor<REQUEST, RESPONSE> constructor,
       SpanKindExtractor<? super REQUEST> spanKindExtractor) {
     this.spanKindExtractor = spanKindExtractor;
+    if (shouldStartExtractor == null) {
+      shouldStartExtractor = new DefaultShouldStartExtractor<>(spanKindExtractor);
+    }
     return constructor.create(this);
   }
 

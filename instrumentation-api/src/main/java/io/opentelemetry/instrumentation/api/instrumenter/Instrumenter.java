@@ -56,6 +56,7 @@ public class Instrumenter<REQUEST, RESPONSE> {
   private final Tracer tracer;
   private final SpanNameExtractor<? super REQUEST> spanNameExtractor;
   private final SpanKindExtractor<? super REQUEST> spanKindExtractor;
+  private final ShouldStartExtractor<? super REQUEST> shouldStartExtractor;
   private final SpanStatusExtractor<? super REQUEST, ? super RESPONSE> spanStatusExtractor;
   private final List<? extends AttributesExtractor<? super REQUEST, ? super RESPONSE>> extractors;
   private final List<? extends RequestListener> requestListeners;
@@ -69,6 +70,7 @@ public class Instrumenter<REQUEST, RESPONSE> {
         builder.openTelemetry.getTracer(instrumentationName, InstrumentationVersion.VERSION);
     this.spanNameExtractor = builder.spanNameExtractor;
     this.spanKindExtractor = builder.spanKindExtractor;
+    this.shouldStartExtractor = builder.shouldStartExtractor;
     this.spanStatusExtractor = builder.spanStatusExtractor;
     this.extractors = new ArrayList<>(builder.attributesExtractors);
     this.requestListeners = new ArrayList<>(builder.requestListeners);
@@ -84,22 +86,11 @@ public class Instrumenter<REQUEST, RESPONSE> {
    * without calling those methods.
    */
   public boolean shouldStart(Context parentContext, REQUEST request) {
-    boolean suppressed = false;
-    SpanKind spanKind = spanKindExtractor.extract(request);
-    switch (spanKind) {
-      case SERVER:
-        suppressed = ServerSpan.fromContextOrNull(parentContext) != null;
-        break;
-      case CLIENT:
-        suppressed = ClientSpan.fromContextOrNull(parentContext) != null;
-        break;
-      default:
-        break;
+    boolean shouldStart = shouldStartExtractor.shouldStart(parentContext, request);
+    if (!shouldStart) {
+      supportability.recordSuppressedSpan(spanKindExtractor.extract(request), instrumentationName);
     }
-    if (suppressed) {
-      supportability.recordSuppressedSpan(spanKind, instrumentationName);
-    }
-    return !suppressed;
+    return shouldStart;
   }
 
   /**

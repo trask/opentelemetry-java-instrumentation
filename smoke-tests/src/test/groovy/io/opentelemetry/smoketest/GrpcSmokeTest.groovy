@@ -59,6 +59,6 @@ class GrpcSmokeTest extends SmokeTest {
     channel.shutdown()
 
     where:
-    jdk << [8, 11, 15]
+    jdk << [8, 11, 16]
   }
 }

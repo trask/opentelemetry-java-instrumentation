@@ -22,9 +22,9 @@ instrumented library.
 
 #### Executing tests with specific java version
 
-We run all tests on Java 11 by default, along with Java 8 and 15. To run on the later, set the
+We run all tests on Java 11 by default, along with Java 8 and 16. To run on the later, set the
 `testJavaVersion` Gradle property to the desired major version, e.g., `./gradlew test -PtestJavaVersion=8`,
-`./gradlew test -PtestJavaVersion=15`. If you don't have a JDK of these versions
+`./gradlew test -PtestJavaVersion=16`. If you don't have a JDK of these versions
 installed, Gradle will automatically download it for you.
 
 #### Executing tests against the latest versions of libraries under instrumentation

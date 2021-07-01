@@ -69,6 +69,6 @@ class SpringBootSmokeTest extends SmokeTest {
     stopTarget()
 
     where:
-    jdk << [8, 11, 15]
+    jdk << [8, 11, 16]
   }
 }

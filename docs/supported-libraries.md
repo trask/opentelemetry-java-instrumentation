@@ -127,8 +127,8 @@ These are the supported JVM version and OS configurations which the javaagent is
 
 | JVM                                               | Versions  | OS                             |
 | ------------------------------------------------- | --------- | ------------------------------ |
-| [AdoptOpenJDK Hotspot](https://adoptopenjdk.net/) | 8, 11, 15 | Ubuntu 18, Windows Server 2019 |
-| [AdoptOpenJDK OpenJ9](https://adoptopenjdk.net/)  | 8, 11, 15 | Ubuntu 18, Windows Server 2019 |
+| [AdoptOpenJDK Hotspot](https://adoptopenjdk.net/) | 8, 11, 16 | Ubuntu 18, Windows Server 2019 |
+| [AdoptOpenJDK OpenJ9](https://adoptopenjdk.net/)  | 8, 11, 16 | Ubuntu 18, Windows Server 2019 |
 
 ## Disabled instrumentations
 

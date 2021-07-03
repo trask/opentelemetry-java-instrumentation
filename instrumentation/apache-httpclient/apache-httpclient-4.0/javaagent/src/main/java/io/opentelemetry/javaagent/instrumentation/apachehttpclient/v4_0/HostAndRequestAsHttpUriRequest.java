@@ -19,17 +19,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public final class HostAndRequestAsHttpUriRequest extends AbstractHttpMessage
     implements HttpUriRequest {
 
-  private final String method;
-  private final RequestLine requestLine;
-  private final ProtocolVersion protocolVersion;
   @Nullable private final URI uri;
 
   private final HttpRequest actualRequest;
 
   public HostAndRequestAsHttpUriRequest(HttpHost httpHost, HttpRequest httpRequest) {
-    method = httpRequest.getRequestLine().getMethod();
-    requestLine = httpRequest.getRequestLine();
-    protocolVersion = requestLine.getProtocolVersion();
 
     URI calculatedUri;
     try {
@@ -58,17 +52,17 @@ public final class HostAndRequestAsHttpUriRequest extends AbstractHttpMessage
 
   @Override
   public String getMethod() {
-    return method;
+    return actualRequest.getRequestLine().getMethod();
   }
 
   @Override
   public RequestLine getRequestLine() {
-    return requestLine;
+    return actualRequest.getRequestLine();
   }
 
   @Override
   public ProtocolVersion getProtocolVersion() {
-    return protocolVersion;
+    return actualRequest.getProtocolVersion();
   }
 
   @Override

@@ -4,12 +4,12 @@ plugins {
 }
 
 description = "OpenTelemetry Javaagent testing commons"
-group = "io.opentelemetry.javaagent"
+group = "io.opentelemetry.instrumentation"
 
 sourceSets {
   main {
     val armeriaShadedDeps = project(":testing:armeria-shaded-for-testing")
-    output.dir(armeriaShadedDeps .file("build/extracted/shadow"), "builtBy" to ":testing:armeria-shaded-for-testing:extractShadowJar")
+    output.dir(armeriaShadedDeps.file("build/extracted/shadow"), "builtBy" to ":testing:armeria-shaded-for-testing:extractShadowJar")
   }
 }
 

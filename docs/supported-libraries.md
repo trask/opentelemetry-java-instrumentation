@@ -13,7 +13,7 @@ or [contributing](../CONTRIBUTING.md).
 - [JVMs and Operating Systems](#jvms-and-operating-systems)
 - [Disabled instrumentations](#disabled-instrumentations)
 
-## Libraries / Frameworks
+<h2 id="libraries-frameworks">Libraries / Frameworks</h2>
 
 These are the supported libraries and frameworks:
 

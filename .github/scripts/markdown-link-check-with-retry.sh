@@ -12,6 +12,7 @@ for file in "$@"; do
     elif [[ $i -eq $retry_count ]]; then
       exit 1
     fi
-    sleep 5
+    echo retrying
+    sleep 1
   done
 done

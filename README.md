@@ -1,35 +1,4 @@
----
-
-<p align="center">
-  <strong>
-    <a href="https://github.com/open-telemetry/opentelemetry-java-instrumentation#getting-started">Getting Started</a>
-    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-    <a href="https://github.com/open-telemetry/community#special-interest-groups">Getting Involved</a>
-    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-    <a href="https://github.com/open-telemetry/opentelemetry-java-instrumentation/discussions">Getting In Touch</a>
-  </strong>
-</p>
-
-<p align="center">
-  <a href="https://github.com/open-telemetry/opentelemetry-java-instrumentation/actions/workflows/build.yml">
-    <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/open-telemetry/opentelemetry-java-instrumentation/build.yml?branch=main&style=for-the-badge">
-  </a>
-  <a href="https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/open-telemetry/opentelemetry-java-instrumentation?style=for-the-badge">
-  </a>
-</p>
-
-<p align="center">
-  <strong>
-    <a href="CONTRIBUTING.md">Contributing</a>
-    &nbsp;&nbsp;&bull;&nbsp;&nbsp;
-    <a href="docs/scope.md">Scope</a>
-  </strong>
-</p>
-
----
-
-# <img src="https://opentelemetry.io/img/logos/opentelemetry-logo-nav.png" alt="OpenTelemetry Icon" width="45" height=""> OpenTelemetry Instrumentation for Java
+# OpenTelemetry Java Instrumentation
 
 * [About](#about)
 * [Getting Started](#getting-started)
@@ -200,3 +169,8 @@ Thanks to all the people who already contributed!
 [manual]: https://opentelemetry.io/docs/languages/java/instrumentation/#manual-instrumentation
 
 [suppress]: https://opentelemetry.io/docs/zero-code/java/agent/disable/
+
+[ci-image]: https://github.com/open-telemetry/opentelemetry-java-instrumentation/workflows/Build/badge.svg
+[ci-url]: https://github.com/open-telemetry/opentelemetry-java-instrumentation/actions?query=workflow%3ABuild+branch%3Amain
+[maven-image]: https://maven-badges.herokuapp.com/maven-central/io.opentelemetry/opentelemetry-api/badge.svg
+[maven-url]: https://maven-badges.herokuapp.com/maven-central/io.opentelemetry/opentelemetry-api

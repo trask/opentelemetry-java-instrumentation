@@ -6,7 +6,6 @@
 package io.opentelemetry.instrumentation.api.internal;
 
 import io.opentelemetry.api.common.Attributes;
-import io.opentelemetry.api.incubator.metrics.ExtendedDoubleHistogramBuilder;
 import io.opentelemetry.api.metrics.DoubleHistogramBuilder;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.context.Context;
@@ -16,6 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Nullable;
 
 /**
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
@@ -23,6 +23,11 @@ import java.util.logging.Logger;
  */
 public class OperationMetricsUtil {
   private static final Logger logger = Logger.getLogger(OperationMetricsUtil.class.getName());
+
+  @Nullable
+  private static final Class<?> extendedDoubleHistogramBuilderClass =
+      getExtendedDoubleHistogramBuilderClass();
+
   public static final OperationListener NOOP_OPERATION_LISTENER =
       new OperationListener() {
 
@@ -49,7 +54,7 @@ public class OperationMetricsUtil {
                 new Object[] {
                   description,
                   histogramBuilder.getClass().getName(),
-                  ExtendedDoubleHistogramBuilder.class.getName()
+                  "io.opentelemetry.api.incubator.metrics.ExtendedDoubleHistogramBuilder"
                 }));
   }
 
@@ -60,13 +65,22 @@ public class OperationMetricsUtil {
       BiConsumer<String, DoubleHistogramBuilder> warningEmitter) {
     return meter -> {
       DoubleHistogramBuilder histogramBuilder = meter.histogramBuilder("compatibility-test");
-      if (!(histogramBuilder instanceof ExtendedDoubleHistogramBuilder)
+      if ((extendedDoubleHistogramBuilderClass == null
+              || !extendedDoubleHistogramBuilderClass.isInstance(histogramBuilder))
           && !histogramBuilder.getClass().getName().contains("NoopDoubleHistogram")) {
         warningEmitter.accept(description, histogramBuilder);
         return NOOP_OPERATION_LISTENER;
       }
       return factory.apply(meter);
     };
+  }
+
+  private static Class<?> getExtendedDoubleHistogramBuilderClass() {
+    try {
+      return Class.forName("io.opentelemetry.api.incubator.metrics.ExtendedDoubleHistogramBuilder");
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
   }
 
   private OperationMetricsUtil() {}

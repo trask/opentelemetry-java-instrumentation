@@ -30,7 +30,7 @@ jobs:
         run: git checkout -b opentelemetrybot/cloudfoundry-${{ github.run_number }}-${{ github.run_attempt }}
 
       - run: sudo apt-get install jq python3-pip
-      - run: pip install yq==3.4.2 --hash=sha256:f916408e834e96f390ef82a36bfcbf24a555ae5a2fcdaef94a2ed5d260d161ef
+      - run: pip install yq==3.4.3 --hash=sha256:f916408e834e96f390ef82a36bfcbf24a555ae5a2fcdaef94a2ed5d260d161ef
 
       - name: update index.yml
         run: |

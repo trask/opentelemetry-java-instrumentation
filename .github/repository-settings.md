@@ -112,6 +112,7 @@ settings](https://github.com/open-telemetry/community/blob/main/docs/how-to-conf
 
 ### Repository secrets
 
+- `FOSSA_API_KEY` - stored in OpenTelemetry-Java 1Password
 - `GPG_PASSWORD` - stored in OpenTelemetry-Java 1Password
 - `GPG_PRIVATE_KEY` - stored in OpenTelemetry-Java 1Password
 - `GRADLE_PUBLISH_KEY`

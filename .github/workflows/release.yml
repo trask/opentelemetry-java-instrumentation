@@ -164,7 +164,7 @@ jobs:
           cp javaagent/build/libs/opentelemetry-javaagent-${VERSION}.jar opentelemetry-javaagent.jar
 
       - id: attest
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@520d128f165991a6c774bcb264f323e3d70747f4 # v2
         with:
           subject-path: |
             opentelemetry-javaagent.jar

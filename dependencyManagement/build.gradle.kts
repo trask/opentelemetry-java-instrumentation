@@ -25,7 +25,8 @@ val groovyVersion = "4.0.25"
 
 val DEPENDENCY_BOMS = listOf(
   // for some reason boms show up as runtime dependencies in license and vulnerability scans
-  // even if they are only used by test dependencies, so not using junit bom since it is LGPL
+  // even if they are only used by test dependencies, so not using junit or spock boms since
+  // junit is LGPL (and spock depends on junit)
 
   "com.fasterxml.jackson:jackson-bom:2.18.2",
   "com.squareup.okio:okio-bom:3.10.2", // see https://github.com/open-telemetry/opentelemetry-java/issues/5637

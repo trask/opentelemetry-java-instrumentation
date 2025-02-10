@@ -40,9 +40,9 @@ targets:
     - type: gradle
       path: ./
       target: ':sdk-autoconfigure-support'
-    - type: gradle
-      path: ./
-      target: ':testing-common'
+#    - type: gradle
+#      path: ./
+#      target: ':testing-common'
     - type: gradle
       path: ./
       target: ':javaagent-tooling:javaagent-tooling-java9'

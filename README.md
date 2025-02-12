@@ -4,6 +4,7 @@
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/open-telemetry/opentelemetry-java-instrumentation/badge)](https://scorecard.dev/viewer/?uri=github.com/open-telemetry/opentelemetry-java-instrumentation)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9977/badge)](https://www.bestpractices.dev/projects/9977)
 [![Slack](https://img.shields.io/badge/slack-@cncf/otel--java-blue.svg?logo=slack)](https://cloud-native.slack.com/archives/C014L2KCTE3)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftrask%2Fopentelemetry-java-instrumentation.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftrask%2Fopentelemetry-java-instrumentation?ref=badge_shield)
 
 * [About](#about)
 * [Getting Started](#getting-started)
@@ -174,3 +175,7 @@ Thanks to all the people who already contributed!
 [manual]: https://opentelemetry.io/docs/languages/java/instrumentation/#manual-instrumentation
 
 [suppress]: https://opentelemetry.io/docs/zero-code/java/agent/disable/
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftrask%2Fopentelemetry-java-instrumentation.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftrask%2Fopentelemetry-java-instrumentation?ref=badge_large)

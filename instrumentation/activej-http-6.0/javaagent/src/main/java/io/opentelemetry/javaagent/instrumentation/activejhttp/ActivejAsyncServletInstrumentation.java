@@ -33,7 +33,8 @@ public class ActivejAsyncServletInstrumentation implements TypeInstrumentation {
 
   @Override
   public ElementMatcher<TypeDescription> typeMatcher() {
-    return hasSuperType(named("io.activej.http.AsyncServlet")).and(not(isInterface()));
+    return hasSuperType(named("io.activej.http.AsyncServlet"))
+            .and(not(isInterface()));
   }
 
   @Override

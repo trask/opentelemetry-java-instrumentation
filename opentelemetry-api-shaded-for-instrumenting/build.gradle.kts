@@ -172,6 +172,16 @@ dependencies {
         strictly("1.32.0")
       }
     }
+    v1_50Deps("io.opentelemetry:$it") {
+      version {
+        strictly("1.50.0")
+      }
+    }
+    v1_52Deps("io.opentelemetry:$it") {
+      version {
+        strictly("1.52.0")
+      }
+    }
   }
 
   listOf("opentelemetry-extension-incubator").forEach {

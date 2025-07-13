@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_50.incubator.logs;
+package io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_52.incubator.logs;
 
 import static application.io.opentelemetry.api.incubator.common.ExtendedAttributeType.EXTENDED_ATTRIBUTES;
 import static java.util.logging.Level.FINE;
@@ -18,20 +18,20 @@ import application.io.opentelemetry.api.logs.Severity;
 import application.io.opentelemetry.context.Context;
 import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.context.AgentContextStorage;
 import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.trace.Bridging;
-import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_50.logs.ApplicationLogRecordBuilder150;
+import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_52.logs.ApplicationLogRecordBuilder152;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
 
-public class ApplicationLogRecordBuilder150Incubator extends ApplicationLogRecordBuilder150
+public class ApplicationLogRecordBuilder152Incubator extends ApplicationLogRecordBuilder152
     implements ExtendedLogRecordBuilder {
   private static final Logger logger =
-      Logger.getLogger(ApplicationLogRecordBuilder150Incubator.class.getName());
+      Logger.getLogger(ApplicationLogRecordBuilder152Incubator.class.getName());
 
   private final io.opentelemetry.api.incubator.logs.ExtendedLogRecordBuilder agentLogRecordBuilder;
 
-  ApplicationLogRecordBuilder150Incubator(
+  ApplicationLogRecordBuilder152Incubator(
       io.opentelemetry.api.logs.LogRecordBuilder agentLogRecordBuilder) {
     super(agentLogRecordBuilder);
     this.agentLogRecordBuilder =

@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_50.incubator.logs;
+package io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_52.incubator.logs;
 
 import application.io.opentelemetry.api.incubator.logs.ExtendedLogRecordBuilder;
 import application.io.opentelemetry.api.incubator.logs.ExtendedLogger;
 import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.v1_27.logs.ApplicationLogger;
 
-class ApplicationLogger150Incubator extends ApplicationLogger implements ExtendedLogger {
+class ApplicationLogger152Incubator extends ApplicationLogger implements ExtendedLogger {
 
   private final io.opentelemetry.api.logs.Logger agentLogger;
 
-  ApplicationLogger150Incubator(io.opentelemetry.api.logs.Logger agentLogger) {
+  ApplicationLogger152Incubator(io.opentelemetry.api.logs.Logger agentLogger) {
     super(agentLogger);
     this.agentLogger = agentLogger;
   }
@@ -25,6 +25,6 @@ class ApplicationLogger150Incubator extends ApplicationLogger implements Extende
 
   @Override
   public ExtendedLogRecordBuilder logRecordBuilder() {
-    return new ApplicationLogRecordBuilder150Incubator(agentLogger.logRecordBuilder());
+    return new ApplicationLogRecordBuilder152Incubator(agentLogger.logRecordBuilder());
   }
 }

@@ -1,5 +1,5 @@
-# Use the official OpenJDK image as base
-FROM mcr.microsoft.com/devcontainers/java:1-21-bookworm
+# Use the official dev container base image
+FROM mcr.microsoft.com/devcontainers/base:bookworm
 
 # Install additional tools
 RUN apt-get update && apt-get install -y \
@@ -15,9 +15,6 @@ RUN chown -R vscode:vscode /home/vscode/.gradle
 
 # Switch to vscode user
 USER vscode
-
-# Set JAVA_HOME for vscode user
-ENV JAVA_HOME=/usr/lib/jvm/msopenjdk-current
 
 # Create gradle cache directory
 RUN mkdir -p ~/.gradle

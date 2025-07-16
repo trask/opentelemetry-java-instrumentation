@@ -43,6 +43,8 @@ public final class HttpSpanNameExtractor {
   /**
    * Returns a new {@link HttpSpanNameExtractorBuilder} that can be used to configure the HTTP
    * client span name extractor.
+   *
+   * @return a new {@link HttpSpanNameExtractorBuilder}
    */
   public static <REQUEST> HttpSpanNameExtractorBuilder<REQUEST> builder(
       HttpClientAttributesGetter<REQUEST, ?> getter) {
@@ -52,6 +54,8 @@ public final class HttpSpanNameExtractor {
   /**
    * Returns a new {@link HttpSpanNameExtractorBuilder} that can be used to configure the HTTP
    * server span name extractor.
+   *
+   * @return a new {@link HttpSpanNameExtractorBuilder}
    */
   public static <REQUEST> HttpSpanNameExtractorBuilder<REQUEST> builder(
       HttpServerAttributesGetter<REQUEST, ?> getter) {

@@ -47,6 +47,8 @@ public final class HttpServerAttributesExtractor<REQUEST, RESPONSE>
   /**
    * Returns a new {@link HttpServerAttributesExtractorBuilder} that can be used to configure the
    * HTTP client attributes extractor.
+   *
+   * @return a new {@link HttpServerAttributesExtractorBuilder}
    */
   public static <REQUEST, RESPONSE> HttpServerAttributesExtractorBuilder<REQUEST, RESPONSE> builder(
       HttpServerAttributesGetter<REQUEST, RESPONSE> httpAttributesGetter) {

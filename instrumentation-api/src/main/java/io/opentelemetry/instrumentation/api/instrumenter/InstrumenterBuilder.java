@@ -196,6 +196,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create {@linkplain SpanKind#CLIENT client} spans
    * and inject context into requests with the passed {@link TextMapSetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildClientInstrumenter(TextMapSetter<REQUEST> setter) {
     return buildInstrumenter(
@@ -206,6 +208,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create {@linkplain SpanKind#SERVER server} spans
    * and extract context from requests with the passed {@link TextMapGetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildServerInstrumenter(TextMapGetter<REQUEST> getter) {
     return buildInstrumenter(
@@ -216,6 +220,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create {@linkplain SpanKind#PRODUCER producer}
    * spans and inject context into requests with the passed {@link TextMapSetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildProducerInstrumenter(TextMapSetter<REQUEST> setter) {
     return buildInstrumenter(
@@ -226,6 +232,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create {@linkplain SpanKind#CONSUMER consumer}
    * spans and extract context from requests with the passed {@link TextMapGetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildConsumerInstrumenter(TextMapGetter<REQUEST> getter) {
     return buildInstrumenter(
@@ -237,6 +245,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
    * Returns a new {@link Instrumenter} which will create spans with kind determined by the passed
    * {@link SpanKindExtractor} and extract context from requests with the passed {@link
    * TextMapGetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   // TODO: candidate for public API
   Instrumenter<REQUEST, RESPONSE> buildUpstreamInstrumenter(
@@ -250,6 +260,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
    * Returns a new {@link Instrumenter} which will create spans with kind determined by the passed
    * {@link SpanKindExtractor} and inject context into requests with the passed {@link
    * TextMapSetter}.
+   *
+   * @return a new {@link Instrumenter}
    */
   // TODO: candidate for public API
   Instrumenter<REQUEST, RESPONSE> buildDownstreamInstrumenter(
@@ -262,6 +274,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create {@linkplain SpanKind#INTERNAL internal}
    * spans and do no context propagation.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildInstrumenter() {
     return buildInstrumenter(
@@ -271,6 +285,8 @@ public final class InstrumenterBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link Instrumenter} which will create spans with kind determined by the passed
    * {@link SpanKindExtractor} and do no context propagation.
+   *
+   * @return a new {@link Instrumenter}
    */
   public Instrumenter<REQUEST, RESPONSE> buildInstrumenter(
       SpanKindExtractor<? super REQUEST> spanKindExtractor) {

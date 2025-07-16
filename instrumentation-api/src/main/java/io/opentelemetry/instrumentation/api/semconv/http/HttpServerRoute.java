@@ -40,6 +40,8 @@ public final class HttpServerRoute {
   /**
    * Returns a new {@link HttpServerRouteBuilder} that can be used to configure the {@link
    * HttpServerRoute}.
+   *
+   * @return a new {@link HttpServerRouteBuilder}
    */
   public static <REQUEST> HttpServerRouteBuilder<REQUEST> builder(
       HttpServerAttributesGetter<REQUEST, ?> getter) {

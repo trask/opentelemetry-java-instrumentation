@@ -90,6 +90,7 @@ public final class HttpSpanNameExtractorBuilder<REQUEST> {
    * Returns a new {@link HttpSpanNameExtractor} with the settings of this {@link
    * HttpSpanNameExtractorBuilder}.
    *
+   * @return a new {@link HttpSpanNameExtractor}
    * @see Instrumenter#builder(OpenTelemetry, String, SpanNameExtractor)
    */
   public SpanNameExtractor<REQUEST> build() {

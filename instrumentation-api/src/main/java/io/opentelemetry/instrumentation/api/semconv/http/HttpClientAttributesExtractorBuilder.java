@@ -184,6 +184,7 @@ public final class HttpClientAttributesExtractorBuilder<REQUEST, RESPONSE> {
    * Returns a new {@link HttpClientAttributesExtractor} with the settings of this {@link
    * HttpClientAttributesExtractorBuilder}.
    *
+   * @return a new {@link HttpClientAttributesExtractor}
    * @see InstrumenterBuilder#addAttributesExtractor(AttributesExtractor)
    */
   public AttributesExtractor<REQUEST, RESPONSE> build() {

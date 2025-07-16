@@ -173,6 +173,12 @@ public final class DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> {
   }
 
   /** Sets custom {@link SpanNameExtractor} via transform function. */
+  /**
+   * Sets the span name extractor transformer.
+   *
+   * @param spanNameExtractorTransformer the transformer to apply to the span name extractor
+   * @return this builder instance
+   */
   @CanIgnoreReturnValue
   public DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> setSpanNameExtractor(
       Function<SpanNameExtractor<REQUEST>, SpanNameExtractor<REQUEST>>
@@ -181,6 +187,12 @@ public final class DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> {
     return this;
   }
 
+  /**
+   * Sets the builder customizer.
+   *
+   * @param builderCustomizer the customizer to apply to the instrumenter builder
+   * @return this builder instance
+   */
   @CanIgnoreReturnValue
   public DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> setBuilderCustomizer(
       Consumer<InstrumenterBuilder<REQUEST, RESPONSE>> builderCustomizer) {
@@ -188,6 +200,11 @@ public final class DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> {
     return this;
   }
 
+  /**
+   * Returns a new {@link Instrumenter} with the settings of this builder.
+   *
+   * @return a new {@link Instrumenter}
+   */
   public Instrumenter<REQUEST, RESPONSE> build() {
     InstrumenterBuilder<REQUEST, RESPONSE> builder = instrumenterBuilder();
 

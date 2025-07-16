@@ -76,6 +76,7 @@ public final class HttpServerRouteBuilder<REQUEST> {
    * Context} returned from {@link Instrumenter#start(Context, Object)}. The returned customizer is
    * configured with the settings of this {@link HttpServerRouteBuilder}.
    *
+   * @return a context customizer for initializing HTTP server routes
    * @see InstrumenterBuilder#addContextCustomizer(ContextCustomizer)
    */
   public ContextCustomizer<REQUEST> build() {

@@ -45,6 +45,8 @@ public final class MessagingAttributesExtractorBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link MessagingAttributesExtractor} with the settings of this {@link
    * MessagingAttributesExtractorBuilder}.
+   *
+   * @return a new {@link MessagingAttributesExtractor}
    */
   public AttributesExtractor<REQUEST, RESPONSE> build() {
     return new MessagingAttributesExtractor<>(getter, operation, capturedHeaders);

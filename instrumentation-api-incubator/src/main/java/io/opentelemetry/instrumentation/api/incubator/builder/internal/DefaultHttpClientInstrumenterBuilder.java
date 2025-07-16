@@ -211,6 +211,12 @@ public final class DefaultHttpClientInstrumenterBuilder<REQUEST, RESPONSE> {
     return addAttributesExtractor(AttributesExtractor.constant(PEER_SERVICE, peerService));
   }
 
+  /**
+   * Sets the builder customizer.
+   *
+   * @param builderCustomizer the customizer to apply to the instrumenter builder
+   * @return this builder instance
+   */
   @CanIgnoreReturnValue
   public DefaultHttpClientInstrumenterBuilder<REQUEST, RESPONSE> setBuilderCustomizer(
       Consumer<InstrumenterBuilder<REQUEST, RESPONSE>> builderCustomizer) {
@@ -218,6 +224,11 @@ public final class DefaultHttpClientInstrumenterBuilder<REQUEST, RESPONSE> {
     return this;
   }
 
+  /**
+   * Returns a new {@link Instrumenter} with the settings of this builder.
+   *
+   * @return a new {@link Instrumenter}
+   */
   public Instrumenter<REQUEST, RESPONSE> build() {
     if (emitExperimentalHttpClientTelemetry
         && attributesGetter instanceof HttpClientExperimentalAttributesGetter) {

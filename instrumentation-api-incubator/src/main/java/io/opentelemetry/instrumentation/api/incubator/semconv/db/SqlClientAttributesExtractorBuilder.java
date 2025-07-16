@@ -67,6 +67,8 @@ public final class SqlClientAttributesExtractorBuilder<REQUEST, RESPONSE> {
   /**
    * Returns a new {@link SqlClientAttributesExtractor} with the settings of this {@link
    * SqlClientAttributesExtractorBuilder}.
+   *
+   * @return a new {@link SqlClientAttributesExtractor}
    */
   public AttributesExtractor<REQUEST, RESPONSE> build() {
     return new SqlClientAttributesExtractor<>(

@@ -26,20 +26,12 @@ USER vscode
 # Set JAVA_HOME for vscode user
 ENV JAVA_HOME=/usr/lib/jvm/msopenjdk-current
 
-# Pre-configure git (optional, helps with development)
-RUN git config --global init.defaultBranch main
-
 # Pre-configure gradle with optimized settings
 RUN mkdir -p ~/.gradle && \
     echo "org.gradle.daemon=true" > ~/.gradle/gradle.properties && \
     echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties && \
     echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties && \
-    echo "org.gradle.configureondemand=true" >> ~/.gradle/gradle.properties && \
-    echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m" >> ~/.gradle/gradle.properties && \
-    echo "org.gradle.priority=low" >> ~/.gradle/gradle.properties
-
-# Set up pnpm store
-RUN mkdir -p ~/.pnpm-store
+    echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m" >> ~/.gradle/gradle.properties
 
 # Final workspace setup
 WORKDIR /workspace

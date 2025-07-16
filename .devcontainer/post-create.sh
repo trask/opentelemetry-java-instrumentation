@@ -8,9 +8,6 @@ echo "Setting up OpenTelemetry Java Instrumentation development environment..."
 # Ensure we're in the right directory
 cd /workspace
 
-# Set up environment variables for faster builds
-export GRADLE_OPTS="-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
-
 # Download Gradle wrapper and start daemon
 echo "Starting Gradle daemon..."
 ./gradlew --version

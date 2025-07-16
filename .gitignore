@@ -62,5 +62,3 @@ replay_pid*
 
 !java-agent/benchmark/releases/*.jar
 
-*.salive
-.kotlin/

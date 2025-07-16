@@ -15,8 +15,7 @@
   },
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
-      "version": "21",
-      "installGradle": "true"
+      "version": "21"
     },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "16"
@@ -26,8 +25,7 @@
   "remoteUser": "vscode",
   "containerEnv": {
     "GRADLE_USER_HOME": "/home/vscode/.gradle",
-    "GRADLE_OPTS": "-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.caching=true",
-    "JAVA_TOOL_OPTIONS": "-Xmx4g -XX:MaxMetaspaceSize=512m"
+    "GRADLE_OPTS": "-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Xmx4g -XX:MaxMetaspaceSize=512m"
   },
   "mounts": [
     "source=opentelemetry-gradle-cache,target=/home/vscode/.gradle,type=volume"

@@ -24,8 +24,7 @@
   "postCreateCommand": ".devcontainer/post-create.sh",
   "remoteUser": "vscode",
   "containerEnv": {
-    "GRADLE_USER_HOME": "/home/vscode/.gradle",
-    "GRADLE_OPTS": "-Xmx2g -XX:MaxMetaspaceSize=512m"
+    "GRADLE_USER_HOME": "/home/vscode/.gradle"
   },
   "mounts": [
     "source=opentelemetry-gradle-cache,target=/home/vscode/.gradle,type=volume"

@@ -8,7 +8,8 @@
     "vscode": {
       "extensions": [
         "vscjava.vscode-java-pack",
-        "vscjava.vscode-gradle"
+        "vscjava.vscode-gradle",
+        "ms-vscode.gradle"
       ]
     }
   },
@@ -22,5 +23,13 @@
     }
   },
   "postCreateCommand": ".devcontainer/post-create.sh",
-  "remoteUser": "vscode"
+  "remoteUser": "vscode",
+  "containerEnv": {
+    "GRADLE_USER_HOME": "/home/vscode/.gradle",
+    "GRADLE_OPTS": "-Dorg.gradle.daemon=true -Dorg.gradle.parallel=true -Dorg.gradle.caching=true",
+    "JAVA_TOOL_OPTIONS": "-Xmx4g -XX:MaxMetaspaceSize=512m"
+  },
+  "mounts": [
+    "source=opentelemetry-gradle-cache,target=/home/vscode/.gradle,type=volume"
+  ]
 }

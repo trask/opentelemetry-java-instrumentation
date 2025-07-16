@@ -30,16 +30,7 @@ The dev container will automatically be used by:
 - VS Code with Dev Containers extension
 - Any tool that supports dev containers
 
-## Build time improvements
-
-Expected improvements:
-- Initial dependency download: ~2-3 minutes → ~10-30 seconds
-- Subsequent builds: ~1-2 minutes → ~30-60 seconds
-- Overall development experience: Much faster iteration cycles
-
 ## Maintenance
 
 The configuration may need updates when:
 - Java version changes (update `.java-version` and `devcontainer.json`)
-- New major dependencies are added
-- Gradle version changes significantly

@@ -8,6 +8,10 @@ echo "Setting up OpenTelemetry Java Instrumentation development environment..."
 # Ensure we're in the right directory
 cd /workspace
 
+# Install pnpm for vaadin tests (Node.js installed via devcontainer features)
+echo "Installing pnpm..."
+npm install -g pnpm
+
 # Download Gradle wrapper and start daemon
 echo "Starting Gradle daemon..."
 ./gradlew --version

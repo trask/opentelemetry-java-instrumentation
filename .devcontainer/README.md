@@ -17,10 +17,10 @@ This directory contains the development container configuration for the OpenTele
 
 ## How it works
 
-1. **Base Image**: Uses Microsoft's Java dev container with OpenJDK 21
+1. **Base Image**: Uses Microsoft's generic dev container base with Java 21 via dev container features
 2. **Post-creation Setup**: Downloads Gradle dependencies during container startup
 3. **Optimization**: Sets up Gradle daemon with optimized JVM settings
-4. **Node.js**: Installs Node.js 16 and pnpm for Vaadin tests
+4. **Node.js**: Installs Node.js 16 via dev container features for Vaadin tests
 5. **Dependency Caching**: Attempts to resolve and cache dependencies after container creation
 
 ## Usage

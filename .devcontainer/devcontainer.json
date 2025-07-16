@@ -1,0 +1,26 @@
+{
+  "name": "OpenTelemetry Java Instrumentation Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-gradle"
+      ]
+    }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installGradle": "true"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "16"
+    }
+  },
+  "postCreateCommand": ".devcontainer/post-create.sh",
+  "remoteUser": "vscode"
+}

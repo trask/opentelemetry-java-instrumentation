@@ -123,6 +123,25 @@ if (gradle.startParameter.taskNames.contains("listTestsInPartition")) {
 tasks {
   val stableVersion = version.toString().replace("-alpha", "")
 
+  val resolveDependencies by registering {
+    group = "Help"
+    description = "Resolve and download all dependencies for faster builds"
+    
+    doLast {
+      allprojects {
+        configurations.configureEach {
+          if (isCanBeResolved) {
+            try {
+              resolve()
+            } catch (e: Exception) {
+              logger.warn("Could not resolve configuration $name: ${e.message}")
+            }
+          }
+        }
+      }
+    }
+  }
+
   val generateFossaConfiguration by registering {
     group = "Help"
     description = "Generate .fossa.yml configuration file"

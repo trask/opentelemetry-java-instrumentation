@@ -28,10 +28,7 @@ ENV JAVA_HOME=/usr/lib/jvm/msopenjdk-current
 
 # Pre-configure gradle with optimized settings
 RUN mkdir -p ~/.gradle && \
-    echo "org.gradle.daemon=true" > ~/.gradle/gradle.properties && \
-    echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties && \
-    echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties && \
-    echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m" >> ~/.gradle/gradle.properties
+    echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=512m" > ~/.gradle/gradle.properties
 
 # Final workspace setup
 WORKDIR /workspace

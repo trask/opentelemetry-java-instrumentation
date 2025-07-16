@@ -29,8 +29,3 @@ The dev container will automatically be used by:
 - GitHub Copilot agents
 - VS Code with Dev Containers extension
 - Any tool that supports dev containers
-
-## Maintenance
-
-The configuration may need updates when:
-- Java version changes (update `.java-version` and `devcontainer.json`)

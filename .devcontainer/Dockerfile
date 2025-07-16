@@ -19,9 +19,8 @@ USER vscode
 # Set JAVA_HOME for vscode user
 ENV JAVA_HOME=/usr/lib/jvm/msopenjdk-current
 
-# Pre-configure gradle with optimized settings
-RUN mkdir -p ~/.gradle && \
-    echo "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m" > ~/.gradle/gradle.properties
+# Create gradle cache directory
+RUN mkdir -p ~/.gradle
 
 # Final workspace setup
 WORKDIR /workspace

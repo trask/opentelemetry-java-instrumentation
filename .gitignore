@@ -62,4 +62,3 @@ replay_pid*
 
 !java-agent/benchmark/releases/*.jar
 
-build-scan.txt

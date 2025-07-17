@@ -67,12 +67,6 @@ develocity {
 }
 
 buildCache {
-  local {
-    // Local cache is enabled by default for local development, but disabled in CI
-    // to save CI storage space since CI can use the remote cache directly
-    isEnabled = System.getenv("CI").isNullOrEmpty()
-  }
-  
   remote<com.github.burrunan.s3cache.AwsS3BuildCache> {
     region = "us-phoenix-1"
     bucket = "opentelemetry-java-instrumentation-build-cache"
@@ -85,11 +79,8 @@ buildCache {
     if (!accessKeyId.isNullOrEmpty() && !secretAccessKey.isNullOrEmpty()) {
       awsAccessKeyId = accessKeyId
       awsSecretKey = secretAccessKey
-      
-      // Enable push whenever secrets are available
       isPush = true
     } else {
-      // Read-only mode for pull requests and local development
       isPush = false
     }
   }

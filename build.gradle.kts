@@ -126,7 +126,7 @@ tasks {
   val resolveDependencies by registering {
     group = "Help"
     description = "Resolve and download all dependencies for faster builds"
-    
+
     doLast {
       allprojects {
         configurations.configureEach {

@@ -68,8 +68,8 @@ develocity {
 
 buildCache {
   local {
-    // Local cache is enabled by default, but we might want to disable it in CI
-    // when using remote cache to avoid unnecessary storage
+    // Local cache is enabled by default for local development, but disabled in CI
+    // to save CI storage space since CI can use the remote cache directly
     isEnabled = System.getenv("CI").isNullOrEmpty()
   }
   
@@ -78,7 +78,7 @@ buildCache {
     bucket = "opentelemetry-java-instrumentation-build-cache"
     endpoint = "https://objectstorage.us-phoenix-1.oraclecloud.com"
     
-    // Configure credentials for write access (only on main branch)
+    // Configure credentials for write access
     val accessKeyId = System.getenv("S3_BUILD_CACHE_ACCESS_KEY_ID")
     val secretAccessKey = System.getenv("S3_BUILD_CACHE_SECRET_ACCESS_KEY")
     
@@ -86,15 +86,12 @@ buildCache {
       awsAccessKeyId = accessKeyId
       awsSecretKey = secretAccessKey
       
-      // Enable push only for main branch builds
-      isPush = System.getenv("GITHUB_REF") == "refs/heads/main"
+      // Enable push whenever secrets are available
+      isPush = true
     } else {
       // Read-only mode for pull requests and local development
       isPush = false
     }
-    
-    // Enable the remote cache
-    isEnabled = true
   }
 }
 

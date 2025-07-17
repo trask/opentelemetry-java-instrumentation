@@ -61,5 +61,8 @@ replay_pid*
 .lycheecache
 build-scan.txt
 
+# Kotlin compiler sessions
+**/.kotlin/sessions/
+
 !java-agent/benchmark/releases/*.jar
 

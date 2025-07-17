@@ -22,11 +22,11 @@ The build cache is configured in `settings.gradle.kts`:
 - Always enabled (`isPull = true`)
 
 #### Write Access (Push to cache)
-- Only available on main branch builds (`GITHUB_REF == "refs/heads/main"`)
+- Available when authentication credentials are provided
 - Requires authentication via GitHub secrets:
   - `S3_BUILD_CACHE_ACCESS_KEY_ID`
   - `S3_BUILD_CACHE_SECRET_ACCESS_KEY`
-- Disabled for pull requests and local development
+- Disabled for pull requests and local development (no credentials available)
 
 ### Local Development
 
@@ -35,21 +35,21 @@ For local development, the cache will:
 - Read from the remote cache (no authentication needed)
 - Not write to the remote cache (no credentials available)
 
-To use the build cache locally:
+The build cache is enabled by default via `org.gradle.caching=true` in `gradle.properties`, so you can simply run:
 ```bash
-./gradlew build --build-cache
+./gradlew build
 ```
 
-To also enable configuration cache:
+To also enable configuration cache (which provides additional speedup):
 ```bash
-./gradlew build --build-cache --configuration-cache
+./gradlew build --configuration-cache
 ```
 
 ### GitHub Actions
 
 The cache is automatically configured in GitHub Actions workflows:
 - All workflows have access to read from the cache
-- Only main branch builds have write access via secrets
+- Workflows with access to the S3 secrets have write access
 - Both build cache and configuration cache are enabled
 
 ### Benefits

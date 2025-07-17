@@ -36,3 +36,32 @@ This option can be used to let agent run with all privileges without being affec
 
 [1] Disclaimer: agent can provide application means for escaping security manager sandbox. Do not use
 this option if your application relies on security manager to run untrusted code.
+
+## JavaScript snippet injection
+
+This experimental feature allows you to inject JavaScript code into HTML responses from servlet applications. The agent will monitor servlet output streams and print writers, look for the `</head>` tag in HTML responses, and inject the configured JavaScript snippet before the closing `</head>` tag.
+
+This feature is primarily useful for integrating client-side monitoring and Real User Monitoring (RUM) solutions.
+
+| System property                         | Environment variable                    | Purpose                                                                                                                                                                      |
+|-----------------------------------------|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| otel.experimental.javascript-snippet    | OTEL_EXPERIMENTAL_JAVASCRIPT_SNIPPET    | JavaScript code to inject into HTML responses before the closing `</head>` tag. The value should be a complete JavaScript snippet including `<script>` tags if needed. |
+
+**Example usage:**
+
+```bash
+# System property
+-Dotel.experimental.javascript-snippet="<script>console.log('OpenTelemetry tracking enabled');</script>"
+
+# Environment variable
+export OTEL_EXPERIMENTAL_JAVASCRIPT_SNIPPET="<script src='https://example.com/rum.js'></script>"
+```
+
+**Important notes:**
+
+- This is an experimental feature and may change or be removed in future versions
+- Only works with servlet-based applications
+- The snippet is injected only into HTML responses that contain a `</head>` tag
+- The agent will attempt to preserve the original character encoding of the response
+- If the response already has a `Content-Length` header, it will be updated to reflect the additional content
+- No validation is performed on the JavaScript snippet - ensure it is properly formatted and safe

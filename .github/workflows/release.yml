@@ -8,6 +8,9 @@ permissions:
 jobs:
   common:
     uses: ./.github/workflows/build-common.yml
+    secrets:
+      S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+      S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
 
   # test-latest-deps is intentionally not included in the release workflows
   # because any time a new library version is released to maven central

@@ -21,6 +21,10 @@ on:
     secrets:
       FLAKY_TEST_REPORTER_ACCESS_KEY:
         required: false
+      S3_BUILD_CACHE_ACCESS_KEY_ID:
+        required: false
+      S3_BUILD_CACHE_SECRET_ACCESS_KEY:
+        required: false
 
 permissions:
   contents: read
@@ -195,6 +199,9 @@ jobs:
 
       - name: Build
         # javadoc task fails sporadically fetching https://docs.oracle.com/javase/8/docs/api/
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew check spdxSbom -x javadoc -x spotlessCheck -PskipTests=true ${{ inputs.no-build-cache && '--no-build-cache' || '' }}
 
       - name: Check for jApiCmp diffs
@@ -322,6 +329,9 @@ jobs:
 
       - name: Test
         # spotless is checked separately since it's a common source of failure
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: >
           ./gradlew
           ${{ env.test-tasks }}
@@ -440,9 +450,15 @@ jobs:
       - name: Build
         # running suite "none" compiles everything needed by smoke tests without executing any tests
         # --no-daemon is used to free up the memory from the build step before running the test step below
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew :smoke-tests:test -PsmokeTestSuite=none --no-daemon ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
 
       - name: Test
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }} ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
 
       - name: Build scan
@@ -489,6 +505,9 @@ jobs:
           cache-read-only: ${{ inputs.cache-read-only }}
 
       - name: Build
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew build ${{ inputs.no-build-cache && '--no-build-cache' || '' }}
         working-directory: gradle-plugins
 
@@ -513,25 +532,43 @@ jobs:
 
       - name: Local publish of artifacts
         # javadoc task fails sporadically fetching https://docs.oracle.com/javase/8/docs/api/
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew publishToMavenLocal -x javadoc
 
       - name: Local publish of gradle plugins
         # javadoc task fails sporadically fetching https://docs.oracle.com/javase/8/docs/api/
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew publishToMavenLocal -x javadoc
         working-directory: gradle-plugins
 
       - name: Build distro
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew build --init-script ../../.github/scripts/local.init.gradle.kts ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
         working-directory: examples/distro
 
       - name: Build extension
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew build --init-script ../../.github/scripts/local.init.gradle.kts ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
         working-directory: examples/extension
 
       - name: Build benchmark-overhead
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew assemble ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
         working-directory: benchmark-overhead
 
       - name: Run muzzle check against extension
+        env:
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew muzzle --init-script ../../.github/scripts/local.init.gradle.kts
         working-directory: examples/extension

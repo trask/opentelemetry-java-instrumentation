@@ -15,6 +15,8 @@ jobs:
     uses: ./.github/workflows/build-common.yml
     secrets:
       FLAKY_TEST_REPORTER_ACCESS_KEY: ${{ secrets.FLAKY_TEST_REPORTER_ACCESS_KEY }}
+      S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+      S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
 
   test-latest-deps:
     # release branches are excluded
@@ -84,6 +86,8 @@ jobs:
           SONATYPE_KEY: ${{ secrets.SONATYPE_KEY }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew assemble spdxSbom publishToSonatype
 
       - name: Build and publish gradle plugin snapshots
@@ -92,5 +96,7 @@ jobs:
           SONATYPE_KEY: ${{ secrets.SONATYPE_KEY }}
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          S3_BUILD_CACHE_ACCESS_KEY_ID: ${{ secrets.S3_BUILD_CACHE_ACCESS_KEY_ID }}
+          S3_BUILD_CACHE_SECRET_ACCESS_KEY: ${{ secrets.S3_BUILD_CACHE_SECRET_ACCESS_KEY }}
         run: ./gradlew build publishToSonatype
         working-directory: gradle-plugins

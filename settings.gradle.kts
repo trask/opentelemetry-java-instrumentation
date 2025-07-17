@@ -8,6 +8,7 @@ pluginManagement {
     id("org.xbib.gradle.plugin.jflex") version "3.0.2"
     id("org.unbroken-dome.xjc") version "2.0.0"
     id("org.graalvm.buildtools.native") version "0.10.6"
+    id("com.github.burrunan.s3-build-cache") version "1.8.2"
   }
 }
 
@@ -21,6 +22,7 @@ plugins {
   // ./gradlew :smoke-tests:images:servlet:buildWindowsTestImages pushMatrix -PsmokeTestServer=jetty
   id("com.bmuschko.docker-remote-api") version "9.4.0" apply false
   id("com.gradle.develocity") version "4.1"
+  id("com.github.burrunan.s3-build-cache") version "1.8.2"
 }
 
 dependencyResolutionManagement {
@@ -61,6 +63,38 @@ develocity {
         }
       }
     }
+  }
+}
+
+buildCache {
+  local {
+    // Local cache is enabled by default, but we might want to disable it in CI
+    // when using remote cache to avoid unnecessary storage
+    isEnabled = System.getenv("CI").isNullOrEmpty()
+  }
+  
+  remote<com.github.burrunan.s3cache.AwsS3BuildCache> {
+    region = "us-phoenix-1"
+    bucket = "opentelemetry-java-instrumentation-build-cache"
+    endpoint = "https://objectstorage.us-phoenix-1.oraclecloud.com"
+    
+    // Configure credentials for write access (only on main branch)
+    val accessKeyId = System.getenv("S3_BUILD_CACHE_ACCESS_KEY_ID")
+    val secretAccessKey = System.getenv("S3_BUILD_CACHE_SECRET_ACCESS_KEY")
+    
+    if (!accessKeyId.isNullOrEmpty() && !secretAccessKey.isNullOrEmpty()) {
+      awsAccessKeyId = accessKeyId
+      awsSecretKey = secretAccessKey
+      
+      // Enable push only for main branch builds
+      isPush = System.getenv("GITHUB_REF") == "refs/heads/main"
+    } else {
+      // Read-only mode for pull requests and local development
+      isPush = false
+    }
+    
+    // Enable the remote cache
+    isEnabled = true
   }
 }
 

@@ -59,6 +59,7 @@ replay_pid*
 .attach_pid*
 .telemetry*
 .lycheecache
+build-scan.txt
 
 !java-agent/benchmark/releases/*.jar
 

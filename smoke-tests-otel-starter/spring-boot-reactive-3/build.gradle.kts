@@ -4,6 +4,14 @@ plugins {
   id("org.graalvm.buildtools.native")
 }
 
+// Create source sets early to avoid configuration naming conflicts with external plugins
+sourceSets {
+  create("nativeTest") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+  }
+}
+
 description = "smoke-tests-otel-starter-spring-boot-reactive-3"
 
 otelJava {

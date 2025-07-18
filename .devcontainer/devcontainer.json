@@ -4,7 +4,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "vscjava.vscode-java-pack",
+        "redhat.java", // minimal Java support
         "ms-vscode.vscode-json"
       ]
     }

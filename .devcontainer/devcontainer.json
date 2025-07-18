@@ -1,0 +1,12 @@
+{
+  "name": "OpenTelemetry Java Instrumentation Development Environment",
+  "image": "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/devcontainer:latest",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "ms-vscode.vscode-json"
+      ]
+    }
+  }
+}

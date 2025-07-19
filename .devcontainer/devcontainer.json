@@ -1,0 +1,22 @@
+{
+  "name": "OpenTelemetry Java Instrumentation Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/base:bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "jdkDistro": "ms"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "updateContentCommand": "./gradlew classes --no-daemon",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "redhat.java",
+        "ms-vscode.vscode-json",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ]
+    }
+  }
+}

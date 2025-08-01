@@ -71,4 +71,42 @@ tasks {
     dependsOn(windowsBackendImageBuild)
     images.add("ghcr.io/$repo/smoke-test-fake-backend-windows:$extraTag")
   }
+
+  val linuxBackendImagePrepare by registering(Copy::class) {
+    dependsOn(shadowJar)
+    into(backendDockerBuildDir)
+    from("src/docker/backend")
+    from(shadowJar.get().outputs) {
+      rename { "fake-backend.jar" }
+    }
+  }
+
+  val linuxBackendMultiPlatformImageBuild by registering(Exec::class) {
+    dependsOn(linuxBackendImagePrepare)
+    group = "docker"
+    description = "Build multi-platform Linux Docker image for the test backend"
+    workingDir(backendDockerBuildDir)
+    commandLine(
+      "docker", "buildx", "build",
+      "--platform", "linux/amd64,linux/arm64",
+      "--tag", "ghcr.io/$repo/smoke-test-fake-backend:$extraTag",
+      "--file", "Dockerfile",
+      "."
+    )
+  }
+
+  val linuxBackendMultiPlatformImagePush by registering(Exec::class) {
+    dependsOn(linuxBackendImagePrepare)
+    group = "publishing"
+    description = "Build and push multi-platform Linux Docker image for the test backend"
+    workingDir(backendDockerBuildDir)
+    commandLine(
+      "docker", "buildx", "build",
+      "--platform", "linux/amd64,linux/arm64",
+      "--tag", "ghcr.io/$repo/smoke-test-fake-backend:$extraTag",
+      "--file", "Dockerfile",
+      "--push",
+      "."
+    )
+  }
 }

@@ -5,14 +5,11 @@
 
 package io.opentelemetry.javaagent.testing.provider;
 
-import com.google.auto.service.AutoService;
 import io.opentelemetry.api.incubator.config.DeclarativeConfigProperties;
 import io.opentelemetry.sdk.autoconfigure.spi.internal.ComponentProvider;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
-@AutoService(ComponentProvider.class)
 public class AgentTestLogRecordExporterComponentProvider
     implements ComponentProvider<LogRecordExporter> {
 

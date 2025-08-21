@@ -5,14 +5,11 @@
 
 package io.opentelemetry.javaagent.testing.provider;
 
-import com.google.auto.service.AutoService;
 import io.opentelemetry.api.incubator.config.DeclarativeConfigProperties;
 import io.opentelemetry.sdk.autoconfigure.spi.internal.ComponentProvider;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
-@AutoService(ComponentProvider.class)
 public class AgentTestMetricExporterComponentProvider implements ComponentProvider<MetricExporter> {
 
   private static MetricExporter metricExporter;

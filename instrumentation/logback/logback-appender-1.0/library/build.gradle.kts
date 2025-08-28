@@ -81,6 +81,26 @@ testing {
           implementation("ch.qos.logback:logback-classic") {
             version {
               strictly("1.3.0")
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code")
+          }
+        }
+      }
+    }
+
+    val testBothSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
+          }
+        }
+      }
+    }
             }
           }
           implementation("org.slf4j:slf4j-api") {
@@ -126,18 +146,10 @@ testing {
 
 tasks {
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code")
-  }
-
-  val testBothSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
-  }
-
   check {
     dependsOn(testing.suites)
-    dependsOn(testStableSemconv)
-    dependsOn(testBothSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
+    dependsOn(testing.suites.named("testBothSemconv"))
   }
 }
 

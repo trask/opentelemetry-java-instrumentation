@@ -19,31 +19,45 @@ tasks.register("generateDocs", JavaExec::class) {
   systemProperties.set("jfr.readme.path", project.projectDir.toString() + "/README.md")
 }
 
-tasks {
-  val testG1 by registering(Test::class) {
-    filter {
+
+testing {
+  suites {
+    val testG1 by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*G1GcMemoryMetricTest*")
+          }
+        }
+      }
     }
-    include("**/*G1GcMemoryMetricTest.*")
-    jvmArgs("-XX:+UseG1GC")
-  }
 
-  val testPS by registering(Test::class) {
-    filter {
+    val testPS by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*PsGcMemoryMetricTest*")
+          }
+        }
+      }
     }
-    include("**/*PsGcMemoryMetricTest.*")
-    jvmArgs("-XX:+UseParallelGC")
-  }
 
-  val testSerial by registering(Test::class) {
-    filter {
+    val testSerial by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*SerialGcMemoryMetricTest*")
+          }
+        }
+      }
     }
-    include("**/*SerialGcMemoryMetricTest.*")
-    jvmArgs("-XX:+UseSerialGC")
   }
+}
 
+tasks {
   test {
     filter {
       excludeTestsMatching("*G1GcMemoryMetricTest")
@@ -53,9 +67,9 @@ tasks {
   }
 
   check {
-    dependsOn(testG1)
-    dependsOn(testPS)
-    dependsOn(testSerial)
+    dependsOn(testing.suites.named("testG1"))
+    dependsOn(testing.suites.named("testPS"))
+    dependsOn(testing.suites.named("testSerial"))
   }
 
   compileJava {

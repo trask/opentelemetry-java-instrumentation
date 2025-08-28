@@ -33,16 +33,25 @@ otelJava {
   minJavaVersionSupported.set(JavaVersion.VERSION_11)
 }
 
+
+testing {
+  suites {
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+      includeTestsMatching("Jms3SuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
 tasks {
   test {
     usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
-  }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("Jms3SuppressReceiveSpansTest")
-    }
-    include("**/Jms3SuppressReceiveSpansTest.*")
   }
 
   test {
@@ -53,6 +62,6 @@ tasks {
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }

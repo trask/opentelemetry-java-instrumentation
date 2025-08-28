@@ -19,31 +19,45 @@ dependencies {
   testImplementation(project(":instrumentation:micrometer:micrometer-1.5:testing"))
 }
 
-tasks {
-  val testPrometheusMode by registering(Test::class) {
-    filter {
+
+testing {
+  suites {
+    val testPrometheusMode by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*PrometheusModeTest")
+          }
+        }
+      }
     }
-    include("**/*PrometheusModeTest.*")
-    jvmArgs("-Dotel.instrumentation.micrometer.prometheus-mode.enabled=true")
-  }
 
-  val testBaseTimeUnit by registering(Test::class) {
-    filter {
+    val testBaseTimeUnit by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*TimerMillisecondsTest")
+          }
+        }
+      }
     }
-    include("**/*TimerMillisecondsTest.*")
-    jvmArgs("-Dotel.instrumentation.micrometer.base-time-unit=milliseconds")
-  }
 
-  val testHistogramGauges by registering(Test::class) {
-    filter {
+    val testHistogramGauges by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("*HistogramGaugesTest")
+          }
+        }
+      }
     }
-    include("**/*HistogramGaugesTest.*")
-    jvmArgs("-Dotel.instrumentation.micrometer.histogram-gauges.enabled=true")
   }
+}
 
+tasks {
   test {
     filter {
       excludeTestsMatching("*TimerMillisecondsTest")
@@ -53,9 +67,9 @@ tasks {
   }
 
   check {
-    dependsOn(testBaseTimeUnit)
-    dependsOn(testPrometheusMode)
-    dependsOn(testHistogramGauges)
+    dependsOn(testing.suites.named("testBaseTimeUnit"))
+    dependsOn(testing.suites.named("testPrometheusMode"))
+    dependsOn(testing.suites.named("testHistogramGauges"))
   }
 
   withType<Test>().configureEach {

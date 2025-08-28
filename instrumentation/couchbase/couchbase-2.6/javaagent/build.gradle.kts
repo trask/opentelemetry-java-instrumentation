@@ -33,6 +33,20 @@ dependencies {
   latestDepTestLibrary("com.couchbase.client:java-client:2.+") // see couchbase-3.1 module
 }
 
+testing {
+  suites {
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
 tasks {
   withType<Test>().configureEach {
     // TODO run tests both with and without experimental span attributes
@@ -43,11 +57,7 @@ tasks {
     jvmArgs("-XX:+IgnoreUnrecognizedVMOptions")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

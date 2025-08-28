@@ -18,45 +18,6 @@ dependencies {
   testImplementation("io.opentracing.contrib.dropwizard:dropwizard-opentracing:0.2.2") {
     isTransitive = false
   }
-testing {
-  suites {
-    // Configure the default test suite
-    named<JvmTestSuite>("test") {
-      targets {
-        all {
-          testTask.configure {
-            filter {
-                  excludeTestsMatching("ConfiguredTraceAnnotationsTest")
-                  excludeTestsMatching("TracedMethodsExclusionTest")
-          }
-        }
-      }
-    }
-    
-    val testIncludeProperty by registering(JvmTestSuite::class) {
-      targets {
-        all {
-          testTask.configure {
-            filter {
-                  includeTestsMatching("ConfiguredTraceAnnotationsTest")
-          }
-        }
-      }
-    }
-    val testExcludeMethodsProperty by registering(JvmTestSuite::class) {
-      targets {
-        all {
-          testTask.configure {
-            filter {
-                  includeTestsMatching("TracedMethodsExclusionTest")
-          }
-        }
-      }
-    }
-  }
-}
-
-
   testImplementation("com.datadoghq:dd-trace-api:1.43.0")
   testImplementation("com.signalfx.public:signalfx-trace-api:0.48.0-sfx8")
   // Old and new versions of kamon use different packages for Trace annotation
@@ -73,17 +34,55 @@ testing {
   testCompileOnly("org.springframework:spring-core:4.3.30.RELEASE")
 }
 
-tasks {
-    include("**/ConfiguredTraceAnnotationsTest.*")
-    jvmArgs("-Dotel.instrumentation.external-annotations.include=io.opentelemetry.javaagent.instrumentation.extannotations.OuterClass\$InterestingMethod")
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+              excludeTestsMatching("ConfiguredTraceAnnotationsTest")
+              excludeTestsMatching("TracedMethodsExclusionTest")
+            }
+          }
+        }
+      }
+    }
+    
+    val testIncludeProperty by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+              includeTestsMatching("ConfiguredTraceAnnotationsTest")
+            }
+            include("**/ConfiguredTraceAnnotationsTest.*")
+            jvmArgs("-Dotel.instrumentation.external-annotations.include=io.opentelemetry.javaagent.instrumentation.extannotations.OuterClass\$InterestingMethod")
+          }
+        }
+      }
+    }
+    
+    val testExcludeMethodsProperty by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+              includeTestsMatching("TracedMethodsExclusionTest")
+            }
+            include("**/TracedMethodsExclusionTest.*")
+            jvmArgs(
+              "-Dotel.instrumentation.external-annotations.exclude-methods=io.opentelemetry.javaagent.instrumentation.extannotations.TracedMethodsExclusionTest\$TestClass[excluded,annotatedButExcluded]"
+            )
+          }
+        }
+      }
+    }
   }
-    include("**/TracedMethodsExclusionTest.*")
-    jvmArgs(
-      "-Dotel.instrumentation.external-annotations.exclude-methods=io.opentelemetry.javaagent.instrumentation.extannotations.TracedMethodsExclusionTest\$TestClass[excluded,annotatedButExcluded]"
-    )
-  }
-  }
+}
 
+tasks {
   check {
     dependsOn(testing.suites.named("testIncludeProperty"))
     dependsOn(testing.suites.named("testExcludeMethodsProperty"))

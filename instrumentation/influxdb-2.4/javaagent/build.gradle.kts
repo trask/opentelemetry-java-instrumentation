@@ -30,6 +30,8 @@ testing {
         implementation(project())
         implementation("org.influxdb:influxdb-java:2.4")
         implementation("org.testcontainers:testcontainers")
+      }
+    }
 
     val testStableSemconv by registering(JvmTestSuite::class) {
       targets {
@@ -38,8 +40,6 @@ testing {
             jvmArgs("-Dotel.semconv-stability.opt-in=database")
           }
         }
-      }
-    }
       }
     }
   }

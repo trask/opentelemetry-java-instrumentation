@@ -32,6 +32,33 @@ dependencies {
   latestDepTestLibrary("org.springframework.data:spring-data-couchbase:3.1.+") // see couchbase-3.1 module
   latestDepTestLibrary("com.couchbase.client:java-client:2.+") // see couchbase-3.1 module
 }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+                systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+    val testExperimental by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.instrumentation.couchbase.experimental-span-attributes=true")
+                systemProperty("metadataConfig", "otel.instrumentation.couchbase.experimental-span-attributes=true")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
@@ -42,17 +69,7 @@ tasks {
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
-  val testExperimental by registering(Test::class) {
-    jvmArgs("-Dotel.instrumentation.couchbase.experimental-span-attributes=true")
-    systemProperty("metadataConfig", "otel.instrumentation.couchbase.experimental-span-attributes=true")
-  }
-
   check {
-    dependsOn(testStableSemconv, testExperimental)
+    dependsOn(testing.suites.named("testStableSemconv"), testing.suites.named("testExperimental"))
   }
 }

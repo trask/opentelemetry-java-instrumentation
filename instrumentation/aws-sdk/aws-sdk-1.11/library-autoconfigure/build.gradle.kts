@@ -22,29 +22,47 @@ dependencies {
   // last version that does not use json protocol
   latestDepTestLibrary("com.amazonaws:aws-java-sdk-sqs:1.12.583") // documented limitation
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
     systemProperty("otel.instrumentation.aws-sdk.experimental-span-attributes", "true")
     systemProperty("otel.instrumentation.messaging.experimental.capture-headers", "Test-Message-Header")
   }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("SqsSuppressReceiveSpansTest")
-    }
     include("**/SqsSuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("SqsSuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }
 

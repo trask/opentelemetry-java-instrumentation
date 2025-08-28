@@ -28,6 +28,34 @@ dependencies {
   testLibrary("org.springframework.boot:spring-boot-starter-test:3.0.0")
   testLibrary("org.springframework.boot:spring-boot-starter:3.0.0")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("SpringListenerSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("SpringListenerSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 // spring 6 requires java 17
 otelJava {
@@ -39,22 +67,12 @@ tasks {
     usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
   }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("SpringListenerSuppressReceiveSpansTest")
-    }
     include("**/SpringListenerSuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("SpringListenerSuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }

@@ -14,6 +14,22 @@ dependencies {
 
   testImplementation(project(":instrumentation:jdbc:testing"))
 }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   // We cannot use "--release" javac option here because that will forbid using apis that were added
@@ -51,12 +67,8 @@ tasks {
     include("io/opentelemetry/javaagent/bootstrap/**")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }
 

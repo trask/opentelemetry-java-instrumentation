@@ -22,6 +22,34 @@ dependencies {
   testImplementation("com.google.guava:guava")
   testImplementation("org.testcontainers:kafka")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("KafkaStreamsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("KafkaStreamsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
@@ -32,22 +60,12 @@ tasks {
     // TODO run tests both with and without experimental span attributes
     jvmArgs("-Dotel.instrumentation.kafka.experimental-span-attributes=true")
   }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("KafkaStreamsSuppressReceiveSpansTest")
-    }
     include("**/KafkaStreamsSuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("KafkaStreamsSuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }

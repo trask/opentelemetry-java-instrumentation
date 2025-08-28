@@ -39,6 +39,33 @@ dependencies {
   compileOnly("org.elasticsearch.client:transport:5.3.0") {
     isTransitive = false
   }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database,code")
+                systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+    val testExperimental by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.instrumentation.elasticsearch.experimental-span-attributes=true")
+                systemProperty("metadataConfig", "otel.instrumentation.elasticsearch.experimental-span-attributes=true")
+          }
+        }
+      }
+    }
+  }
+}
+
+
   compileOnly("org.elasticsearch:elasticsearch:5.3.0") {
     // We don't need all its transitive dependencies when compiling and run tests against 5.5.0
     isTransitive = false
@@ -76,17 +103,7 @@ tasks {
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database,code")
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
-  val testExperimental by registering(Test::class) {
-    jvmArgs("-Dotel.instrumentation.elasticsearch.experimental-span-attributes=true")
-    systemProperty("metadataConfig", "otel.instrumentation.elasticsearch.experimental-span-attributes=true")
-  }
-
   check {
-    dependsOn(testStableSemconv, testExperimental)
+    dependsOn(testing.suites.named("testStableSemconv"), testing.suites.named("testExperimental"))
   }
 }

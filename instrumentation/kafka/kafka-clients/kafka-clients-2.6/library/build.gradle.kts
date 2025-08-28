@@ -15,31 +15,49 @@ dependencies {
   testCompileOnly("com.google.auto.value:auto-value-annotations")
   testAnnotationProcessor("com.google.auto.value:auto-value")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("InterceptorsSuppressReceiveSpansTest")
+                  excludeTestsMatching("WrapperSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("InterceptorsSuppressReceiveSpansTest")
+                  includeTestsMatching("WrapperSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
     usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
     systemProperty("testLatestDeps", findProperty("testLatestDeps") as Boolean)
   }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("InterceptorsSuppressReceiveSpansTest")
-      includeTestsMatching("WrapperSuppressReceiveSpansTest")
-    }
     include("**/InterceptorsSuppressReceiveSpansTest.*", "**/WrapperSuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("InterceptorsSuppressReceiveSpansTest")
-      excludeTestsMatching("WrapperSuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
     systemProperty("otel.instrumentation.messaging.experimental.capture-headers", "Test-Message-Header")
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }

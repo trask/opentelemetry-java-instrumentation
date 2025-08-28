@@ -18,24 +18,43 @@ dependencies {
   testImplementation("org.testcontainers:pulsar")
   testImplementation("org.apache.pulsar:pulsar-client-admin:2.8.0")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("PulsarClientSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpanDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("PulsarClientSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
-  val testReceiveSpanDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("PulsarClientSuppressReceiveSpansTest")
-    }
     include("**/PulsarClientSuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("PulsarClientSuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
   }
 
   check {
-    dependsOn(testReceiveSpanDisabled)
+    dependsOn(testing.suites.named("testReceiveSpanDisabled"))
   }
 }
 

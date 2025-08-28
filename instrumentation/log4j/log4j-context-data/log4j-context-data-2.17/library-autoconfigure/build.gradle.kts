@@ -10,33 +10,57 @@ dependencies {
 
   testImplementation(project(":instrumentation:log4j:log4j-context-data:log4j-context-data-common:testing"))
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("LibraryLog4j2BaggageTest")
+                  excludeTestsMatching("LibraryLog4j2LoggingKeysTest")
+          }
+        }
+      }
+    }
+    
+    val testAddBaggage by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("LibraryLog4j2BaggageTest")
+          }
+        }
+      }
+    }
+    val testLoggingKeys by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("LibraryLog4j2LoggingKeysTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
-  test {
-    filter {
-      excludeTestsMatching("LibraryLog4j2BaggageTest")
-      excludeTestsMatching("LibraryLog4j2LoggingKeysTest")
-    }
   }
-
-  val testAddBaggage by registering(Test::class) {
-    filter {
-      includeTestsMatching("LibraryLog4j2BaggageTest")
-    }
     jvmArgs("-Dotel.instrumentation.log4j-context-data.add-baggage=true")
   }
-
-  val testLoggingKeys by registering(Test::class) {
-    filter {
-      includeTestsMatching("LibraryLog4j2LoggingKeysTest")
-    }
     jvmArgs("-Dotel.instrumentation.common.logging.trace-id=trace_id_test")
     jvmArgs("-Dotel.instrumentation.common.logging.span-id=span_id_test")
     jvmArgs("-Dotel.instrumentation.common.logging.trace-flags=trace_flags_test")
   }
 
   named("check") {
-    dependsOn(testAddBaggage)
-    dependsOn(testLoggingKeys)
+    dependsOn(testing.suites.named("testAddBaggage"))
+    dependsOn(testing.suites.named("testLoggingKeys"))
   }
 }

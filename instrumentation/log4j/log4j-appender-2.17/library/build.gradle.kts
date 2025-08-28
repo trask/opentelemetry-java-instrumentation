@@ -15,6 +15,40 @@ dependencies {
     testCompileOnly("biz.aQute.bnd:biz.aQute.bnd.annotation:7.0.0")
     testCompileOnly("com.google.errorprone:error_prone_annotations")
   }
+testing {
+  suites {
+    
+    val testAsyncLogger by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-DLog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector")
+          }
+        }
+      }
+    }
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code")
+          }
+        }
+      }
+    }
+    val testBothSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 }
 
 tasks {
@@ -23,21 +57,9 @@ tasks {
     jvmArgs("-Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true")
   }
 
-  val testAsyncLogger by registering(Test::class) {
-    jvmArgs("-DLog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector")
-  }
-
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code")
-  }
-
-  val testBothSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
-  }
-
   check {
-    dependsOn(testAsyncLogger)
-    dependsOn(testStableSemconv)
-    dependsOn(testBothSemconv)
+    dependsOn(testing.suites.named("testAsyncLogger"))
+    dependsOn(testing.suites.named("testStableSemconv"))
+    dependsOn(testing.suites.named("testBothSemconv"))
   }
 }

@@ -28,20 +28,39 @@ dependencies {
 
   testImplementation("org.apache.activemq:artemis-jakarta-client:2.27.1")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("Jms3SuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 otelJava {
   minJavaVersionSupported.set(JavaVersion.VERSION_11)
 }
 
 tasks {
-  test {
-    usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
-  }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("Jms3SuppressReceiveSpansTest")
-    }
     include("**/Jms3SuppressReceiveSpansTest.*")
   }
 
@@ -53,6 +72,6 @@ tasks {
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }

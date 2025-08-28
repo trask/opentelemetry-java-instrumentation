@@ -38,6 +38,22 @@ dependencies {
 
   latestDepTestLibrary("org.hibernate:hibernate-core:3.+") // see hibernate-4.0 module
 }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 if (findProperty("testLatestDeps") as Boolean) {
   configurations {
@@ -57,11 +73,7 @@ tasks {
     jvmArgs("-XX:+IgnoreUnrecognizedVMOptions")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

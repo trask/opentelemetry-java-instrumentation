@@ -144,20 +144,8 @@ tasks {
     }
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-
-    systemProperty("collectMetadata", collectMetadata)
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
-  }
-
-  test {
-    usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
-    systemProperty("collectMetadata", collectMetadata)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 
   withType<Test>().configureEach {

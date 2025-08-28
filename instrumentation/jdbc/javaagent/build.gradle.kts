@@ -43,6 +43,66 @@ dependencies {
   testImplementation("com.typesafe.slick:slick_2.11:3.2.0")
   testImplementation("com.h2database:h2:1.4.197")
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("SlickTest")
+                  excludeTestsMatching("PreparedStatementParametersTest")
+          }
+        }
+      }
+    }
+    
+    val testSlick by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("SlickTest")
+          }
+        }
+      }
+    }
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("SlickTest")
+                  excludeTestsMatching("PreparedStatementParametersTest")
+          }
+        }
+      }
+    }
+    val testSlickStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("SlickTest")
+          }
+        }
+      }
+    }
+    val testCaptureParameters by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("PreparedStatementParametersTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 sourceSets {
   main {
@@ -55,50 +115,24 @@ sourceSets {
 }
 
 tasks {
-  val testSlick by registering(Test::class) {
-    filter {
-      includeTestsMatching("SlickTest")
-    }
     include("**/SlickTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("SlickTest")
-      excludeTestsMatching("PreparedStatementParametersTest")
-    }
     jvmArgs("-Dotel.instrumentation.jdbc-datasource.enabled=true")
   }
-
-  val testStableSemconv by registering(Test::class) {
-    filter {
-      excludeTestsMatching("SlickTest")
-      excludeTestsMatching("PreparedStatementParametersTest")
-    }
     jvmArgs("-Dotel.instrumentation.jdbc-datasource.enabled=true")
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
   }
-
-  val testSlickStableSemconv by registering(Test::class) {
-    filter {
-      includeTestsMatching("SlickTest")
-    }
     include("**/SlickTest.*")
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
   }
-
-  val testCaptureParameters by registering(Test::class) {
-    filter {
-      includeTestsMatching("PreparedStatementParametersTest")
-    }
     jvmArgs("-Dotel.instrumentation.jdbc.experimental.capture-query-parameters=true")
   }
 
   check {
-    dependsOn(testSlick)
-    dependsOn(testStableSemconv)
-    dependsOn(testSlickStableSemconv)
-    dependsOn(testCaptureParameters)
+    dependsOn(testing.suites.named("testSlick"))
+    dependsOn(testing.suites.named("testStableSemconv"))
+    dependsOn(testing.suites.named("testSlickStableSemconv"))
+    dependsOn(testing.suites.named("testCaptureParameters"))
   }
 }
 

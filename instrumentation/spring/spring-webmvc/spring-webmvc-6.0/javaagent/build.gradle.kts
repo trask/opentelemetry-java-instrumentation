@@ -38,6 +38,23 @@ dependencies {
   testLibrary("org.springframework.boot:spring-boot-starter-web:3.0.0")
   testLibrary("org.springframework.boot:spring-boot-starter-security:3.0.0")
 }
+testing {
+  suites {
+    
+    val testExperimental by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            systemProperty("metadataConfig", "otel.instrumentation.spring-webmvc.experimental-span-attributes=true")
+                jvmArgs("-Dotel.instrumentation.spring-webmvc.experimental-span-attributes=true")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 // spring 6 requires java 17
 otelJava {
@@ -56,12 +73,7 @@ tasks {
     systemProperty("testLatestDeps", findProperty("testLatestDeps") as Boolean)
   }
 
-  val testExperimental by registering(Test::class) {
-    systemProperty("metadataConfig", "otel.instrumentation.spring-webmvc.experimental-span-attributes=true")
-    jvmArgs("-Dotel.instrumentation.spring-webmvc.experimental-span-attributes=true")
-  }
-
   check {
-    dependsOn(testExperimental)
+    dependsOn(testing.suites.named("testExperimental"))
   }
 }

@@ -27,7 +27,23 @@ dependencies {
     testImplementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.+")
     testCompileOnly("biz.aQute.bnd:biz.aQute.bnd.annotation:7.0.0")
     testCompileOnly("com.google.errorprone:error_prone_annotations")
-  } else {
+  }
+testing {
+  suites {
+    
+    val testAsync by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-DLog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector")
+          }
+        }
+      }
+    }
+  }
+}
+
+ else {
     // log4j 2.17 doesn't have an slf4j2 bridge
     testImplementation("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
     testImplementation("org.slf4j:slf4j-api") {
@@ -46,12 +62,9 @@ tasks.withType<Test>().configureEach {
 }
 
 tasks {
-  val testAsync by registering(Test::class) {
-    jvmArgs("-DLog4j2.contextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector")
-  }
 
   check {
-    dependsOn(testAsync)
+    dependsOn(testing.suites.named("testAsync"))
   }
 }
 

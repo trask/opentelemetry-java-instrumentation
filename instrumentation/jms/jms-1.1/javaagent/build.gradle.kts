@@ -52,24 +52,14 @@ tasks {
   withType<Test>().configureEach {
     usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
   }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("Jms1SuppressReceiveSpansTest")
-    }
     include("**/Jms1SuppressReceiveSpansTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("Jms1SuppressReceiveSpansTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
   }
 
   check {
     dependsOn(testing.suites)
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }
 

@@ -56,6 +56,33 @@ dependencies {
   testImplementation("com.datastax.oss:java-driver-core:4.16.0") {
     exclude(group = "io.dropwizard.metrics", module = "metrics-core")
   }
+testing {
+  suites {
+    
+    val testExperimental by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.instrumentation.camel.experimental-span-attributes=true")
+                systemProperty("metadataConfig", "otel.instrumentation.camel.experimental-span-attributes=true")
+          }
+        }
+      }
+    }
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+                systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
   latestDepTestLibrary("org.apache.camel:camel-core:2.+") // documented limitation
   latestDepTestLibrary("org.apache.camel:camel-spring-boot-starter:2.+") // documented limitation
@@ -83,18 +110,8 @@ tasks {
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
   }
 
-  val testExperimental by registering(Test::class) {
-    jvmArgs("-Dotel.instrumentation.camel.experimental-span-attributes=true")
-    systemProperty("metadataConfig", "otel.instrumentation.camel.experimental-span-attributes=true")
-  }
-
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv, testExperimental)
+    dependsOn(testing.suites.named("testStableSemconv"), testing.suites.named("testExperimental"))
   }
 }
 

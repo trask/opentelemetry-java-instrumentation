@@ -25,6 +25,23 @@ dependencies {
   testInstrumentation(project(":instrumentation:cassandra:cassandra-3.0:javaagent"))
   testInstrumentation(project(":instrumentation:cassandra:cassandra-4.0:javaagent"))
 }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+                systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
@@ -32,12 +49,7 @@ tasks {
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

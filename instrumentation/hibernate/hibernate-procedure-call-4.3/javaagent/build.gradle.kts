@@ -30,6 +30,22 @@ dependencies {
   latestDepTestLibrary("org.hibernate:hibernate-core:5.+") // documented limitation
   latestDepTestLibrary("org.hibernate:hibernate-entitymanager:5.+") // documented limitation
 }
+testing {
+  suites {
+    
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
   withType<Test>().configureEach {
@@ -37,11 +53,7 @@ tasks {
     jvmArgs("-Dotel.instrumentation.hibernate.experimental-span-attributes=true")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

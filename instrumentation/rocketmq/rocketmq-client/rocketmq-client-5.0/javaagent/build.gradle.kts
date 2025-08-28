@@ -16,24 +16,43 @@ dependencies {
 
   testImplementation(project(":instrumentation:rocketmq:rocketmq-client:rocketmq-client-5.0:testing"))
 }
+testing {
+  suites {
+    // Configure the default test suite
+    named<JvmTestSuite>("test") {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  excludeTestsMatching("RocketMqClientSuppressReceiveSpanTest")
+          }
+        }
+      }
+    }
+    
+    val testReceiveSpanDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+                  includeTestsMatching("RocketMqClientSuppressReceiveSpanTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 tasks {
-  val testReceiveSpanDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("RocketMqClientSuppressReceiveSpanTest")
-    }
     include("**/RocketMqClientSuppressReceiveSpanTest.*")
   }
-
-  test {
-    filter {
-      excludeTestsMatching("RocketMqClientSuppressReceiveSpanTest")
-    }
     jvmArgs("-Dotel.instrumentation.messaging.experimental.receive-telemetry.enabled=true")
     jvmArgs("-Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true")
   }
 
   check {
-    dependsOn(testReceiveSpanDisabled)
+    dependsOn(testing.suites.named("testReceiveSpanDisabled"))
   }
 }

@@ -67,17 +67,9 @@ configurations.configureEach {
 
 tasks {
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code")
-  }
-
-  val testBothSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
-  }
-
   check {
     dependsOn(testing.suites)
-    dependsOn(testStableSemconv)
-    dependsOn(testBothSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
+    dependsOn(testing.suites.named("testBothSemconv"))
   }
 }

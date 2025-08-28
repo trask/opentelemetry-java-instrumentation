@@ -49,6 +49,32 @@ dependencies {
   latestDepTestLibrary("org.elasticsearch.client:transport:5.2.+") // see elasticsearch-transport-5.3 module
 }
 
+testing {
+  suites {
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+            systemProperty("metaDataConfig", "otel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+
+    val testExperimental by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.instrumentation.elasticsearch.experimental-span-attributes=true")
+            systemProperty("metaDataConfig", "otel.instrumentation.elasticsearch.experimental-span-attributes=true")
+          }
+        }
+      }
+    }
+  }
+}
+
 tasks {
   withType<Test>().configureEach {
     // required on jdk17
@@ -58,17 +84,7 @@ tasks {
     systemProperty("collectSpans", true)
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-    systemProperty("metaDataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
-  val testExperimental by registering(Test::class) {
-    jvmArgs("-Dotel.instrumentation.elasticsearch.experimental-span-attributes=true")
-    systemProperty("metaDataConfig", "otel.instrumentation.elasticsearch.experimental-span-attributes=true")
-  }
-
   check {
-    dependsOn(testStableSemconv, testExperimental)
+    dependsOn(testing.suites.named("testStableSemconv"), testing.suites.named("testExperimental"))
   }
 }

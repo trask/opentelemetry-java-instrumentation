@@ -21,21 +21,30 @@ dependencies {
 
 val collectMetadata = findProperty("collectMetadata")?.toString() ?: "false"
 
-tasks {
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
+testing {
+  suites {
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
 
-    systemProperty("collectMetadata", collectMetadata)
-    systemProperty("metaDataConfig", "otel.semconv-stability.opt-in=database")
-    systemProperty("collectSpans", true)
+            systemProperty("collectMetadata", collectMetadata)
+            systemProperty("metaDataConfig", "otel.semconv-stability.opt-in=database")
+            systemProperty("collectSpans", true)
+          }
+        }
+      }
+    }
   }
+}
 
+tasks {
   test {
     systemProperty("collectMetadata", collectMetadata)
     systemProperty("collectSpans", true)
   }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

@@ -46,18 +46,25 @@ testing {
         implementation(project(":instrumentation:aws-sdk:aws-sdk-1.11:testing"))
         val version = if (testLatestDeps) "latest.release" else "1.12.80"
         implementation("com.amazonaws:aws-java-sdk-secretsmanager:$version")
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
       }
     }
   }
 }
 
 tasks {
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
 
   check {
     dependsOn(testing.suites)
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

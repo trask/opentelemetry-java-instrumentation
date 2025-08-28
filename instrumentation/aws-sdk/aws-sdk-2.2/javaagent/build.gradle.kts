@@ -138,6 +138,39 @@ testing {
         val version = if (latestDepTest) "latest.release" else "2.10.12"
         implementation("software.amazon.awssdk:s3:$version")
         implementation(project(":instrumentation:aws-sdk:aws-sdk-2.2:library"))
+
+    val testExperimentalSqs by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+      excludeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+      includeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+      excludeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
       }
     }
 
@@ -172,20 +205,6 @@ testing {
 }
 
 tasks {
-  val testExperimentalSqs by registering(Test::class) {
-    filter {
-      excludeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
-    }
-    systemProperty("otel.instrumentation.aws-sdk.experimental-use-propagator-for-messaging", "true")
-    systemProperty("otel.instrumentation.messaging.experimental.receive-telemetry.enabled", "true")
-  }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
-    }
-    include("**/Aws2SqsSuppressReceiveSpansTest.*")
-  }
 
   test {
     filter {
@@ -196,8 +215,8 @@ tasks {
   }
 
   check {
-    dependsOn(testExperimentalSqs)
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testExperimentalSqs"))
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
     dependsOn(testing.suites)
   }
 
@@ -215,17 +234,7 @@ tasks {
     }
   }
 
-  val testStableSemconv by registering(Test::class) {
-    filter {
-      excludeTestsMatching("Aws2SqsSuppressReceiveSpansTest")
-    }
-    systemProperty("otel.instrumentation.messaging.experimental.receive-telemetry.enabled", "true")
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-
-    systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

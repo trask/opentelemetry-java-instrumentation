@@ -30,6 +30,16 @@ testing {
         implementation(project())
         implementation("org.influxdb:influxdb-java:2.4")
         implementation("org.testcontainers:testcontainers")
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
       }
     }
   }
@@ -49,11 +59,7 @@ tasks {
     }
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

@@ -47,6 +47,16 @@ testing {
           implementation("org.hibernate:hibernate-core:6.+")
         } else {
           implementation("org.hibernate:hibernate-core:6.0.0.Final")
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
         }
       }
     }
@@ -83,12 +93,8 @@ tasks {
     }
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
     dependsOn(testing.suites)
   }
 }

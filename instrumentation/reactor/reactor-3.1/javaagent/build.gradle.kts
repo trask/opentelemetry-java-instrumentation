@@ -51,6 +51,26 @@ testing {
         implementation(project(":instrumentation-annotations"))
         val version = if (testLatestDeps) "latest.release" else "3.1.0.RELEASE"
         implementation("io.projectreactor:reactor-test:$version")
+
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code")
+          }
+        }
+      }
+    }
+
+    val testBothSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
+          }
+        }
+      }
+    }
       }
     }
   }
@@ -58,17 +78,9 @@ testing {
 
 tasks {
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code")
-  }
-
-  val testBothSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=code/dup")
-  }
-
   check {
     dependsOn(testing.suites)
-    dependsOn(testStableSemconv)
-    dependsOn(testBothSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
+    dependsOn(testing.suites.named("testBothSemconv"))
   }
 }

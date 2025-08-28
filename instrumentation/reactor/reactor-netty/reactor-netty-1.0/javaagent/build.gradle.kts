@@ -43,18 +43,24 @@ dependencies {
   testImplementation(project(":instrumentation-annotations"))
 }
 
-tasks {
-  val testConnectionSpan by registering(Test::class) {
-    filter {
+
+testing {
+  suites {
+    val testConnectionSpan by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("ReactorNettyConnectionSpanTest")
       includeTestsMatching("ReactorNettyClientSslTest")
+          }
+        }
+      }
     }
-    include("**/ReactorNettyConnectionSpanTest.*", "**/ReactorNettyClientSslTest.*")
-    jvmArgs("-Dotel.instrumentation.netty.ssl-telemetry.enabled=true")
-    jvmArgs("-Dotel.instrumentation.reactor-netty.connection-telemetry.enabled=true")
-    jvmArgs("-Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true")
   }
+}
 
+tasks {
   test {
     systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
 
@@ -65,6 +71,6 @@ tasks {
   }
 
   check {
-    dependsOn(testConnectionSpan)
+    dependsOn(testing.suites.named("testConnectionSpan"))
   }
 }

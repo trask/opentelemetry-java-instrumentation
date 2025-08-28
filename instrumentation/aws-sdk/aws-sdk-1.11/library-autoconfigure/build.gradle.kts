@@ -23,17 +23,25 @@ dependencies {
   latestDepTestLibrary("com.amazonaws:aws-java-sdk-sqs:1.12.583") // documented limitation
 }
 
-tasks {
-  withType<Test>().configureEach {
+
+testing {
+  suites {
+    val testReceiveSpansDisabled by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
+      includeTestsMatching("SqsSuppressReceiveSpansTest")
+          }
+        }
+      }
+    }
+  }
+}
+
+tasks {  withType<Test>().configureEach {
     systemProperty("otel.instrumentation.aws-sdk.experimental-span-attributes", "true")
     systemProperty("otel.instrumentation.messaging.experimental.capture-headers", "Test-Message-Header")
-  }
-
-  val testReceiveSpansDisabled by registering(Test::class) {
-    filter {
-      includeTestsMatching("SqsSuppressReceiveSpansTest")
-    }
-    include("**/SqsSuppressReceiveSpansTest.*")
   }
 
   test {
@@ -44,7 +52,7 @@ tasks {
   }
 
   check {
-    dependsOn(testReceiveSpansDisabled)
+    dependsOn(testing.suites.named("testReceiveSpansDisabled"))
   }
 }
 

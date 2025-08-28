@@ -40,28 +40,34 @@ dependencies {
   latestDepTestLibrary("org.springframework.cloud:spring-cloud-stream-binder-rabbit:3.+") // documented limitation
 }
 
-tasks {
-  val testWithRabbitInstrumentation by registering(Test::class) {
-    filter {
+
+testing {
+  suites {
+    val testWithRabbitInstrumentation by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("SpringIntegrationAndRabbitTest")
+          }
+        }
+      }
     }
-    include("**/SpringIntegrationAndRabbitTest.*")
-    jvmArgs("-Dotel.instrumentation.rabbitmq.enabled=true")
-    jvmArgs("-Dotel.instrumentation.spring-rabbit.enabled=true")
-    systemProperty("metadataConfig", "otel.instrumentation.spring-rabbit.enabled=true")
-  }
 
-  val testWithProducerInstrumentation by registering(Test::class) {
-    filter {
+    val testWithProducerInstrumentation by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            filter {
       includeTestsMatching("SpringCloudStreamProducerTest")
+          }
+        }
+      }
     }
-    include("**/SpringCloudStreamProducerTest.*")
-    jvmArgs("-Dotel.instrumentation.rabbitmq.enabled=false")
-    jvmArgs("-Dotel.instrumentation.spring-rabbit.enabled=false")
-    jvmArgs("-Dotel.instrumentation.spring-integration.producer.enabled=true")
-    systemProperty("metadataConfig", "otel.instrumentation.spring-integration.producer.enabled=true")
   }
+}
 
+tasks {
   test {
     filter {
       excludeTestsMatching("SpringIntegrationAndRabbitTest")
@@ -72,8 +78,8 @@ tasks {
   }
 
   check {
-    dependsOn(testWithRabbitInstrumentation)
-    dependsOn(testWithProducerInstrumentation)
+    dependsOn(testing.suites.named("testWithRabbitInstrumentation"))
+    dependsOn(testing.suites.named("testWithProducerInstrumentation"))
   }
 
   withType<Test>().configureEach {

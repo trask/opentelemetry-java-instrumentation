@@ -24,8 +24,22 @@ otelJava {
   minJavaVersionSupported.set(JavaVersion.VERSION_17)
 }
 
-tasks {
-  withType<Test>().configureEach {
+
+testing {
+  suites {
+    val testStableSemconv by registering(JvmTestSuite::class) {
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+  }
+}
+
+tasks {  withType<Test>().configureEach {
     jvmArgs("-javaagent:" + springAgent.singleFile.absolutePath)
 
     // TODO run tests both with and without experimental span attributes
@@ -34,11 +48,7 @@ tasks {
     jvmArgs("-Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true")
   }
 
-  val testStableSemconv by registering(Test::class) {
-    jvmArgs("-Dotel.semconv-stability.opt-in=database")
-  }
-
   check {
-    dependsOn(testStableSemconv)
+    dependsOn(testing.suites.named("testStableSemconv"))
   }
 }

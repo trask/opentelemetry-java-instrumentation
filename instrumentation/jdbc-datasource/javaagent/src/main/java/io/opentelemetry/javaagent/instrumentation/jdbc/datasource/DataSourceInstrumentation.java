@@ -6,19 +6,16 @@
 package io.opentelemetry.javaagent.instrumentation.jdbc.datasource;
 
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.implementsInterface;
-import static io.opentelemetry.javaagent.instrumentation.jdbc.JdbcSingletons.dataSourceInstrumenter;
+import static io.opentelemetry.javaagent.instrumentation.jdbc.datasource.JdbcDataSourceSingletons.dataSourceInstrumenter;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.returns;
 
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.instrumentation.jdbc.internal.JdbcUtils;
 import io.opentelemetry.javaagent.bootstrap.CallDepth;
-import io.opentelemetry.javaagent.bootstrap.jdbc.DbInfo;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
-import java.sql.Connection;
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import net.bytebuddy.asm.Advice;
@@ -75,7 +72,7 @@ public class DataSourceInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable, DataSource ds, Connection connection) {
+      public void end(@Nullable Throwable throwable, DataSource ds) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -83,12 +80,8 @@ public class DataSourceInstrumentation implements TypeInstrumentation {
           return;
         }
         scope.close();
-        DbInfo dbInfo = null;
-        Connection realConnection = JdbcUtils.unwrapConnection(connection);
-        if (realConnection != null) {
-          dbInfo = JdbcUtils.extractDbInfo(realConnection);
-        }
-        dataSourceInstrumenter().end(context, ds, dbInfo, throwable);
+        // Pass null for DbInfo - database attributes will be captured on JDBC statement spans
+        dataSourceInstrumenter().end(context, ds, null, throwable);
       }
     }
 
@@ -100,10 +93,9 @@ public class DataSourceInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.This DataSource ds,
-        @Advice.Return @Nullable Connection connection,
         @Advice.Thrown @Nullable Throwable throwable,
         @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.end(throwable, ds, connection);
+      adviceScope.end(throwable, ds);
     }
   }
 }

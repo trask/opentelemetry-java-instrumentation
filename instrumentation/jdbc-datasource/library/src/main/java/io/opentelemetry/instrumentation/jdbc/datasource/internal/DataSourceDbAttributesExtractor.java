@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.instrumentation.jdbc.internal;
+package io.opentelemetry.instrumentation.jdbc.datasource.internal;
 
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;

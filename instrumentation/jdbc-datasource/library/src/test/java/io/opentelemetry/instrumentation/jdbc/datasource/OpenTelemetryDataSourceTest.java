@@ -12,12 +12,9 @@ import static io.opentelemetry.semconv.incubating.DbIncubatingAttributes.DB_CONN
 import static io.opentelemetry.semconv.incubating.DbIncubatingAttributes.DB_NAME;
 import static io.opentelemetry.semconv.incubating.DbIncubatingAttributes.DB_SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import io.opentelemetry.api.trace.SpanKind;
-import io.opentelemetry.instrumentation.jdbc.internal.OpenTelemetryConnection;
-import io.opentelemetry.instrumentation.jdbc.internal.dbinfo.DbInfo;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil;
@@ -41,10 +38,10 @@ class OpenTelemetryDataSourceTest {
   @ParameterizedTest
   @MethodSource("getConnectionMethodsArguments")
   void shouldEmitGetConnectionSpans(GetConnectionFunction getConnection) throws SQLException {
-    JdbcTelemetry telemetry = JdbcTelemetry.create(testing.getOpenTelemetry());
+    JdbcDataSourceTelemetry telemetry = JdbcDataSourceTelemetry.create(testing.getOpenTelemetry());
     DataSource dataSource = telemetry.wrap(new TestDataSource());
 
-    Connection connection = testing.runWithSpan("parent", () -> getConnection.call(dataSource));
+    testing.runWithSpan("parent", () -> getConnection.call(dataSource));
 
     List<AttributeAssertion> assertions =
         SemconvCodeStabilityUtil.codeFunctionAssertions(TestDataSource.class, "getConnection");
@@ -64,26 +61,18 @@ class OpenTelemetryDataSourceTest {
                         .hasKind(SpanKind.INTERNAL)
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(assertions)));
-
-    assertThat(connection).isInstanceOf(OpenTelemetryConnection.class);
-    DbInfo dbInfo = ((OpenTelemetryConnection) connection).getDbInfo();
-    assertDbInfo(dbInfo);
   }
 
   @ParameterizedTest
   @MethodSource("getConnectionMethodsArguments")
   void shouldNotEmitGetConnectionSpansWithoutParentSpan(GetConnectionFunction getConnection)
       throws SQLException {
-    JdbcTelemetry telemetry = JdbcTelemetry.create(testing.getOpenTelemetry());
+    JdbcDataSourceTelemetry telemetry = JdbcDataSourceTelemetry.create(testing.getOpenTelemetry());
     DataSource dataSource = telemetry.wrap(new TestDataSource());
 
-    Connection connection = getConnection.call(dataSource);
+    getConnection.call(dataSource);
 
     assertThat(testing.waitForTraces(0)).isEmpty();
-
-    assertThat(connection).isInstanceOf(OpenTelemetryConnection.class);
-    DbInfo dbInfo = ((OpenTelemetryConnection) connection).getDbInfo();
-    assertDbInfo(dbInfo);
   }
 
   private static Stream<Arguments> getConnectionMethodsArguments() {
@@ -96,16 +85,5 @@ class OpenTelemetryDataSourceTest {
   interface GetConnectionFunction {
 
     Connection call(DataSource dataSource) throws SQLException;
-  }
-
-  private static void assertDbInfo(DbInfo dbInfo) {
-    assertThat(dbInfo.getSystem()).isEqualTo("postgresql");
-    assertNull(dbInfo.getSubtype());
-    assertThat(dbInfo.getShortUrl()).isEqualTo("postgresql://127.0.0.1:5432");
-    assertNull(dbInfo.getUser());
-    assertNull(dbInfo.getName());
-    assertThat(dbInfo.getDb()).isEqualTo("dbname");
-    assertThat(dbInfo.getHost()).isEqualTo("127.0.0.1");
-    assertThat(dbInfo.getPort()).isEqualTo(5432);
   }
 }

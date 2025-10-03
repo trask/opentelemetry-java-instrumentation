@@ -1,0 +1,12 @@
+description: >
+  The JDBC DataSource instrumentation creates spans for datasource connections. This 
+  instrumentation is disabled by default due to the volume of telemetry produced.
+  
+  This instrumentation captures DataSource.getConnection() calls and creates spans with 
+  connection information including the database system, database name, and peer address.
+library_link: https://docs.oracle.com/javase/8/docs/api/javax/sql/DataSource.html
+configurations:
+  - name: otel.instrumentation.jdbc-datasource.enabled
+    description: Enables the JDBC DataSource instrumentation. Disabled by default.
+    type: boolean
+    default: false

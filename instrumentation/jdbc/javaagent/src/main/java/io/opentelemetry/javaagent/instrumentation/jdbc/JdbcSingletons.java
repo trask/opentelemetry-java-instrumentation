@@ -5,8 +5,6 @@
 
 package io.opentelemetry.javaagent.instrumentation.jdbc;
 
-import static io.opentelemetry.instrumentation.jdbc.internal.JdbcInstrumenterFactory.createDataSourceInstrumenter;
-
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.api.incubator.semconv.net.PeerServiceAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
@@ -17,17 +15,13 @@ import io.opentelemetry.instrumentation.jdbc.internal.JdbcInstrumenterFactory;
 import io.opentelemetry.instrumentation.jdbc.internal.JdbcNetworkAttributesGetter;
 import io.opentelemetry.javaagent.bootstrap.internal.AgentCommonConfig;
 import io.opentelemetry.javaagent.bootstrap.internal.AgentInstrumentationConfig;
-import io.opentelemetry.javaagent.bootstrap.jdbc.DbInfo;
 import java.sql.SQLException;
 import java.sql.Wrapper;
 import java.util.Collections;
-import javax.sql.DataSource;
 
 public final class JdbcSingletons {
   private static final Instrumenter<DbRequest, Void> STATEMENT_INSTRUMENTER;
   private static final Instrumenter<DbRequest, Void> TRANSACTION_INSTRUMENTER;
-  public static final Instrumenter<DataSource, DbInfo> DATASOURCE_INSTRUMENTER =
-      createDataSourceInstrumenter(GlobalOpenTelemetry.get(), true);
   public static final boolean CAPTURE_QUERY_PARAMETERS;
 
   static {
@@ -65,10 +59,6 @@ public final class JdbcSingletons {
 
   public static Instrumenter<DbRequest, Void> statementInstrumenter() {
     return STATEMENT_INSTRUMENTER;
-  }
-
-  public static Instrumenter<DataSource, DbInfo> dataSourceInstrumenter() {
-    return DATASOURCE_INSTRUMENTER;
   }
 
   private static final Cache<Class<?>, Boolean> wrapperClassCache = Cache.weak();

@@ -2,9 +2,6 @@ description: >
   The JDBC instrumentation provides database client spans and metrics. Each call produces a span
   named after the SQL verb, enriched with standard DB client attributes (system, database,
   operation, sanitized statement, peer address) and error details if an exception occurs.
-  
-  There is also a "jdbc-datasource" instrumentation that creates spans for datasource connections,
-  but is disabled by default due to the volume of telemetry produced.
 library_link: https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html
 configurations:
   - name: otel.instrumentation.jdbc.statement-sanitizer.enabled
@@ -30,9 +27,5 @@ configurations:
       <code>db.query.parameter.&lt;key&gt;</code>. Enabling this option disables the statement
       sanitization.<p>WARNING: captured query parameters may contain sensitive information such as
       passwords, personally identifiable information or protected health info.
-    type: boolean
-    default: false
-  - name: otel.instrumentation.jdbc-datasource.enabled
-    description: Enables instrumentation of JDBC datasource connections.
     type: boolean
     default: false

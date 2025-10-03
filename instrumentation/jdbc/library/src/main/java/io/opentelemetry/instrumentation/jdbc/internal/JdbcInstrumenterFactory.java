@@ -8,8 +8,6 @@ package io.opentelemetry.instrumentation.jdbc.internal;
 import static java.util.Collections.emptyList;
 
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttributesExtractor;
-import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeSpanNameExtractor;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientMetrics;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientSpanNameExtractor;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlClientAttributesExtractor;
@@ -18,9 +16,7 @@ import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor;
 import io.opentelemetry.instrumentation.api.internal.ConfigPropertiesUtil;
 import io.opentelemetry.instrumentation.api.semconv.network.ServerAttributesExtractor;
-import io.opentelemetry.instrumentation.jdbc.internal.dbinfo.DbInfo;
 import java.util.List;
-import javax.sql.DataSource;
 
 /**
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
@@ -82,17 +78,6 @@ public final class JdbcInstrumenterFactory {
         .addOperationMetrics(DbClientMetrics.get())
         .setEnabled(enabled)
         .buildInstrumenter(SpanKindExtractor.alwaysClient());
-  }
-
-  public static Instrumenter<DataSource, DbInfo> createDataSourceInstrumenter(
-      OpenTelemetry openTelemetry, boolean enabled) {
-    DataSourceCodeAttributesGetter getter = DataSourceCodeAttributesGetter.INSTANCE;
-    return Instrumenter.<DataSource, DbInfo>builder(
-            openTelemetry, INSTRUMENTATION_NAME, CodeSpanNameExtractor.create(getter))
-        .addAttributesExtractor(CodeAttributesExtractor.create(getter))
-        .addAttributesExtractor(DataSourceDbAttributesExtractor.INSTANCE)
-        .setEnabled(enabled)
-        .buildInstrumenter();
   }
 
   public static Instrumenter<DbRequest, Void> createTransactionInstrumenter(

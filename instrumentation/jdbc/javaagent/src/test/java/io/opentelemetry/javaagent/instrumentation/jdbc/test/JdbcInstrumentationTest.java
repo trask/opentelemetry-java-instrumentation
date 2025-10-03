@@ -6,7 +6,6 @@
 package io.opentelemetry.javaagent.instrumentation.jdbc.test;
 
 import static io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv;
-import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionAssertions;
 import static io.opentelemetry.instrumentation.testing.junit.db.DbClientMetricsTestUtil.assertDurationMetric;
 import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStabilityUtil.maybeStable;
 import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStabilityUtil.maybeStableDbSystemName;
@@ -39,8 +38,6 @@ import io.opentelemetry.instrumentation.jdbc.TestDriver;
 import io.opentelemetry.instrumentation.testing.internal.AutoCleanupExtension;
 import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
-import io.opentelemetry.sdk.testing.assertj.AttributeAssertion;
-import io.opentelemetry.sdk.testing.assertj.SpanDataAssert;
 import io.opentelemetry.sdk.testing.assertj.TraceAssert;
 import java.beans.PropertyVetoException;
 import java.io.Closeable;
@@ -61,10 +58,8 @@ import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.apache.derby.jdbc.EmbeddedDriver;
 import org.assertj.core.api.ThrowingConsumer;
-import org.h2.jdbcx.JdbcDataSource;
 import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -1007,74 +1002,6 @@ class JdbcInstrumentationTest {
                             equalTo(maybeStable(DB_SQL_TABLE), table))));
   }
 
-  static Stream<Arguments> getConnectionStream() {
-    return Stream.of(
-        Arguments.of(
-            new JdbcDataSource(),
-            (Consumer<DataSource>) ds -> ((JdbcDataSource) ds).setUrl(jdbcUrls.get("h2")),
-            "h2",
-            null,
-            "h2:mem:"),
-        Arguments.of(
-            new EmbeddedDataSource(),
-            (Consumer<DataSource>)
-                ds -> ((EmbeddedDataSource) ds).setDatabaseName("memory:" + dbName),
-            "derby",
-            "APP",
-            "derby:memory:"),
-        Arguments.of(cpDatasources.get("hikari").get("h2"), null, "h2", null, "h2:mem:"),
-        Arguments.of(
-            cpDatasources.get("hikari").get("derby"), null, "derby", "APP", "derby:memory:"),
-        Arguments.of(cpDatasources.get("c3p0").get("h2"), null, "h2", null, "h2:mem:"),
-        Arguments.of(
-            cpDatasources.get("c3p0").get("derby"), null, "derby", "APP", "derby:memory:"));
-  }
-
-  @ParameterizedTest(autoCloseArguments = false)
-  @MethodSource("getConnectionStream")
-  void testGetConnection(
-      DataSource datasource,
-      Consumer<DataSource> init,
-      String system,
-      String user,
-      String connectionString)
-      throws SQLException {
-    // Tomcat's pool doesn't work because the getConnection method is
-    // implemented in a parent class that doesn't implement DataSource
-
-    if (init != null) {
-      init.accept(datasource);
-    }
-    datasource.getConnection().close();
-    assertThat(testing.spans()).noneMatch(span -> span.getName().equals("database.connection"));
-
-    testing.clearData();
-
-    List<AttributeAssertion> attributesAssertions =
-        codeFunctionAssertions(datasource.getClass(), "getConnection");
-    attributesAssertions.add(equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName(system)));
-    attributesAssertions.add(equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName(system)));
-    attributesAssertions.add(equalTo(DB_USER, emitStableDatabaseSemconv() ? null : user));
-    attributesAssertions.add(equalTo(maybeStable(DB_NAME), "jdbcunittest"));
-    attributesAssertions.add(
-        equalTo(DB_CONNECTION_STRING, emitStableDatabaseSemconv() ? null : connectionString));
-
-    testing.runWithSpan("parent", () -> datasource.getConnection().close());
-    testing.waitAndAssertTraces(
-        trace -> {
-          List<Consumer<SpanDataAssert>> assertions =
-              new ArrayList<>(
-                  asList(
-                      span1 -> span1.hasName("parent").hasKind(SpanKind.INTERNAL).hasNoParent(),
-                      span1 ->
-                          span1
-                              .hasName(datasource.getClass().getSimpleName() + ".getConnection")
-                              .hasKind(SpanKind.INTERNAL)
-                              .hasParent(trace.getSpan(0))
-                              .hasAttributesSatisfyingExactly(attributesAssertions)));
-          trace.hasSpansSatisfyingExactly(assertions);
-        });
-  }
 
   @ParameterizedTest
   @DisplayName("test getClientInfo exception")

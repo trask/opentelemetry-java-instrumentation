@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.instrumentation.jdbc.datasource;
+package io.opentelemetry.instrumentation.jdbc;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.jdbc.internal.DbRequest;
+import io.opentelemetry.instrumentation.jdbc.internal.OpenTelemetryConnection;
 import io.opentelemetry.instrumentation.jdbc.internal.dbinfo.DbInfo;
-import javax.sql.DataSource;
+import java.sql.Connection;
 
-/** Entrypoint for instrumenting a JDBC DataSources. */
+/** Entrypoint for instrumenting JDBC Connections. */
 public final class JdbcTelemetry {
 
   /** Returns a new {@link JdbcTelemetry} configured with the given {@link OpenTelemetry}. */
@@ -24,28 +25,27 @@ public final class JdbcTelemetry {
     return new JdbcTelemetryBuilder(openTelemetry);
   }
 
-  private final Instrumenter<DataSource, DbInfo> dataSourceInstrumenter;
   private final Instrumenter<DbRequest, Void> statementInstrumenter;
   private final Instrumenter<DbRequest, Void> transactionInstrumenter;
   private final boolean captureQueryParameters;
 
   JdbcTelemetry(
-      Instrumenter<DataSource, DbInfo> dataSourceInstrumenter,
       Instrumenter<DbRequest, Void> statementInstrumenter,
       Instrumenter<DbRequest, Void> transactionInstrumenter,
       boolean captureQueryParameters) {
-    this.dataSourceInstrumenter = dataSourceInstrumenter;
     this.statementInstrumenter = statementInstrumenter;
     this.transactionInstrumenter = transactionInstrumenter;
     this.captureQueryParameters = captureQueryParameters;
   }
 
-  public DataSource wrap(DataSource dataSource) {
-    return new OpenTelemetryDataSource(
-        dataSource,
-        this.dataSourceInstrumenter,
-        this.statementInstrumenter,
-        this.transactionInstrumenter,
-        this.captureQueryParameters);
+  /**
+   * Wraps a JDBC {@link Connection} to enable OpenTelemetry instrumentation for statements and
+   * transactions.
+   */
+  public Connection wrap(Connection connection) {
+    DbInfo dbInfo =
+        io.opentelemetry.instrumentation.jdbc.internal.JdbcUtils.computeDbInfo(connection);
+    return OpenTelemetryConnection.create(
+        connection, dbInfo, statementInstrumenter, transactionInstrumenter, captureQueryParameters);
   }
 }

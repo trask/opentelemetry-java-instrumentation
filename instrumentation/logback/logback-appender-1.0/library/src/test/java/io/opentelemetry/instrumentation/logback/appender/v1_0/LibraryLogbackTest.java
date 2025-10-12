@@ -7,23 +7,24 @@ package io.opentelemetry.instrumentation.logback.appender.v1_0;
 
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFileAndLineAssertions;
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionAssertions;
-import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 
-import io.opentelemetry.api.common.AttributeKey;
-import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.api.trace.TraceFlags;
-import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
+import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
 import io.opentelemetry.sdk.testing.assertj.AttributeAssertion;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-class LogbackTest extends AbstractLogbackTest {
+class LibraryLogbackTest extends AbstractLogbackTest {
 
   @RegisterExtension
-  static final InstrumentationExtension testing = AgentInstrumentationExtension.create();
+  static final LibraryInstrumentationExtension testing = LibraryInstrumentationExtension.create();
+
+  @BeforeEach
+  void setup() {
+    OpenTelemetryAppender.install(testing.getOpenTelemetry());
+  }
 
   @Override
   protected InstrumentationExtension testing() {
@@ -36,15 +37,5 @@ class LogbackTest extends AbstractLogbackTest {
     result.addAll(codeFunctionAssertions(AbstractLogbackTest.class, methodName));
     result.addAll(codeFileAndLineAssertions("AbstractLogbackTest.java"));
     return result;
-  }
-
-  @Override
-  protected List<AttributeAssertion> addTraceContextAttributes() {
-    // Javaagent adds trace context attributes when in a span
-    SpanContext spanContext = testing().spans().get(0).getSpanContext();
-    return Arrays.asList(
-        equalTo(AttributeKey.stringKey("trace_id"), spanContext.getTraceId()),
-        equalTo(AttributeKey.stringKey("span_id"), spanContext.getSpanId()),
-        equalTo(AttributeKey.stringKey("trace_flags"), TraceFlags.getSampled().asHex()));
   }
 }

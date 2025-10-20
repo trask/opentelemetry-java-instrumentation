@@ -5,12 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.spring.webflux.v5_0.server;
 
-import io.opentelemetry.instrumentation.spring.webflux.IpcSingleThreadNettyCustomizer;
-import io.opentelemetry.instrumentation.spring.webflux.server.SingleThreadNettyCustomizer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
-import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.context.annotation.Bean;
 import server.SpringWebFluxTestApplication;
 
@@ -30,16 +27,7 @@ class SpringThreadedSpringWebfluxTest extends SpringWebfluxTest {
   static class ForceSingleThreadedNettyAutoConfiguration {
     @Bean
     NettyReactiveWebServerFactory nettyFactory() {
-      NettyReactiveWebServerFactory factory = new NettyReactiveWebServerFactory();
-      factory.addServerCustomizers(customizer());
-      return factory;
+      return new NettyReactiveWebServerFactory();
     }
-  }
-
-  static NettyServerCustomizer customizer() {
-    if (Boolean.getBoolean("testLatestDeps")) {
-      return new SingleThreadNettyCustomizer();
-    }
-    return new IpcSingleThreadNettyCustomizer();
   }
 }

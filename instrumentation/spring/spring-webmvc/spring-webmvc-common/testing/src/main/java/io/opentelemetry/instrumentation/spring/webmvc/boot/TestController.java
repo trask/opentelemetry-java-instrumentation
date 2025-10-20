@@ -16,6 +16,10 @@ import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.REDIRECT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.SUCCESS;
 
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.http.HttpStatus;
@@ -32,6 +36,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class TestController {
+
+  private static final Tracer tracer = GlobalOpenTelemetry.getTracer("test");
 
   @RequestMapping("/basicsecured/endpoint")
   @ResponseBody
@@ -110,7 +116,15 @@ public class TestController {
         DEFERRED_RESULT,
         () -> {
           DeferredResult<String> result = new DeferredResult<>();
-          CompletableFuture.runAsync(() -> result.setResult(DEFERRED_RESULT.getBody()));
+          CompletableFuture.runAsync(
+              () -> {
+                Span span = tracer.spanBuilder("deferred-result-child").startSpan();
+                try (Scope ignored = span.makeCurrent()) {
+                  result.setResult(DEFERRED_RESULT.getBody());
+                } finally {
+                  span.end();
+                }
+              });
           return result;
         });
   }

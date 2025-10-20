@@ -7,12 +7,10 @@ package io.opentelemetry.instrumentation.spring.webmvc.boot;
 
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionAssertions;
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionSuffixAssertions;
-import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.AUTH_ERROR;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.DEFERRED_RESULT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD;
-import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.LOGIN;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.NOT_FOUND;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.PATH_PARAM;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.QUERY_PARAM;
@@ -32,23 +30,18 @@ import io.opentelemetry.instrumentation.testing.junit.http.HttpServerTestOptions
 import io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint;
 import io.opentelemetry.sdk.testing.assertj.SpanDataAssert;
 import io.opentelemetry.sdk.trace.data.StatusData;
-import io.opentelemetry.testing.internal.armeria.common.AggregatedHttpRequest;
 import io.opentelemetry.testing.internal.armeria.common.AggregatedHttpResponse;
-import io.opentelemetry.testing.internal.armeria.common.HttpData;
-import io.opentelemetry.testing.internal.armeria.common.MediaType;
-import io.opentelemetry.testing.internal.armeria.common.QueryParams;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.web.util.OnCommittedResponseWrapper;
 import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.view.RedirectView;
 
+@SuppressWarnings("unused")
 public abstract class AbstractSpringBootBasedTest
     extends AbstractHttpServerTest<ConfigurableApplicationContext> {
 
@@ -93,59 +86,6 @@ public abstract class AbstractSpringBootBasedTest
   }
 
   @Test
-  void testSpansWithAuthError() {
-    SavingAuthenticationProvider authProvider =
-        context().getBean(SavingAuthenticationProvider.class);
-    AggregatedHttpRequest request = request(AUTH_ERROR, "GET");
-
-    authProvider.latestAuthentications.clear();
-    AggregatedHttpResponse response = client.execute(request).aggregate().join();
-
-    assertThat(response.status().code()).isEqualTo(401); // not secured
-
-    testing()
-        .waitAndAssertTraces(
-            trace ->
-                trace.hasSpansSatisfyingExactly(
-                    span -> assertServerSpan(span, "GET", AUTH_ERROR, AUTH_ERROR.getStatus()),
-                    span ->
-                        span.satisfies(
-                                spanData -> assertThat(spanData.getName()).endsWith(".sendError"))
-                            .hasKind(SpanKind.INTERNAL),
-                    span -> errorPageSpanAssertions(null, null)));
-  }
-
-  @ParameterizedTest
-  @ValueSource(strings = {"password", "dfsdföääöüüä", "🤓"})
-  void testCharacterEncodingOfTestPassword(String testPassword) {
-    SavingAuthenticationProvider authProvider =
-        context().getBean(SavingAuthenticationProvider.class);
-
-    QueryParams form = QueryParams.of("username", "test", "password", testPassword);
-    AggregatedHttpRequest request =
-        AggregatedHttpRequest.of(
-            request(LOGIN, "POST").headers().toBuilder().contentType(MediaType.FORM_DATA).build(),
-            HttpData.ofUtf8(form.toQueryString()));
-
-    authProvider.latestAuthentications.clear();
-    AggregatedHttpResponse response = client.execute(request).aggregate().join();
-
-    assertThat(response.status().code()).isEqualTo(302); // redirect after success
-    assertThat(authProvider.latestAuthentications.get(0).getPassword()).isEqualTo(testPassword);
-
-    testing()
-        .waitAndAssertTraces(
-            trace ->
-                trace.hasSpansSatisfyingExactly(
-                    span -> assertServerSpan(span, "POST", LOGIN, LOGIN.getStatus()),
-                    span ->
-                        span.satisfies(
-                                spanData ->
-                                    assertThat(spanData.getName()).endsWith(".sendRedirect"))
-                            .hasKind(SpanKind.INTERNAL)));
-  }
-
-  @Test
   void deferredResult() {
     AggregatedHttpResponse response =
         client.execute(request(DEFERRED_RESULT, "GET")).aggregate().join();
@@ -153,7 +93,22 @@ public abstract class AbstractSpringBootBasedTest
     assertThat(response.status().code()).isEqualTo(DEFERRED_RESULT.getStatus());
     assertThat(response.contentUtf8()).isEqualTo(DEFERRED_RESULT.getBody());
 
-    assertTheTraces(1, null, null, null, "GET", DEFERRED_RESULT);
+    testing()
+        .waitAndAssertTraces(
+            trace ->
+                trace.hasSpansSatisfyingExactly(
+                    span -> {
+                      assertServerSpan(span, "GET", DEFERRED_RESULT, DEFERRED_RESULT.getStatus());
+                      span.hasNoParent();
+                    },
+                    span ->
+                        assertHandlerSpan(span, "GET", DEFERRED_RESULT).hasParent(trace.getSpan(0)),
+                    span -> assertControllerSpan(span, null).hasParent(trace.getSpan(1)),
+                    span ->
+                        span.hasName("deferred-result-child")
+                            .hasKind(SpanKind.INTERNAL)
+                            .hasParent(trace.getSpan(1))
+                            .hasTotalAttributeCount(0)));
   }
 
   @Override

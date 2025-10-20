@@ -49,7 +49,7 @@ public class ServerEndpoint {
   public static final ServerEndpoint INDEXED_CHILD =
       new ServerEndpoint("INDEXED_CHILD", "child", 200, "success");
   public static final ServerEndpoint DEFERRED_RESULT =
-    new ServerEndpoint("DEFERRED_RESULT", "deferred-result", 200, "deferred result");
+      new ServerEndpoint("DEFERRED_RESULT", "deferred-result", 200, "deferred result");
 
   public static final String ID_ATTRIBUTE_NAME = "test.request.id";
   public static final String ID_PARAMETER_NAME = "id";

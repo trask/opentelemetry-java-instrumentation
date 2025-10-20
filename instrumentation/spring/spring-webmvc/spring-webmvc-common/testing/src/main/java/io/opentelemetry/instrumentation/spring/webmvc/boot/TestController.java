@@ -7,6 +7,7 @@ package io.opentelemetry.instrumentation.spring.webmvc.boot;
 
 import static io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpServerTest.controller;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS;
+import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.DEFERRED_RESULT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.ERROR;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD;
@@ -16,6 +17,7 @@ import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.SUCCESS;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
@@ -97,6 +100,18 @@ public class TestController {
         () -> {
           INDEXED_CHILD.collectSpanAttributes(it -> Objects.equals(it, "id") ? id : null);
           return INDEXED_CHILD.getBody();
+        });
+  }
+
+  @RequestMapping("/deferred-result")
+  @ResponseBody
+  DeferredResult<String> deferredResult() {
+    return controller(
+        DEFERRED_RESULT,
+        () -> {
+          DeferredResult<String> result = new DeferredResult<>();
+          CompletableFuture.runAsync(() -> result.setResult(DEFERRED_RESULT.getBody()));
+          return result;
         });
   }
 

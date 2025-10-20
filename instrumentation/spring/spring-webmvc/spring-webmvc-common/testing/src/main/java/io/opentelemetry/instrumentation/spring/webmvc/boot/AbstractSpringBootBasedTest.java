@@ -9,6 +9,7 @@ import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeSta
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionSuffixAssertions;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.AUTH_ERROR;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS;
+import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.DEFERRED_RESULT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.LOGIN;
@@ -142,6 +143,17 @@ public abstract class AbstractSpringBootBasedTest
                                 spanData ->
                                     assertThat(spanData.getName()).endsWith(".sendRedirect"))
                             .hasKind(SpanKind.INTERNAL)));
+  }
+
+  @Test
+  void deferredResult() {
+    AggregatedHttpResponse response =
+        client.execute(request(DEFERRED_RESULT, "GET")).aggregate().join();
+
+    assertThat(response.status().code()).isEqualTo(DEFERRED_RESULT.getStatus());
+    assertThat(response.contentUtf8()).isEqualTo(DEFERRED_RESULT.getBody());
+
+    assertTheTraces(1, null, null, null, "GET", DEFERRED_RESULT);
   }
 
   @Override

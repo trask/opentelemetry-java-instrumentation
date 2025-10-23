@@ -1,0 +1,3 @@
+
+./gradlew :instrumentation:spring:spring-webmvc:spring-webmvc-3.1:javaagent:test --tests SpringBootBasedTest.deferredResult -PtestLatestDeps=true
+

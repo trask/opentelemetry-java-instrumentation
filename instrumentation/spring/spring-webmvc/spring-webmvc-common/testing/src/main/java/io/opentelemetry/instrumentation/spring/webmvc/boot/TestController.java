@@ -7,7 +7,6 @@ package io.opentelemetry.instrumentation.spring.webmvc.boot;
 
 import static io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpServerTest.controller;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.CAPTURE_HEADERS;
-import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.DEFERRED_RESULT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.ERROR;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD;
@@ -16,54 +15,45 @@ import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.REDIRECT;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.SUCCESS;
 
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.context.Scope;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.view.RedirectView;
 
-@Controller
+@RestController
 public class TestController {
 
-  private static final Tracer tracer = GlobalOpenTelemetry.getTracer("test");
+  @Autowired private TestBean testBean;
 
-  @RequestMapping("/basicsecured/endpoint")
-  @ResponseBody
+  @GetMapping("/basicsecured/endpoint")
   String secureEndpoint() {
     return controller(SUCCESS, SUCCESS::getBody);
   }
 
-  @RequestMapping("/success")
-  @ResponseBody
+  @GetMapping("/success")
   String success() {
     return controller(SUCCESS, SUCCESS::getBody);
   }
 
-  @RequestMapping("/query")
-  @ResponseBody
+  @GetMapping("/query")
   String queryParam(@RequestParam("some") String param) {
     return controller(QUERY_PARAM, () -> "some=" + param);
   }
 
-  @RequestMapping("/redirect")
-  @ResponseBody
+  @GetMapping("/redirect")
   RedirectView redirect() {
     return controller(REDIRECT, () -> new RedirectView(REDIRECT.getBody()));
   }
 
-  @RequestMapping("/error-status")
+  @GetMapping("/error-status")
   ResponseEntity<String> error() {
     return controller(
         ERROR,
@@ -73,7 +63,7 @@ public class TestController {
   }
 
   @SuppressWarnings("ThrowSpecificExceptions")
-  @RequestMapping("/exception")
+  @GetMapping("/exception")
   ResponseEntity<String> exception() {
     return controller(
         EXCEPTION,
@@ -82,7 +72,7 @@ public class TestController {
         });
   }
 
-  @RequestMapping("/captureHeaders")
+  @GetMapping("/captureHeaders")
   ResponseEntity<String> captureHeaders(@RequestHeader("X-Test-Request") String testRequestHeader) {
     return controller(
         CAPTURE_HEADERS,
@@ -92,14 +82,12 @@ public class TestController {
                 .body(CAPTURE_HEADERS.getBody()));
   }
 
-  @RequestMapping("/path/{id}/param")
-  @ResponseBody
+  @GetMapping("/path/{id}/param")
   String pathParam(@PathVariable("id") int id) {
     return controller(PATH_PARAM, () -> String.valueOf(id));
   }
 
-  @RequestMapping("/child")
-  @ResponseBody
+  @GetMapping("/child")
   String indexedChild(@RequestParam("id") String id) {
     return controller(
         INDEXED_CHILD,
@@ -109,24 +97,11 @@ public class TestController {
         });
   }
 
-  @RequestMapping("/deferred-result")
-  @ResponseBody
+  @GetMapping("/deferred-result")
   DeferredResult<String> deferredResult() {
-    return controller(
-        DEFERRED_RESULT,
-        () -> {
-          DeferredResult<String> result = new DeferredResult<>();
-          CompletableFuture.runAsync(
-              () -> {
-                Span span = tracer.spanBuilder("deferred-result-child").startSpan();
-                try (Scope ignored = span.makeCurrent()) {
-                  result.setResult(DEFERRED_RESULT.getBody());
-                } finally {
-                  span.end();
-                }
-              });
-          return result;
-        });
+    DeferredResult<String> deferredResult = new DeferredResult<>();
+    testBean.asyncDependencyCall(deferredResult);
+    return deferredResult;git sta
   }
 
   @ExceptionHandler

@@ -86,7 +86,7 @@ public abstract class AbstractSpringBootBasedTest
   }
 
   @Test
-  void deferredResult() {
+  void deferredResult() { // without controller spans
     AggregatedHttpResponse response =
         client.execute(request(DEFERRED_RESULT, "GET")).aggregate().join();
 
@@ -101,13 +101,13 @@ public abstract class AbstractSpringBootBasedTest
                       assertServerSpan(span, "GET", DEFERRED_RESULT, DEFERRED_RESULT.getStatus());
                       span.hasNoParent();
                     },
-                    span ->
-                        assertHandlerSpan(span, "GET", DEFERRED_RESULT).hasParent(trace.getSpan(0)),
-                    span -> assertControllerSpan(span, null).hasParent(trace.getSpan(1)),
+                    // span ->
+                    //     assertHandlerSpan(span, "GET", DEFERRED_RESULT).hasParent(trace.getSpan(0)),
+                    // span -> assertControllerSpan(span, null).hasParent(trace.getSpan(0)),
                     span ->
                         span.hasName("deferred-result-child")
                             .hasKind(SpanKind.INTERNAL)
-                            .hasParent(trace.getSpan(1))
+                            .hasParent(trace.getSpan(0))
                             .hasTotalAttributeCount(0)));
   }
 

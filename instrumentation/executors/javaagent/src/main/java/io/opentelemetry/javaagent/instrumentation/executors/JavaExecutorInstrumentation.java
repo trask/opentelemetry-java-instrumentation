@@ -22,13 +22,16 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.javaagent.bootstrap.CallDepth;
 import io.opentelemetry.javaagent.bootstrap.Java8BytecodeBridge;
+import io.opentelemetry.javaagent.bootstrap.executors.ContextPropagatingCallable;
 import io.opentelemetry.javaagent.bootstrap.executors.ContextPropagatingRunnable;
 import io.opentelemetry.javaagent.bootstrap.executors.ExecutorAdviceHelper;
 import io.opentelemetry.javaagent.bootstrap.executors.PropagatedContext;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.Future;
@@ -270,6 +273,10 @@ public class JavaExecutorInstrumentation implements TypeInstrumentation {
         if (!ExecutorAdviceHelper.shouldPropagateContext(context, task)) {
           return new CallableAdviceScope(callDepth, null, task);
         }
+        if (ContextPropagatingCallable.shouldDecorateCallable(task)) {
+          task = ContextPropagatingCallable.propagateContext(task, context);
+          return new CallableAdviceScope(callDepth, null, task);
+        }
 
         PropagatedContext propagatedContext =
             ExecutorAdviceHelper.attachContextToTask(context, CALLABLE_PROPAGATED_CONTEXT, task);
@@ -337,14 +344,34 @@ public class JavaExecutorInstrumentation implements TypeInstrumentation {
         }
         Context context = Context.current();
 
+        // first, go through the list and wrap all Callables that need to be wrapped
+        List<Callable<?>> list = null;
         for (Callable<?> task : tasks) {
-          if (ExecutorAdviceHelper.shouldPropagateContext(context, task)) {
+          if (!ExecutorAdviceHelper.shouldPropagateContext(context, task)) {
+            continue;
+          }
+          if (ContextPropagatingCallable.shouldDecorateCallable(task)) {
+            // lazily create the list only if we need to
+            if (list == null) {
+              list = new ArrayList<>();
+            }
+            list.add(ContextPropagatingCallable.propagateContext(task, context));
+          }
+        }
+
+        for (Callable<?> task : tasks) {
+          if (ExecutorAdviceHelper.shouldPropagateContext(context, task)
+              && !ContextPropagatingCallable.shouldDecorateCallable(task)) {
             ExecutorAdviceHelper.attachContextToTask(context, CALLABLE_PROPAGATED_CONTEXT, task);
+            // if there are wrapped Callables, we need to add the unwrapped ones as well
+            if (list != null) {
+              list.add(task);
+            }
           }
         }
         // returning tasks and not propagatedContexts to avoid allocating another list just for an
         // edge case (exception)
-        return new CallableCollectionAdviceScope(callDepth, tasks);
+        return new CallableCollectionAdviceScope(callDepth, list != null ? list : tasks);
       }
 
       public void end(@Nullable Throwable throwable) {

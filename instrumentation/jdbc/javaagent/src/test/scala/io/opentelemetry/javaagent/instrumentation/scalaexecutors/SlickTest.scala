@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package io.opentelemetry.javaagent.instrumentation.scalaexecutors
+package io.opentelemetry.javaagent.instrumentation.jdbc.slick
 
 import io.opentelemetry.api.trace.{SpanKind, Tracer}
 import io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv

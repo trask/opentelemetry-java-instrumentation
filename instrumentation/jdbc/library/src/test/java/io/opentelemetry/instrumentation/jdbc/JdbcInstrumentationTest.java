@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.jdbc;
 
+import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
 import io.opentelemetry.instrumentation.jdbc.testing.AbstractJdbcInstrumentationTest;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
@@ -18,8 +19,11 @@ class JdbcInstrumentationTest extends AbstractJdbcInstrumentationTest {
   @RegisterExtension
   static final InstrumentationExtension testing = LibraryInstrumentationExtension.create();
 
-  private static final LibraryJdbcTestTelemetry telemetryHelper =
-      new LibraryJdbcTestTelemetry(testing);
+  private static final JdbcTelemetry telemetry =
+      JdbcTelemetry.builder(testing.getOpenTelemetry())
+          .setDataSourceInstrumenterEnabled(true)
+          .setTransactionInstrumenterEnabled(true)
+          .build();
 
   @Override
   protected InstrumentationExtension testing() {
@@ -28,11 +32,18 @@ class JdbcInstrumentationTest extends AbstractJdbcInstrumentationTest {
 
   @Override
   protected Connection wrap(Connection connection) throws SQLException {
-    return telemetryHelper.wrap(connection);
+    // if (connection instanceof OpenTelemetryConnection) {
+    //   return connection;
+    // }
+    DataSource dataSource = telemetry.wrap(new SingleConnectionDataSource(connection));
+    return dataSource.getConnection();
   }
 
   @Override
   protected DataSource wrap(DataSource dataSource) {
-    return telemetryHelper.wrap(dataSource);
+    // if (dataSource instanceof OpenTelemetryDataSource) {
+    //   return dataSource;
+    // }
+    return telemetry.wrap(dataSource);
   }
 }

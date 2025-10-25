@@ -23,8 +23,7 @@ public class TestClassLoader extends URLClassLoader {
     if (clazz != null) {
       return clazz;
     }
-    String instrumentationPackage = TestInterface.class.getPackage().getName();
-    if (name.startsWith(instrumentationPackage)) {
+    if (name.startsWith("io.opentelemetry.instrumentation.jdbc.testing")) {
       try {
         return findClass(name);
       } catch (ClassNotFoundException exception) {

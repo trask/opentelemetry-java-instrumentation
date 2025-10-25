@@ -32,18 +32,11 @@ class JdbcInstrumentationTest extends AbstractJdbcInstrumentationTest {
 
   @Override
   protected Connection wrap(Connection connection) throws SQLException {
-    // if (connection instanceof OpenTelemetryConnection) {
-    //   return connection;
-    // }
-    DataSource dataSource = telemetry.wrap(new SingleConnectionDataSource(connection));
-    return dataSource.getConnection();
+    return ConnectionWrapper.wrap(connection, telemetry);
   }
 
   @Override
   protected DataSource wrap(DataSource dataSource) {
-    // if (dataSource instanceof OpenTelemetryDataSource) {
-    //   return dataSource;
-    // }
     return telemetry.wrap(dataSource);
   }
 }

@@ -11,7 +11,6 @@ import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class PreparedStatementParametersTest extends AbstractPreparedStatementParametersTest {
@@ -24,7 +23,6 @@ class PreparedStatementParametersTest extends AbstractPreparedStatementParameter
           .setDataSourceInstrumenterEnabled(true)
           .setTransactionInstrumenterEnabled(true)
           .setCaptureQueryParameters(true)
-          .setStatementSanitizationEnabled(false)
           .build();
 
   @Override
@@ -34,10 +32,6 @@ class PreparedStatementParametersTest extends AbstractPreparedStatementParameter
 
   @Override
   protected Connection wrap(Connection connection) throws SQLException {
-    // if (connection instanceof OpenTelemetryConnection) {
-    //   return connection;
-    // }
-    DataSource dataSource = telemetry.wrap(new SingleConnectionDataSource(connection));
-    return dataSource.getConnection();
+    return ConnectionWrapper.wrap(connection, telemetry);
   }
 }

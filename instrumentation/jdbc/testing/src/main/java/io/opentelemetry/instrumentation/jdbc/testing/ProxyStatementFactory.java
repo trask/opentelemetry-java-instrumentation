@@ -59,8 +59,7 @@ public final class ProxyStatementFactory {
     // in the same package as the package private interface
     // by default we ignore jdk proxies, having the proxy in a different package ensures it gets
     // instrumented
-    String expectedPackage = TestInterface.class.getPackage().getName();
-    if (!proxy.getClass().getName().startsWith(expectedPackage)) {
+    if (!proxy.getClass().getName().startsWith("io.opentelemetry.instrumentation.jdbc.testing")) {
       throw new IllegalStateException("proxy is in wrong package");
     }
 

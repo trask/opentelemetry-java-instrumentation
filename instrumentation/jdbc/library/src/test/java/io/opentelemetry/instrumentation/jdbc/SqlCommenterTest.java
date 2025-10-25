@@ -13,13 +13,20 @@ import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class SqlCommenterTest extends AbstractSqlCommenterTest {
 
   @RegisterExtension
   static final InstrumentationExtension testing = LibraryInstrumentationExtension.create();
+
+  private static final JdbcTelemetry telemetry;
+
+  static {
+    JdbcTelemetryBuilder builder = JdbcTelemetry.builder(testing.getOpenTelemetry());
+    Experimental.setEnableSqlCommenter(builder, true);
+    telemetry = builder.build();
+  }
 
   @Override
   protected InstrumentationExtension testing() {
@@ -28,10 +35,6 @@ class SqlCommenterTest extends AbstractSqlCommenterTest {
 
   @Override
   protected Connection wrap(Connection connection) throws SQLException {
-    JdbcTelemetryBuilder builder = JdbcTelemetry.builder(testing.getOpenTelemetry());
-    Experimental.setEnableSqlCommenter(builder, true);
-    JdbcTelemetry telemetry = builder.build();
-    DataSource dataSource = telemetry.wrap(new SingleConnectionDataSource(connection));
-    return dataSource.getConnection();
+    return ConnectionWrapper.wrap(connection, telemetry);
   }
 }

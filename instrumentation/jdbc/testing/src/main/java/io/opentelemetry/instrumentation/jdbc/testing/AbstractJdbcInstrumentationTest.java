@@ -996,6 +996,7 @@ public abstract class AbstractJdbcInstrumentationTest {
     } catch (Exception ignored) {
       connection = driver.connect(jdbcUrl, null);
     }
+    connection = wrap(connection);
     cleanup.deferCleanup(connection);
     Connection finalConnection = connection;
     ResultSet rs =

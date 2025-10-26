@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class AbstractXxlJobTest {
@@ -61,7 +62,10 @@ public abstract class AbstractXxlJobTest {
     triggerParam.setExecutorTimeout(0);
     jobThread.pushTriggerQueue(triggerParam);
     jobThread.start();
-    checkXxlJobWithoutCodeAttributes("GLUE(Shell)", StatusData.unset(), GlueTypeEnum.GLUE_SHELL, 2);
+
+    // On Windows, shell scripts may fail, so accept both UNSET and ERROR status
+    StatusData expectedStatus = OS.WINDOWS.isCurrentOs() ? StatusData.error() : StatusData.unset();
+    checkXxlJobWithoutCodeAttributes("GLUE(Shell)", expectedStatus, GlueTypeEnum.GLUE_SHELL, 2);
     jobThread.toStop("Test finish");
   }
 

@@ -46,12 +46,6 @@ public class NettyScope {
     nettyScope.scope.close();
 
     if (throwable != null) {
-      // On Windows, Netty wraps connection exceptions in AbstractChannel.AnnotatedConnectException
-      // Unwrap to get the actual exception type for proper error reporting
-      if (throwable.getClass().getName().contains("AnnotatedConnectException")
-          && throwable.getCause() != null) {
-        throwable = throwable.getCause();
-      }
       instrumenter.end(nettyScope.context, nettyScope.request, null, throwable);
     } else {
       channelPromise.addListener(

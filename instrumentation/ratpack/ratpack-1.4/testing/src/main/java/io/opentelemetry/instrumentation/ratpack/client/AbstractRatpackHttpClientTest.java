@@ -9,15 +9,18 @@ import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSIO
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 
+import io.netty.handler.codec.PrematureChannelClosureException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
 import java.net.URI;
+import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
@@ -167,19 +170,14 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
   }
 
   private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
-    // Unwrap AnnotatedConnectException (Windows behavior) so test assertions match what instrumentation records
-    Throwable unwrappedException = exception;
-    if (exception != null
-        && exception.getClass().getName().contains("AnnotatedConnectException")
-        && exception.getCause() != null) {
-      unwrappedException = exception.getCause();
-    }
-
     // For read timeout, map to ReadTimeoutException
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    return unwrappedException;
+    if (isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
+      return new PrematureChannelClosureException();
+    }
+    return exception;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
@@ -190,12 +188,16 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
         // On Windows, non-routable addresses don't fail at CONNECT level.
         // The connection proceeds far enough to start HTTP processing before
         // the channel closes, resulting in an HTTP span instead of CONNECT.
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
           return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
         }
         return "CONNECT";
       default:
         return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
     }
+  }
+
+  private static boolean isNonRoutableAddress(URI uri) {
+    return "192.0.2.1".equals(uri.getHost());
   }
 }

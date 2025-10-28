@@ -18,6 +18,7 @@ import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions
 import java.net.URI;
 import java.time.Duration;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
@@ -152,19 +153,11 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
   }
 
   private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
-    // Unwrap AnnotatedConnectException (Windows behavior) so test assertions match what instrumentation records
-    Throwable unwrappedException = exception;
-    if (exception != null
-        && exception.getClass().getName().contains("AnnotatedConnectException")
-        && exception.getCause() != null) {
-      unwrappedException = exception.getCause();
-    }
-
     // For read timeout, map to HttpClientReadTimeoutException
     if (uri.getPath().equals("/read-timeout")) {
       return HttpClientReadTimeoutException.INSTANCE;
     }
-    return unwrappedException;
+    return exception;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
@@ -175,7 +168,7 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
         // On Windows, non-routable addresses don't fail at CONNECT level.
         // The connection proceeds far enough to start HTTP processing before
         // the channel closes, resulting in an HTTP span instead of CONNECT.
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+        if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
           return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
         }
         return "CONNECT";

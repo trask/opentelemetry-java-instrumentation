@@ -49,15 +49,6 @@ public class AbstractChannelHandlerContextInstrumentation implements TypeInstrum
     public static void onEnter(
         @Advice.This ChannelHandlerContext ctx, @Advice.Argument(0) Throwable throwable) {
 
-      // On Windows, Netty wraps connection exceptions in AbstractChannel.AnnotatedConnectException
-      // Unwrap to get the actual exception type for proper error reporting
-      Throwable error = throwable;
-      if (error != null
-          && error.getClass().getName().contains("AnnotatedConnectException")
-          && error.getCause() != null) {
-        error = error.getCause();
-      }
-
       // we can't rely on exception handling in HttpClientTracingHandler because it can't catch
       // exceptions from handlers that run after it, for example ratpack has ReadTimeoutHandler
       // (trigger ReadTimeoutException) after HttpClientCodec (or handler is inserted after it)
@@ -67,12 +58,12 @@ public class AbstractChannelHandlerContextInstrumentation implements TypeInstrum
         ctx.channel().attr(AttributeKeys.CLIENT_PARENT_CONTEXT).remove();
         contextAttr.remove();
         HttpRequestAndChannel request = ctx.channel().attr(HTTP_CLIENT_REQUEST).getAndRemove();
-        instrumenter().end(clientContext, request, null, error);
+        instrumenter().end(clientContext, request, null, throwable);
         return;
       }
       ServerContext serverContext = ServerContexts.peekFirst(ctx.channel());
       if (serverContext != null) {
-        NettyErrorHolder.set(serverContext.context(), error);
+        NettyErrorHolder.set(serverContext.context(), throwable);
       }
     }
   }

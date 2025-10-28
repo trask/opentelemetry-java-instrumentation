@@ -64,7 +64,6 @@ public abstract class AbstractXxlJobTest {
     triggerParam.setExecutorTimeout(0);
     jobThread.pushTriggerQueue(triggerParam);
     jobThread.start();
-
     checkXxlJobWithoutCodeAttributes("GLUE(Shell)", StatusData.unset(), GlueTypeEnum.GLUE_SHELL, 2);
     jobThread.toStop("Test finish");
   }

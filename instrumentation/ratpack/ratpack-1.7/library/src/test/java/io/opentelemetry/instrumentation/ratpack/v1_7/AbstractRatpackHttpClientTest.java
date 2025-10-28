@@ -142,8 +142,7 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
         (uri, exception) -> {
           // On Windows, Netty wraps exceptions in AbstractChannel.AnnotatedConnectException
           // Unwrap to get the actual exception type
-          if (OS.WINDOWS.isCurrentOs()
-              && exception != null
+          if (exception != null
               && exception.getClass().getName().contains("AnnotatedConnectException")
               && exception.getCause() != null) {
             exception = exception.getCause();

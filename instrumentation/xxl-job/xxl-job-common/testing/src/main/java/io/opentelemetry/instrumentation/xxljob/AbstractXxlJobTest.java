@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -54,6 +55,7 @@ public abstract class AbstractXxlJobTest {
     jobThread.toStop("Test finish");
   }
 
+  @DisabledOnOs(value = OS.WINDOWS, disabledReason = "Shell scripts require /bin/sh")
   @Test
   void testScriptJob() {
     JobThread jobThread = new JobThread(2, getScriptJobHandler());
@@ -63,9 +65,7 @@ public abstract class AbstractXxlJobTest {
     jobThread.pushTriggerQueue(triggerParam);
     jobThread.start();
 
-    // On Windows, shell scripts may fail, so accept both UNSET and ERROR status
-    StatusData expectedStatus = OS.WINDOWS.isCurrentOs() ? StatusData.error() : StatusData.unset();
-    checkXxlJobWithoutCodeAttributes("GLUE(Shell)", expectedStatus, GlueTypeEnum.GLUE_SHELL, 2);
+    checkXxlJobWithoutCodeAttributes("GLUE(Shell)", StatusData.unset(), GlueTypeEnum.GLUE_SHELL, 2);
     jobThread.toStop("Test finish");
   }
 

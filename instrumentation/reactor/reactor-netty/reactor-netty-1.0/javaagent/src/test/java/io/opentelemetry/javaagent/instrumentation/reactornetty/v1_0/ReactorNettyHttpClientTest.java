@@ -35,11 +35,6 @@ class ReactorNettyHttpClientTest extends AbstractReactorNettyHttpClientTest {
 
     boolean isWindows = OS.WINDOWS.isCurrentOs();
 
-    // Disable remote connection tests on Windows due to reactor-netty creating extra spans
-    if (isWindows) {
-      optionsBuilder.setTestRemoteConnection(false);
-    }
-
     // Only run single connection tests on Linux due to networking stack differences
     if (!isWindows) {
       optionsBuilder.setSingleConnectionFactory(
@@ -64,6 +59,11 @@ class ReactorNettyHttpClientTest extends AbstractReactorNettyHttpClientTest {
                     .status()
                     .code();
           });
+    }
+
+    // Disable remote connection tests on Windows due to reactor-netty creating extra spans
+    if (isWindows) {
+      optionsBuilder.setTestRemoteConnection(false);
     }
   }
 

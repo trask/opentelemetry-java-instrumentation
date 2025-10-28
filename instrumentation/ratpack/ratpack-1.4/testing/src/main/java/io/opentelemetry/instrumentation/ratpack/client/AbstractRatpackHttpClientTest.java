@@ -176,14 +176,6 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
   }
 
   private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
-    // On Windows, Netty wraps exceptions in AbstractChannel.AnnotatedConnectException
-    // Unwrap to get the actual exception type
-    if (exception != null
-        && exception.getClass().getName().contains("AnnotatedConnectException")
-        && exception.getCause() != null) {
-      exception = exception.getCause();
-    }
-
     if (uri.toString().equals("https://192.0.2.1/")) {
       return new ConnectTimeoutException(
           "connection timed out"

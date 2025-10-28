@@ -9,7 +9,6 @@ import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSIO
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 
-import io.netty.channel.ConnectTimeoutException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.condition.OS;
 import ratpack.exec.Operation;
 import ratpack.exec.Promise;
 import ratpack.func.Action;
@@ -141,13 +139,6 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     // these tests will pass, but they don't really test anything since REQUEST is Void
     optionsBuilder.disableTestReusedRequest();
 
-    // Connection error tests fail on Windows due to different exception handling by Netty
-    // even with the unwrapping and error mapping logic above
-    if (OS.WINDOWS.isCurrentOs()) {
-      optionsBuilder.disableTestConnectionFailure();
-      optionsBuilder.disableTestRemoteConnection();
-    }
-
     optionsBuilder.spanEndsAfterBody();
   }
 
@@ -176,23 +167,32 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
   }
 
   private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
-    if (uri.toString().equals("https://192.0.2.1/")) {
-      return new ConnectTimeoutException(
-          "connection timed out"
-              + (Boolean.getBoolean("testLatestDeps") ? " after 2000 ms" : "")
-              + ": /192.0.2.1:443");
-    } else if (OS.WINDOWS.isCurrentOs() && uri.toString().equals("http://localhost:61/")) {
-      return new ConnectTimeoutException("connection timed out: localhost/127.0.0.1:61");
-    } else if (uri.getPath().equals("/read-timeout")) {
+    // Unwrap AnnotatedConnectException (Windows behavior) so test assertions match what instrumentation records
+    Throwable unwrappedException = exception;
+    if (exception != null
+        && exception.getClass().getName().contains("AnnotatedConnectException")
+        && exception.getCause() != null) {
+      unwrappedException = exception.getCause();
+    }
+
+    // For read timeout, map to ReadTimeoutException
+    if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    return exception;
+    return unwrappedException;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
     switch (uri.toString()) {
       case "http://localhost:61/": // unopened port
+        return "CONNECT";
       case "https://192.0.2.1/": // non routable address
+        // On Windows, non-routable addresses don't fail at CONNECT level.
+        // The connection proceeds far enough to start HTTP processing before
+        // the channel closes, resulting in an HTTP span instead of CONNECT.
+        if (System.getProperty("os.name").toLowerCase().contains("win")) {
+          return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+        }
         return "CONNECT";
       default:
         return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);

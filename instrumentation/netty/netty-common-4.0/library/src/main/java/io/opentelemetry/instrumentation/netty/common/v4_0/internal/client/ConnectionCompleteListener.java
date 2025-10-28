@@ -34,6 +34,14 @@ public class ConnectionCompleteListener implements GenericFutureListener<Future<
     if (future instanceof ChannelFuture) {
       channel = ((ChannelFuture) future).channel();
     }
-    instrumenter.end(context, request, channel, future.cause());
+    Throwable error = future.cause();
+    // On Windows, Netty wraps connection exceptions in AbstractChannel.AnnotatedConnectException
+    // Unwrap to get the actual exception type for proper error reporting
+    if (error != null
+        && error.getClass().getName().contains("AnnotatedConnectException")
+        && error.getCause() != null) {
+      error = error.getCause();
+    }
+    instrumenter.end(context, request, channel, error);
   }
 }

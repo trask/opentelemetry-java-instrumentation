@@ -174,8 +174,12 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    if (isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
-      return new PrematureChannelClosureException();
+    if (isNonRoutableAddress(uri)) {
+      Throwable rootCause = unwrapConnectionException(exception);
+      if (rootCause instanceof ClosedChannelException) {
+        return new PrematureChannelClosureException();
+      }
+      return rootCause;
     }
     return exception;
   }
@@ -199,5 +203,16 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
 
   private static boolean isNonRoutableAddress(URI uri) {
     return "192.0.2.1".equals(uri.getHost());
+  }
+
+  private static Throwable unwrapConnectionException(Throwable exception) {
+    if (exception == null) {
+      return null;
+    }
+    Throwable current = exception;
+    while (current.getCause() != null && current.getCause() != current) {
+      current = current.getCause();
+    }
+    return current;
   }
 }

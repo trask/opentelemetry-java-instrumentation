@@ -15,6 +15,7 @@ import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
+import java.net.ConnectException;
 import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
@@ -179,7 +180,7 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       if (rootCause instanceof ClosedChannelException) {
         return new PrematureChannelClosureException();
       }
-      return rootCause;
+      return buildConnectTimeoutException(uri, rootCause);
     }
     return exception;
   }
@@ -214,5 +215,21 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       current = current.getCause();
     }
     return current;
+  }
+
+  private static Throwable buildConnectTimeoutException(URI uri, Throwable original) {
+    String message = "connection timed out: /" + uri.getHost() + ":" + resolvePort(uri);
+    ConnectException connectException = new ConnectException(message);
+    if (original != null && original != connectException) {
+      connectException.initCause(original);
+    }
+    return connectException;
+  }
+
+  private static int resolvePort(URI uri) {
+    if (uri.getPort() != -1) {
+      return uri.getPort();
+    }
+    return uri.getScheme().equalsIgnoreCase("https") ? 443 : 80;
   }
 }

@@ -15,7 +15,6 @@ import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
-import java.net.ConnectException;
 import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
@@ -180,7 +179,10 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       if (rootCause instanceof ClosedChannelException) {
         return new PrematureChannelClosureException();
       }
-      return buildConnectTimeoutException(uri, rootCause);
+      if (isWindows()) {
+        return exception;
+      }
+      return rootCause != null ? rootCause : exception;
     }
     return exception;
   }
@@ -193,7 +195,7 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
         // On Windows, non-routable addresses don't fail at CONNECT level.
         // The connection proceeds far enough to start HTTP processing before
         // the channel closes, resulting in an HTTP span instead of CONNECT.
-        if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
+        if (isWindows()) {
           return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
         }
         return "CONNECT";
@@ -206,6 +208,10 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     return "192.0.2.1".equals(uri.getHost());
   }
 
+  private static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
+  }
+
   private static Throwable unwrapConnectionException(Throwable exception) {
     if (exception == null) {
       return null;
@@ -215,21 +221,5 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       current = current.getCause();
     }
     return current;
-  }
-
-  private static Throwable buildConnectTimeoutException(URI uri, Throwable original) {
-    String message = "connection timed out: /" + uri.getHost() + ":" + resolvePort(uri);
-    ConnectException connectException = new ConnectException(message);
-    if (original != null && original != connectException) {
-      connectException.initCause(original);
-    }
-    return connectException;
-  }
-
-  private static int resolvePort(URI uri) {
-    if (uri.getPort() != -1) {
-      return uri.getPort();
-    }
-    return uri.getScheme().equalsIgnoreCase("https") ? 443 : 80;
   }
 }

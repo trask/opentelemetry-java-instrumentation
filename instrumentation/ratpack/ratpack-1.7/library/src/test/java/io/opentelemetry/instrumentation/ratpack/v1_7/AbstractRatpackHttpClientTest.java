@@ -8,6 +8,7 @@ package io.opentelemetry.instrumentation.ratpack.v1_7;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 
 import com.google.common.collect.ImmutableList;
+import io.netty.handler.codec.PrematureChannelClosureException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.ratpack.v1_7.internal.OpenTelemetryExecInitializer;
@@ -15,7 +16,9 @@ import io.opentelemetry.instrumentation.ratpack.v1_7.internal.OpenTelemetryExecI
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
+import io.opentelemetry.instrumentation.test.utils.PortUtils;
 import java.net.URI;
+import java.nio.channels.ClosedChannelException;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Locale;
@@ -155,31 +158,42 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
   private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
     // For read timeout, map to HttpClientReadTimeoutException
     if (uri.getPath().equals("/read-timeout")) {
-      return HttpClientReadTimeoutException.INSTANCE;
+      return new HttpClientReadTimeoutException(
+          "Read timeout (PT2S) waiting on HTTP server at " + uri);
+    }
+    if (isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
+      return new PrematureChannelClosureException();
     }
     return exception;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    switch (uri.toString()) {
-      case "http://localhost:61/": // unopened port
-        return "CONNECT";
-      case "https://192.0.2.1/": // non routable address
-        // On Windows, non-routable addresses don't fail at CONNECT level.
-        // The connection proceeds far enough to start HTTP processing before
-        // the channel closes, resulting in an HTTP span instead of CONNECT.
-        if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
-          return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-        }
-        return "CONNECT";
-      default:
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+    if (isUnopenedPort(uri)) {
+      return "CONNECT";
     }
+    if (isNonRoutableAddress(uri)) {
+      // On Windows, non-routable addresses don't fail at CONNECT level.
+      // The connection proceeds far enough to start HTTP processing before
+      // the channel closes, resulting in an HTTP span instead of CONNECT.
+      if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
+        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+      }
+      return "CONNECT";
+    }
+    return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
 
   protected Set<AttributeKey<?>> computeHttpAttributes(URI uri) {
     Set<AttributeKey<?>> attributes = new HashSet<>(HttpClientTestOptions.DEFAULT_HTTP_ATTRIBUTES);
     attributes.remove(NETWORK_PROTOCOL_VERSION);
     return attributes;
+  }
+
+  private static boolean isNonRoutableAddress(URI uri) {
+    return "192.0.2.1".equals(uri.getHost());
+  }
+
+  private static boolean isUnopenedPort(URI uri) {
+    return "localhost".equals(uri.getHost()) && uri.getPort() == PortUtils.UNUSABLE_PORT;
   }
 }

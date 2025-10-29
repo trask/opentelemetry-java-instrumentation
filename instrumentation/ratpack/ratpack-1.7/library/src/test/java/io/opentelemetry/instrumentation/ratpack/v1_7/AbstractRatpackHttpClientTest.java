@@ -38,6 +38,9 @@ import ratpack.test.exec.ExecHarness;
 
 abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void> {
 
+  private static final boolean IS_WINDOWS =
+      System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
+
   final ExecHarness exec = ExecHarness.harness();
 
   HttpClient client;
@@ -161,7 +164,7 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
       return new HttpClientReadTimeoutException(
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
-    if (isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
+    if (!IS_WINDOWS && isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
       return new PrematureChannelClosureException();
     }
     return exception;
@@ -169,13 +172,16 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
     if (isUnopenedPort(uri)) {
+      if (IS_WINDOWS) {
+        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+      }
       return "CONNECT";
     }
     if (isNonRoutableAddress(uri)) {
       // On Windows, non-routable addresses don't fail at CONNECT level.
       // The connection proceeds far enough to start HTTP processing before
       // the channel closes, resulting in an HTTP span instead of CONNECT.
-      if (System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win")) {
+      if (IS_WINDOWS) {
         return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
       }
       return "CONNECT";

@@ -5,14 +5,10 @@
 
 package io.opentelemetry.instrumentation.ratpack.v1_7.internal;
 
-import io.netty.handler.codec.PrematureChannelClosureException;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.semconv.HttpAttributes;
-import java.net.ConnectException;
-import java.nio.channels.ClosedChannelException;
-import java.util.Locale;
 import ratpack.exec.Execution;
 import ratpack.http.client.HttpClient;
 import ratpack.http.client.HttpResponse;
@@ -72,38 +68,10 @@ public final class OpenTelemetryHttpClient {
                     .ifPresent(
                         contextHolder -> {
                           execution.remove(ContextHolder.class);
-                          RequestSpec requestSpec = contextHolder.requestSpec();
-                          Throwable error = mapClientError(requestSpec, ex);
-                          if (shouldRenameSpanToConnect(requestSpec, error)) {
-                            Span.fromContext(contextHolder.context()).updateName("CONNECT");
-                          }
-                          instrumenter.end(contextHolder.context(), requestSpec, null, error);
+                          instrumenter.end(
+                              contextHolder.context(), contextHolder.requestSpec(), null, ex);
                         });
               });
         });
-  }
-
-  private static Throwable mapClientError(RequestSpec requestSpec, Throwable error) {
-    if (isNonRoutableAddress(requestSpec) && error instanceof ClosedChannelException) {
-      return new PrematureChannelClosureException();
-    }
-    return error;
-  }
-
-  private static boolean shouldRenameSpanToConnect(RequestSpec requestSpec, Throwable error) {
-    if (error instanceof ConnectException) {
-      return true;
-    }
-    return !isWindows()
-        && isNonRoutableAddress(requestSpec)
-        && error instanceof ClosedChannelException;
-  }
-
-  private static boolean isNonRoutableAddress(RequestSpec requestSpec) {
-    return "192.0.2.1".equals(requestSpec.getUri().getHost());
-  }
-
-  private static boolean isWindows() {
-    return System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
   }
 }

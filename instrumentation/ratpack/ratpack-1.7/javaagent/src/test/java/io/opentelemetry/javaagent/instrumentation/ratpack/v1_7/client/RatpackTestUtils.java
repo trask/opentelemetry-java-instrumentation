@@ -6,8 +6,8 @@
 package io.opentelemetry.javaagent.instrumentation.ratpack.v1_7.client;
 
 import io.netty.handler.codec.PrematureChannelClosureException;
-import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
 import io.opentelemetry.instrumentation.test.utils.PortUtils;
+import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
 import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import org.junit.jupiter.api.condition.OS;

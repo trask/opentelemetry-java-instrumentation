@@ -77,8 +77,7 @@ public final class OpenTelemetryHttpClient {
                           if (shouldRenameSpanToConnect(requestSpec, error)) {
                             Span.fromContext(contextHolder.context()).updateName("CONNECT");
                           }
-                          instrumenter.end(
-                              contextHolder.context(), requestSpec, null, error);
+                          instrumenter.end(contextHolder.context(), requestSpec, null, error);
                         });
               });
         });

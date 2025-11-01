@@ -164,8 +164,16 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
       return new HttpClientReadTimeoutException(
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
-    if (!IS_WINDOWS && isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
-      return new PrematureChannelClosureException();
+    if (isNonRoutableAddress(uri)) {
+      if (exception instanceof ClosedChannelException) {
+        return IS_WINDOWS ? exception : new PrematureChannelClosureException();
+      }
+      if (!IS_WINDOWS) {
+        Throwable timeoutCause = findExceptionWithMessage(exception, "connection timed out");
+        if (timeoutCause != null) {
+          return timeoutCause;
+        }
+      }
     }
     return exception;
   }
@@ -201,5 +209,25 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
 
   private static boolean isUnopenedPort(URI uri) {
     return "localhost".equals(uri.getHost()) && uri.getPort() == PortUtils.UNUSABLE_PORT;
+  }
+
+  private static Throwable findExceptionWithMessage(Throwable exception, String expectedFragment) {
+    if (exception == null) {
+      return null;
+    }
+    String needle = expectedFragment.toLowerCase(Locale.ROOT);
+    Throwable current = exception;
+    while (current != null) {
+      String message = current.getMessage();
+      if (message != null && message.toLowerCase(Locale.ROOT).contains(needle)) {
+        return current;
+      }
+      Throwable cause = current.getCause();
+      if (cause == null || cause == current) {
+        break;
+      }
+      current = cause;
+    }
+    return null;
   }
 }

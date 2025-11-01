@@ -182,7 +182,12 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       if (isWindows()) {
         return exception;
       }
-      return rootCause != null ? rootCause : exception;
+      Throwable candidate = rootCause != null ? rootCause : exception;
+      Throwable timeoutCause = findExceptionWithMessage(exception, "connection timed out");
+      if (timeoutCause != null) {
+        candidate = timeoutCause;
+      }
+      return candidate;
     }
     return exception;
   }
@@ -221,5 +226,25 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       current = current.getCause();
     }
     return current;
+  }
+
+  private static Throwable findExceptionWithMessage(Throwable exception, String expectedFragment) {
+    if (exception == null) {
+      return null;
+    }
+    String needle = expectedFragment.toLowerCase(Locale.ROOT);
+    Throwable current = exception;
+    while (current != null) {
+      String message = current.getMessage();
+      if (message != null && message.toLowerCase(Locale.ROOT).contains(needle)) {
+        return current;
+      }
+      Throwable cause = current.getCause();
+      if (cause == null || cause == current) {
+        break;
+      }
+      current = cause;
+    }
+    return null;
   }
 }

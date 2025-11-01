@@ -23,6 +23,9 @@ public final class RatpackTestUtils {
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
     if (isNonRoutableAddress(uri) && exception instanceof ClosedChannelException) {
+      if (OS.WINDOWS.isCurrentOs()) {
+        return exception;
+      }
       return new PrematureChannelClosureException();
     }
     return exception;

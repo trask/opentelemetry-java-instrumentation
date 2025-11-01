@@ -171,7 +171,7 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
       return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
     }
     if (IS_WINDOWS && isUnopenedPort(uri)) {
-      return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
+      return exception;
     }
     return exception;
   }

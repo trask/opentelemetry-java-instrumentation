@@ -8,7 +8,7 @@ package io.opentelemetry.instrumentation.ratpack.v1_7;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 
 import com.google.common.collect.ImmutableList;
-import io.netty.handler.codec.PrematureChannelClosureException;
+import io.netty.channel.ConnectTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.ratpack.v1_7.internal.OpenTelemetryExecInitializer;
@@ -165,15 +165,13 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
     if (isNonRoutableAddress(uri)) {
-      if (exception instanceof ClosedChannelException) {
-        return IS_WINDOWS ? exception : new PrematureChannelClosureException();
+      if (exception instanceof ClosedChannelException && IS_WINDOWS) {
+        return exception;
       }
-      if (!IS_WINDOWS) {
-        Throwable timeoutCause = findExceptionWithMessage(exception, "connection timed out");
-        if (timeoutCause != null) {
-          return timeoutCause;
-        }
-      }
+      return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
+    }
+    if (IS_WINDOWS && isUnopenedPort(uri)) {
+      return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
     }
     return exception;
   }
@@ -211,23 +209,4 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
     return "localhost".equals(uri.getHost()) && uri.getPort() == PortUtils.UNUSABLE_PORT;
   }
 
-  private static Throwable findExceptionWithMessage(Throwable exception, String expectedFragment) {
-    if (exception == null) {
-      return null;
-    }
-    String needle = expectedFragment.toLowerCase(Locale.ROOT);
-    Throwable current = exception;
-    while (current != null) {
-      String message = current.getMessage();
-      if (message != null && message.toLowerCase(Locale.ROOT).contains(needle)) {
-        return current;
-      }
-      Throwable cause = current.getCause();
-      if (cause == null || cause == current) {
-        break;
-      }
-      current = cause;
-    }
-    return null;
-  }
 }

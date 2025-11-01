@@ -1,14 +1,10 @@
-/*
- * Copyright The OpenTelemetry Authors
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.opentelemetry.instrumentation.ratpack.client;
 
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 
+import io.netty.channel.ConnectTimeoutException;
 import io.netty.handler.codec.PrematureChannelClosureException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
@@ -174,20 +170,21 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    if (isNonRoutableAddress(uri)) {
-      Throwable rootCause = unwrapConnectionException(exception);
-      if (rootCause instanceof ClosedChannelException) {
-        return new PrematureChannelClosureException();
-      }
+    if (uri.toString().equals("https://192.0.2.1/")) {
       if (isWindows()) {
+        Throwable rootCause = unwrapConnectionException(exception);
+        if (rootCause instanceof ClosedChannelException) {
+          return new PrematureChannelClosureException();
+        }
         return exception;
       }
-      Throwable candidate = rootCause != null ? rootCause : exception;
-      Throwable timeoutCause = findExceptionWithMessage(exception, "connection timed out");
-      if (timeoutCause != null) {
-        candidate = timeoutCause;
-      }
-      return candidate;
+      return new ConnectTimeoutException(
+          "connection timed out"
+              + (Boolean.getBoolean("testLatestDeps") ? " after 2000 ms" : "")
+              + ": /192.0.2.1:443");
+    }
+    if (isWindows() && uri.toString().equals("http://localhost:61/")) {
+      return new ConnectTimeoutException("connection timed out: localhost/127.0.0.1:61");
     }
     return exception;
   }
@@ -209,10 +206,6 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     }
   }
 
-  private static boolean isNonRoutableAddress(URI uri) {
-    return "192.0.2.1".equals(uri.getHost());
-  }
-
   private static boolean isWindows() {
     return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
   }
@@ -226,25 +219,5 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
       current = current.getCause();
     }
     return current;
-  }
-
-  private static Throwable findExceptionWithMessage(Throwable exception, String expectedFragment) {
-    if (exception == null) {
-      return null;
-    }
-    String needle = expectedFragment.toLowerCase(Locale.ROOT);
-    Throwable current = exception;
-    while (current != null) {
-      String message = current.getMessage();
-      if (message != null && message.toLowerCase(Locale.ROOT).contains(needle)) {
-        return current;
-      }
-      Throwable cause = current.getCause();
-      if (cause == null || cause == current) {
-        break;
-      }
-      current = cause;
-    }
-    return null;
   }
 }

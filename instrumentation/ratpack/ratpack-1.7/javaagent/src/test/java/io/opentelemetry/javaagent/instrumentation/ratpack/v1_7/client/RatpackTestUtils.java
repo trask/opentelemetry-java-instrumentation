@@ -5,12 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.ratpack.v1_7.client;
 
-import io.netty.channel.ConnectTimeoutException;
-import io.netty.handler.codec.PrematureChannelClosureException;
 import io.opentelemetry.instrumentation.test.utils.PortUtils;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
 import java.net.URI;
-import java.nio.channels.ClosedChannelException;
 import ratpack.http.client.HttpClientReadTimeoutException;
 
 public final class RatpackTestUtils {
@@ -23,10 +20,8 @@ public final class RatpackTestUtils {
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
     if (isNonRoutableAddress(uri)) {
-      if (exception instanceof ClosedChannelException) {
-        return new PrematureChannelClosureException();
-      }
-      return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
+      // Both Windows and Linux produce ClosedChannelException for non-routable addresses
+      return exception;
     }
     if (isUnopenedPort(uri)) {
       return exception;

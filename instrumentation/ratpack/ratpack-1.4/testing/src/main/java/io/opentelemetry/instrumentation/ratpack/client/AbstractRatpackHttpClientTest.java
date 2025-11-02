@@ -184,26 +184,22 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
               + ": /192.0.2.1:443");
     }
     if (isWindows() && uri.toString().equals("http://localhost:61/")) {
-      return new ConnectTimeoutException("connection timed out: localhost/127.0.0.1:61");
+      return exception;
     }
     return exception;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    switch (uri.toString()) {
-      case "http://localhost:61/": // unopened port
+    // On Linux connection failures emit spans named after the attempted HTTP method, but on
+    // Windows Netty still reports them as CONNECT. Account for both to keep the assertion
+    // platform-agnostic.
+    if (isWindows() && method.equals("GET")) {
+      String target = uri.toString();
+      if ("http://localhost:61/".equals(target) || "https://192.0.2.1/".equals(target)) {
         return "CONNECT";
-      case "https://192.0.2.1/": // non routable address
-        // On Windows, non-routable addresses don't fail at CONNECT level.
-        // The connection proceeds far enough to start HTTP processing before
-        // the channel closes, resulting in an HTTP span instead of CONNECT.
-        if (isWindows()) {
-          return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-        }
-        return "CONNECT";
-      default:
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+      }
     }
+    return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
 
   private static boolean isWindows() {

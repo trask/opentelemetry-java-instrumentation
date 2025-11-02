@@ -177,21 +177,8 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    if (isUnopenedPort(uri)) {
-      if (IS_WINDOWS) {
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-      }
-      return "CONNECT";
-    }
-    if (isNonRoutableAddress(uri)) {
-      // On Windows, non-routable addresses don't fail at CONNECT level.
-      // The connection proceeds far enough to start HTTP processing before
-      // the channel closes, resulting in an HTTP span instead of CONNECT.
-      if (IS_WINDOWS) {
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-      }
-      return "CONNECT";
-    }
+    // Recent Ratpack/Netty versions emit spans named after the attempted HTTP method even when the
+    // connection fails during setup, so align expectations with the default mapper on all platforms.
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
 

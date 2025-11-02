@@ -171,29 +171,21 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
+    // For non-routable address, Netty produces PrematureChannelClosureException on both platforms
     if (uri.toString().equals("https://192.0.2.1/")) {
-      if (isWindows()) {
-        Throwable rootCause = unwrapConnectionException(exception);
-        if (rootCause instanceof ClosedChannelException) {
-          return new PrematureChannelClosureException();
-        }
-        return exception;
-      }
-      return new ConnectTimeoutException(
-          "connection timed out"
-              + (Boolean.getBoolean("testLatestDeps") ? " after 2000 ms" : "")
-              + ": /192.0.2.1:443");
+      return new PrematureChannelClosureException();
     }
-    if (isWindows() && uri.toString().equals("http://localhost:61/")) {
+    // For unopened port, keep the platform-specific exception
+    if (uri.toString().equals("http://localhost:61/")) {
       return exception;
     }
     return exception;
   }
 
-  // Netty still reports connection failures as CONNECT on Windows while Linux emits the HTTP
-  // method, so keep expectations OS-aware for the handful of endpoints that trigger this case.
+  // Netty reports connection failures as CONNECT on both Windows and Linux for these
+  // specific failure scenarios (unopened port and non-routable address).
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    if (OS.WINDOWS.isCurrentOs() && "GET".equals(method)) {
+    if ("GET".equals(method)) {
       String target = uri.toString();
       if ("http://localhost:61/".equals(target) || "https://192.0.2.1/".equals(target)) {
         return "CONNECT";

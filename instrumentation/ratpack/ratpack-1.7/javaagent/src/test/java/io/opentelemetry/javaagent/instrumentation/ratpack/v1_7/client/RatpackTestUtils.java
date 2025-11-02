@@ -36,16 +36,9 @@ public final class RatpackTestUtils {
   }
 
   public static String ratpackExpectedClientSpanNameMapper(URI uri, String method) {
-    if (isUnopenedPort(uri)) {
-      if (OS.WINDOWS.isCurrentOs()) {
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-      }
-      return "CONNECT";
-    }
-    if (isNonRoutableAddress(uri)) {
-      if (OS.WINDOWS.isCurrentOs()) {
-        return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
-      }
+    // Windows still emits CONNECT spans when dialing non-routable addresses, while Linux uses the
+    // HTTP method. Toggle expectations accordingly to keep the tests portable.
+    if (OS.WINDOWS.isCurrentOs() && "GET".equals(method) && isNonRoutableAddress(uri)) {
       return "CONNECT";
     }
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);

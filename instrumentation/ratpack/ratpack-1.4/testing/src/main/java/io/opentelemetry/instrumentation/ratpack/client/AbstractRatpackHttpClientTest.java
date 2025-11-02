@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.condition.OS;
 import ratpack.exec.Operation;
 import ratpack.exec.Promise;
 import ratpack.func.Action;
@@ -189,11 +190,10 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     return exception;
   }
 
+  // Netty still reports connection failures as CONNECT on Windows while Linux emits the HTTP
+  // method, so keep expectations OS-aware for the handful of endpoints that trigger this case.
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    // On Linux connection failures emit spans named after the attempted HTTP method, but on
-    // Windows Netty still reports them as CONNECT. Account for both to keep the assertion
-    // platform-agnostic.
-    if (isWindows() && method.equals("GET")) {
+    if (OS.WINDOWS.isCurrentOs() && "GET".equals(method)) {
       String target = uri.toString();
       if ("http://localhost:61/".equals(target) || "https://192.0.2.1/".equals(target)) {
         return "CONNECT";

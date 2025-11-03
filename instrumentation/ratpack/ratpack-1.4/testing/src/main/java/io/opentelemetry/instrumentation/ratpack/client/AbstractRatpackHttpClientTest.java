@@ -14,6 +14,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.AfterAll;
@@ -178,15 +179,20 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     return exception;
   }
 
-  // Netty reports connection failures as CONNECT on both Windows and Linux for these
-  // specific failure scenarios (unopened port and non-routable address).
+  // On Linux connection failures emit spans named after the attempted HTTP method, but on
+  // Windows Netty still reports them as CONNECT. Account for both to keep the assertion
+  // platform-agnostic.
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    if ("GET".equals(method)) {
+    if (isWindows() && "GET".equals(method)) {
       String target = uri.toString();
       if ("http://localhost:61/".equals(target) || "https://192.0.2.1/".equals(target)) {
         return "CONNECT";
       }
     }
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
+  }
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
   }
 }

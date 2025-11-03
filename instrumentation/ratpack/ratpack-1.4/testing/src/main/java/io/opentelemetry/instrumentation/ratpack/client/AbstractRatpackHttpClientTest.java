@@ -9,7 +9,6 @@ import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSIO
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 
-import io.netty.handler.codec.PrematureChannelClosureException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
@@ -172,14 +171,7 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    // For non-routable address, Netty produces PrematureChannelClosureException on both platforms
-    if (uri.toString().equals("https://192.0.2.1/")) {
-      return new PrematureChannelClosureException();
-    }
-    // For unopened port, keep the platform-specific exception
-    if (uri.toString().equals("http://localhost:61/")) {
-      return exception;
-    }
+    // For connection errors, return the actual exception
     return exception;
   }
 

@@ -180,12 +180,14 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
   }
 
   // On Linux connection failures emit spans named after the attempted HTTP method, but on
-  // Windows Netty still reports them as CONNECT. Account for both to keep the assertion
-  // platform-agnostic.
+  // Windows Netty still reports them as CONNECT for TCP-level failures. Account for both
+  // to keep the assertion platform-agnostic.
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    if (isWindows() && "GET".equals(method)) {
-      String target = uri.toString();
-      if ("http://localhost:61/".equals(target) || "https://192.0.2.1/".equals(target)) {
+    if (isWindows() && ("GET".equals(method) || "HEAD".equals(method))) {
+      String host = uri.getHost();
+      // Only localhost (TCP connection refused) creates CONNECT spans on Windows
+      // Non-routable addresses (SSL failures) create method-named spans on both platforms
+      if ("localhost".equals(host)) {
         return "CONNECT";
       }
     }

@@ -171,7 +171,15 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    // For connection errors, return the actual exception
+    if ("https://192.0.2.1/".equals(uri.toString())) {
+      // Ratpack wraps the lower-level Netty ConnectTimeoutException with its own message; unwrap
+      // to compare against the span emitted by the Netty instrumentation.
+      Throwable cause = exception.getCause();
+      if (cause != null) {
+        return cause;
+      }
+    }
+    // For other connection errors, return the exception we observed
     return exception;
   }
 

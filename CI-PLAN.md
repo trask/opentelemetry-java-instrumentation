@@ -12,7 +12,7 @@
 - [ ] Task: :instrumentation:ratpack:ratpack-1.7:javaagent:test
   - Seen in: common / test1 (multiple parameter variants), test-latest-deps / testLatestDeps1
   - Log files: /tmp/common-test1.log, /tmp/testLatestDeps1.log
-  
+
 - [ ] Task: :instrumentation:ratpack:ratpack-1.4:javaagent:test
   - Seen in: common / test3 (multiple parameter variants), test-latest-deps / testLatestDeps3
   - Log files: /tmp/common-test3.log, /tmp/testLatestDeps3.log

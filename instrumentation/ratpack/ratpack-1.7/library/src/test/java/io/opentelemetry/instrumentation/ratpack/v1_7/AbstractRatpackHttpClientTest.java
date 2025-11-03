@@ -178,7 +178,8 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
     // Recent Ratpack/Netty versions emit spans named after the attempted HTTP method even when the
-    // connection fails during setup, so align expectations with the default mapper on all platforms.
+    // connection fails during setup, so align expectations with the default mapper on all
+    // platforms.
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
 
@@ -195,5 +196,4 @@ abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTest<Void
   private static boolean isUnopenedPort(URI uri) {
     return "localhost".equals(uri.getHost()) && uri.getPort() == PortUtils.UNUSABLE_PORT;
   }
-
 }

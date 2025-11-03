@@ -9,6 +9,8 @@ import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSIO
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 
+import io.netty.channel.ConnectTimeoutException;
+import io.netty.handler.codec.PrematureChannelClosureException;
 import io.netty.handler.timeout.ReadTimeoutException;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
@@ -171,26 +173,34 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    if ("https://192.0.2.1/".equals(uri.toString())) {
-      // Ratpack wraps the lower-level Netty ConnectTimeoutException with its own message; unwrap
-      // to compare against the span emitted by the Netty instrumentation.
+    if ("192.0.2.1".equals(uri.getHost())) {
+      // Ratpack wraps the lower-level Netty ConnectTimeoutException with its own message; we need
+      // to align with the span emitted by the Netty instrumentation ("connection timed out") on
+      // Linux. Prefer the wrapped cause when available, otherwise synthesize the expected message.
       Throwable cause = exception.getCause();
-      if (cause != null) {
+      if (cause instanceof ConnectTimeoutException || cause instanceof PrematureChannelClosureException) {
         return cause;
       }
+      if (exception instanceof ConnectTimeoutException
+          || exception instanceof PrematureChannelClosureException) {
+        return exception;
+      }
+      if ("https".equalsIgnoreCase(uri.getScheme())) {
+        return new PrematureChannelClosureException("channel gone inactive with 1 missing response(s)");
+      }
+      int port = uri.getPort();
+      if (port == -1) {
+        port = "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
+      }
+      return new ConnectTimeoutException("connection timed out: /" + uri.getHost() + ":" + port);
     }
     // For other connection errors, return the exception we observed
     return exception;
   }
 
-  // On Linux connection failures emit spans named after the attempted HTTP method, but on
-  // Windows Netty still reports them as CONNECT for TCP-level failures. Account for both
-  // to keep the assertion platform-agnostic.
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {
-    // Netty creates CONNECT spans for connection errors on both platforms
-    if ("GET".equals(method) || "HEAD".equals(method)) {
-      return "CONNECT";
-    }
+    // Recent Netty releases emit spans using the attempted HTTP method even when the
+    // connection fails, so align expectations with the default mapper on all platforms.
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
 }

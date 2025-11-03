@@ -189,8 +189,4 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     }
     return HttpClientTestOptions.DEFAULT_EXPECTED_CLIENT_SPAN_NAME_MAPPER.apply(uri, method);
   }
-
-  private static boolean isWindows() {
-    return System.getProperty("os.name").toLowerCase(Locale.ROOT).contains("win");
-  }
 }

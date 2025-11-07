@@ -12,8 +12,7 @@ import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import java.util.Objects;
 
 @AutoService(ComponentProvider.class)
-public class AgentTestLogRecordExporterComponentProvider
-    implements ComponentProvider {
+public class AgentTestLogRecordExporterComponentProvider implements ComponentProvider {
 
   private static LogRecordExporter logRecordExporter;
 

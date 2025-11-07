@@ -11,7 +11,7 @@ import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import java.util.Objects;
 
 public class TestLogRecordExporterComponentProvider
-    implements ComponentProvider<LogRecordExporter> {
+    implements ComponentProvider {
 
   private static LogRecordExporter logRecordExporter;
 
@@ -26,7 +26,7 @@ public class TestLogRecordExporterComponentProvider
   }
 
   @Override
-  public LogRecordExporter create(DeclarativeConfigProperties config) {
+  public Object create(DeclarativeConfigProperties config) {
     return Objects.requireNonNull(logRecordExporter, "logRecordExporter must not be null");
   }
 

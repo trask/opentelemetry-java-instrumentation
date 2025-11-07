@@ -10,7 +10,7 @@ import io.opentelemetry.sdk.autoconfigure.spi.internal.ComponentProvider;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.util.Objects;
 
-public class TestMetricExporterComponentProvider implements ComponentProvider<MetricExporter> {
+public class TestMetricExporterComponentProvider implements ComponentProvider {
 
   private static MetricExporter metricExporter;
 
@@ -25,7 +25,7 @@ public class TestMetricExporterComponentProvider implements ComponentProvider<Me
   }
 
   @Override
-  public MetricExporter create(DeclarativeConfigProperties config) {
+  public Object create(DeclarativeConfigProperties config) {
     return Objects.requireNonNull(metricExporter, "metricExporter must not be null");
   }
 

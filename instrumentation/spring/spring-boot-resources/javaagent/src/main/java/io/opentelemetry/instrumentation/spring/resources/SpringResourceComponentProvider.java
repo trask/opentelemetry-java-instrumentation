@@ -16,9 +16,8 @@ import io.opentelemetry.sdk.resources.Resource;
  * <p>This class is internal and is hence not for public use. Its APIs are unstable and can change
  * at any time.
  */
-@SuppressWarnings("rawtypes")
 @AutoService(ComponentProvider.class)
-public class SpringResourceComponentProvider implements ComponentProvider<Resource> {
+public class SpringResourceComponentProvider implements ComponentProvider {
 
   @Override
   public Class<Resource> getType() {
@@ -31,7 +30,7 @@ public class SpringResourceComponentProvider implements ComponentProvider<Resour
   }
 
   @Override
-  public Resource create(DeclarativeConfigProperties config) {
+  public Object create(DeclarativeConfigProperties config) {
     return new SpringBootServiceVersionDetector()
         .createResource(config)
         .merge(new SpringBootServiceNameDetector().createResource(config));

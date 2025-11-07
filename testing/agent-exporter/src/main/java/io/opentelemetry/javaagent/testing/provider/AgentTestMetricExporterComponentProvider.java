@@ -11,9 +11,8 @@ import io.opentelemetry.sdk.autoconfigure.spi.internal.ComponentProvider;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
 @AutoService(ComponentProvider.class)
-public class AgentTestMetricExporterComponentProvider implements ComponentProvider<MetricExporter> {
+public class AgentTestMetricExporterComponentProvider implements ComponentProvider {
 
   private static MetricExporter metricExporter;
 
@@ -28,7 +27,7 @@ public class AgentTestMetricExporterComponentProvider implements ComponentProvid
   }
 
   @Override
-  public MetricExporter create(DeclarativeConfigProperties config) {
+  public Object create(DeclarativeConfigProperties config) {
     return Objects.requireNonNull(metricExporter, "metricExporter must not be null");
   }
 

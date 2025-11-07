@@ -11,10 +11,9 @@ import io.opentelemetry.sdk.autoconfigure.spi.internal.ComponentProvider;
 import io.opentelemetry.sdk.logs.export.LogRecordExporter;
 import java.util.Objects;
 
-@SuppressWarnings("rawtypes")
 @AutoService(ComponentProvider.class)
 public class AgentTestLogRecordExporterComponentProvider
-    implements ComponentProvider<LogRecordExporter> {
+    implements ComponentProvider {
 
   private static LogRecordExporter logRecordExporter;
 
@@ -29,7 +28,7 @@ public class AgentTestLogRecordExporterComponentProvider
   }
 
   @Override
-  public LogRecordExporter create(DeclarativeConfigProperties config) {
+  public Object create(DeclarativeConfigProperties config) {
     return Objects.requireNonNull(logRecordExporter, "logRecordExporter must not be null");
   }
 

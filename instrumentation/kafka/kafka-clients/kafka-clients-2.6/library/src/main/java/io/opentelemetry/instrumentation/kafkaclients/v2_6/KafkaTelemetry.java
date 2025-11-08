@@ -86,18 +86,20 @@ public final class KafkaTelemetry {
   }
 
   /** Returns a decorated {@link Producer} that emits spans for each sent message. */
-  @SuppressWarnings("unchecked")
   public <K, V> Producer<K, V> wrap(Producer<K, V> producer) {
-    return (Producer<K, V>)
-        Proxy.newProxyInstance(
-            KafkaTelemetry.class.getClassLoader(),
-            new Class<?>[] {Producer.class},
-            (proxy, method, args) -> {
+    @SuppressWarnings("unchecked")
+    Producer<K, V> result =
+        (Producer<K, V>)
+            Proxy.newProxyInstance(
+                KafkaTelemetry.class.getClassLoader(),
+                new Class<?>[] {Producer.class},
+                (proxy, method, args) -> {
               // Future<RecordMetadata> send(ProducerRecord<K, V> record)
               // Future<RecordMetadata> send(ProducerRecord<K, V> record, Callback callback)
               if ("send".equals(method.getName())
                   && method.getParameterCount() >= 1
                   && method.getParameterTypes()[0] == ProducerRecord.class) {
+                @SuppressWarnings("unchecked")
                 ProducerRecord<K, V> record = (ProducerRecord<K, V>) args[0];
                 Callback callback =
                     method.getParameterCount() >= 2
@@ -113,16 +115,18 @@ public final class KafkaTelemetry {
                 throw exception.getCause();
               }
             });
+    return result;
   }
 
   /** Returns a decorated {@link Consumer} that consumes spans for each received message. */
-  @SuppressWarnings("unchecked")
   public <K, V> Consumer<K, V> wrap(Consumer<K, V> consumer) {
-    return (Consumer<K, V>)
-        Proxy.newProxyInstance(
-            KafkaTelemetry.class.getClassLoader(),
-            new Class<?>[] {Consumer.class},
-            (proxy, method, args) -> {
+    @SuppressWarnings("unchecked")
+    Consumer<K, V> result =
+        (Consumer<K, V>)
+            Proxy.newProxyInstance(
+                KafkaTelemetry.class.getClassLoader(),
+                new Class<?>[] {Consumer.class},
+                (proxy, method, args) -> {
               Object result;
               Timer timer = "poll".equals(method.getName()) ? Timer.start() : null;
               try {
@@ -133,6 +137,7 @@ public final class KafkaTelemetry {
               // ConsumerRecords<K, V> poll(long timeout)
               // ConsumerRecords<K, V> poll(Duration duration)
               if ("poll".equals(method.getName()) && result instanceof ConsumerRecords) {
+                @SuppressWarnings("unchecked")
                 ConsumerRecords<K, V> consumerRecords = (ConsumerRecords<K, V>) result;
                 Context receiveContext =
                     consumerTelemetry.buildAndFinishSpan(consumerRecords, consumer, timer);
@@ -145,6 +150,7 @@ public final class KafkaTelemetry {
               }
               return result;
             });
+    return result;
   }
 
   /**

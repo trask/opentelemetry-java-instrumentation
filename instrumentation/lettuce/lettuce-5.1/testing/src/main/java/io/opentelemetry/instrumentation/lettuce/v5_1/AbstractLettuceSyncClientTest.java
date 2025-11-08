@@ -157,9 +157,10 @@ public abstract class AbstractLettuceSyncClientTest extends AbstractLettuceClien
     assertDurationMetric(testing(), "io.opentelemetry.lettuce-5.1", toArray(expected));
   }
 
-  @SuppressWarnings("rawtypes")
   private static AttributeKey[] toArray(List<AttributeKey<?>> expected) {
-    return expected.toArray(new AttributeKey[0]);
+    @SuppressWarnings("rawtypes")
+    AttributeKey[] result = expected.toArray(new AttributeKey[0]);
+    return result;
   }
 
   @Test

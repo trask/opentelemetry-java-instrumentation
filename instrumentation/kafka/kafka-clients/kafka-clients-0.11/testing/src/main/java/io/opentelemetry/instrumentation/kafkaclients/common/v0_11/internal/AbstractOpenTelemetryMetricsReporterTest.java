@@ -147,10 +147,11 @@ public abstract class AbstractOpenTelemetryMetricsReporterTest {
     return consumerConfig;
   }
 
-  @SuppressWarnings("unchecked")
   private static Object mergeValue(Object o1, Object o2) {
     List<Object> result = new MetricsReporterList<>();
-    result.addAll((List<Object>) o1);
+    @SuppressWarnings("unchecked")
+    List<Object> o1List = (List<Object>) o1;
+    result.addAll(o1List);
     result.add(o2);
     return result;
   }

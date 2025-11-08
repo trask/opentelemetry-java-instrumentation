@@ -39,10 +39,11 @@ public class AttributeKeys {
    *
    * <p>Keep this API public for vendor instrumentations
    */
-  @SuppressWarnings("unchecked")
   public static <T> AttributeKey<T> attributeKey(String key) {
     ConcurrentMap<String, AttributeKey<?>> classLoaderMap = mapSupplier.get(AttributeKey.class);
-    return (AttributeKey<T>) classLoaderMap.computeIfAbsent(key, AttributeKey::new);
+    @SuppressWarnings("unchecked")
+    AttributeKey<T> result = (AttributeKey<T>) classLoaderMap.computeIfAbsent(key, AttributeKey::new);
+    return result;
   }
 
   private AttributeKeys() {}

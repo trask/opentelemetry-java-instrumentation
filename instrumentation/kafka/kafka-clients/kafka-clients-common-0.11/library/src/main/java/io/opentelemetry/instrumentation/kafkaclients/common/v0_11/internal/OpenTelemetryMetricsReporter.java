@@ -172,7 +172,6 @@ public final class OpenTelemetryMetricsReporter implements MetricsReporter {
     meter = meterBuilder.build();
   }
 
-  @SuppressWarnings("unchecked")
   private static <T> T getProperty(Map<String, ?> configs, String key, Class<T> requiredType) {
     Object value = configs.get(key);
     if (value == null) {
@@ -182,7 +181,9 @@ public final class OpenTelemetryMetricsReporter implements MetricsReporter {
       throw new IllegalStateException(
           "Configuration property " + key + " is not instance of " + requiredType.getSimpleName());
     }
-    return (T) value;
+    @SuppressWarnings("unchecked")
+    T result = (T) value;
+    return result;
   }
 
   // Visible for test

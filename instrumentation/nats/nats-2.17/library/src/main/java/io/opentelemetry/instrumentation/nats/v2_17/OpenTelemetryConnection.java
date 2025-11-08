@@ -234,7 +234,6 @@ final class OpenTelemetryConnection implements InvocationHandler {
   // Duration timeout);
   // CompletableFuture<Message> request(Message message);
   // CompletableFuture<Message> requestWithTimeout(Message message, Duration timeout);
-  @SuppressWarnings("unchecked")
   private CompletableFuture<Message> requestAsync(Method method, Object[] args) throws Throwable {
     String subject = null;
     Headers headers = null;
@@ -291,7 +290,10 @@ final class OpenTelemetryConnection implements InvocationHandler {
     }
 
     if (natsRequest == null || !producerInstrumenter.shouldStart(parentContext, natsRequest)) {
-      return (CompletableFuture<Message>) invokeMethod(method, delegate, args);
+      @SuppressWarnings("unchecked")
+      CompletableFuture<Message> result =
+          (CompletableFuture<Message>) invokeMethod(method, delegate, args);
+      return result;
     }
 
     NatsRequest notNullNatsRequest = natsRequest;

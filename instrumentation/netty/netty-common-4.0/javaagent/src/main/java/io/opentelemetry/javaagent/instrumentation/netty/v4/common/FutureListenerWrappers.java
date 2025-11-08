@@ -46,13 +46,13 @@ public final class FutureListenerWrappers {
     return listener != null && shouldWrap.get(listener.getClass());
   }
 
-  @SuppressWarnings("unchecked")
   public static GenericFutureListener<?> wrap(
       Context context, GenericFutureListener<? extends Future<?>> delegate) {
 
     // note: not using computeIfAbsent because that leaves window where WeakReference can be
     // collected before we have a chance to make (and return) a strong reference to the wrapper
 
+    @SuppressWarnings("unchecked")
     WeakReference<GenericFutureListener<? extends Future<?>>> resultReference =
         wrapperVirtualField.get(delegate);
 

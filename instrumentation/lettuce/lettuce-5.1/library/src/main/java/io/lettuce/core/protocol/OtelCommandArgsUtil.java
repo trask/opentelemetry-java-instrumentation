@@ -32,13 +32,14 @@ public final class OtelCommandArgsUtil {
     return result;
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   private static String getArgValue(StringCodec stringCodec, SingularArgument argument) {
     if (argument instanceof KeyArgument) {
+      @SuppressWarnings({"rawtypes", "unchecked"})
       KeyArgument keyArg = (KeyArgument) argument;
       return stringCodec.decodeKey(keyArg.codec.encodeKey(keyArg.key));
     }
     if (argument instanceof ValueArgument) {
+      @SuppressWarnings({"rawtypes", "unchecked"})
       ValueArgument valueArg = (ValueArgument) argument;
       return stringCodec.decodeValue(valueArg.codec.encodeValue(valueArg.val));
     }

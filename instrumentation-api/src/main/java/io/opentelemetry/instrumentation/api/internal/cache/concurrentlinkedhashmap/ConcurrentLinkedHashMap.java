@@ -211,7 +211,6 @@ public final class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V>
   transient Set<Entry<K, V>> entrySet;
 
   /** Creates an instance based on the builder's configuration. */
-  @SuppressWarnings({"unchecked", "cast", "rawtypes"})
   private ConcurrentLinkedHashMap(Builder<K, V> builder) {
     // The data store and its maximum capacity
     concurrencyLevel = builder.concurrencyLevel;
@@ -226,14 +225,24 @@ public final class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V>
     writeBuffer = new ConcurrentLinkedQueue<>();
     drainStatus = new AtomicReference<>(IDLE);
 
-    readBufferReadCount = new long[NUMBER_OF_READ_BUFFERS];
-    readBufferWriteCount = new AtomicLong[NUMBER_OF_READ_BUFFERS];
-    readBufferDrainAtWriteCount = new AtomicLong[NUMBER_OF_READ_BUFFERS];
-    readBuffers = new AtomicReference[NUMBER_OF_READ_BUFFERS][READ_BUFFER_SIZE];
+    @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+    long[] bufferReadCounts = new long[NUMBER_OF_READ_BUFFERS];
+    readBufferReadCount = bufferReadCounts;
+    @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+    AtomicLong[] bufferWriteCounts = new AtomicLong[NUMBER_OF_READ_BUFFERS];
+    readBufferWriteCount = bufferWriteCounts;
+    @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+    AtomicLong[] bufferDrainCounts = new AtomicLong[NUMBER_OF_READ_BUFFERS];
+    readBufferDrainAtWriteCount = bufferDrainCounts;
+    @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+    AtomicReference[][] buffers = new AtomicReference[NUMBER_OF_READ_BUFFERS][READ_BUFFER_SIZE];
+    readBuffers = buffers;
     for (int i = 0; i < NUMBER_OF_READ_BUFFERS; i++) {
       readBufferWriteCount[i] = new AtomicLong();
       readBufferDrainAtWriteCount[i] = new AtomicLong();
-      readBuffers[i] = new AtomicReference[READ_BUFFER_SIZE];
+      @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+      AtomicReference[] buffer = new AtomicReference[READ_BUFFER_SIZE];
+      readBuffers[i] = buffer;
       for (int j = 0; j < READ_BUFFER_SIZE; j++) {
         readBuffers[i][j] = new AtomicReference<>();
       }
@@ -241,10 +250,12 @@ public final class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V>
 
     // The notification queue and listener
     listener = builder.listener;
-    pendingNotifications =
+    @SuppressWarnings({"unchecked", "cast", "rawtypes"})
+    Queue<Node<K, V>> queue =
         (listener == DiscardingListener.INSTANCE)
             ? (Queue<Node<K, V>>) DISCARDING_QUEUE
             : new ConcurrentLinkedQueue<>();
+    pendingNotifications = queue;
   }
 
   /** Ensures that the object is not null. */
@@ -1490,13 +1501,15 @@ public final class ConcurrentLinkedHashMap<K, V> extends AbstractMap<K, V>
     int initialCapacity;
     long capacity;
 
-    @SuppressWarnings("unchecked")
     public Builder() {
       capacity = -1;
       weigher = Weighers.entrySingleton();
       initialCapacity = DEFAULT_INITIAL_CAPACITY;
       concurrencyLevel = DEFAULT_CONCURRENCY_LEVEL;
-      listener = (EvictionListener<K, V>) DiscardingListener.INSTANCE;
+      @SuppressWarnings("unchecked")
+      EvictionListener<K, V> discardingListener =
+          (EvictionListener<K, V>) DiscardingListener.INSTANCE;
+      listener = discardingListener;
     }
 
     /**

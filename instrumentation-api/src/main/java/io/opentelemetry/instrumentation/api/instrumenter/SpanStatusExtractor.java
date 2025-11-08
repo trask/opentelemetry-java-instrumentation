@@ -27,8 +27,10 @@ public interface SpanStatusExtractor<REQUEST, RESPONSE> {
    * Returns the default {@link SpanStatusExtractor}, which returns {@link StatusCode#ERROR} if the
    * framework returned an unhandled exception, or {@link StatusCode#UNSET} otherwise.
    */
-  @SuppressWarnings("unchecked")
   static <REQUEST, RESPONSE> SpanStatusExtractor<REQUEST, RESPONSE> getDefault() {
-    return (SpanStatusExtractor<REQUEST, RESPONSE>) DefaultSpanStatusExtractor.INSTANCE;
+    @SuppressWarnings("unchecked")
+    SpanStatusExtractor<REQUEST, RESPONSE> extractor =
+        (SpanStatusExtractor<REQUEST, RESPONSE>) DefaultSpanStatusExtractor.INSTANCE;
+    return extractor;
   }
 }

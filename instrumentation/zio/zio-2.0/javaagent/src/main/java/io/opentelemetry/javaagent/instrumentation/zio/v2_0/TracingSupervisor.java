@@ -25,9 +25,10 @@ public final class TracingSupervisor extends Supervisor<Object> {
   private TracingSupervisor() {}
 
   @Override
-  @SuppressWarnings("rawtypes")
   public ZIO value(Object trace) {
-    return ZIO$.MODULE$.unit();
+    @SuppressWarnings("rawtypes")
+    ZIO result = ZIO$.MODULE$.unit();
+    return result;
   }
 
   @Override

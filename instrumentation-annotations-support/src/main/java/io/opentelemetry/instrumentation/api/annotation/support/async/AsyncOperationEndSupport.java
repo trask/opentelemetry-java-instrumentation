@@ -62,7 +62,6 @@ public final class AsyncOperationEndSupport<REQUEST, RESPONSE> {
    * won't be {@link Instrumenter#end(Context, Object, Object, Throwable) ended} until {@code
    * asyncValue} completes.
    */
-  @SuppressWarnings("unchecked")
   @Nullable
   public <ASYNC> ASYNC asyncEnd(
       Context context, REQUEST request, @Nullable ASYNC asyncValue, @Nullable Throwable throwable) {
@@ -74,8 +73,12 @@ public final class AsyncOperationEndSupport<REQUEST, RESPONSE> {
 
     // use the configured strategy to compose over the asyncValue
     if (asyncOperationEndStrategy != null && asyncType.isInstance(asyncValue)) {
-      return (ASYNC)
-          asyncOperationEndStrategy.end(instrumenter, context, request, asyncValue, responseType);
+      @SuppressWarnings("unchecked")
+      ASYNC result =
+          (ASYNC)
+              asyncOperationEndStrategy.end(
+                  instrumenter, context, request, asyncValue, responseType);
+      return result;
     }
 
     // fall back to sync end() if asyncValue type doesn't match

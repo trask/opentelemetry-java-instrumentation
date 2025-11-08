@@ -67,9 +67,9 @@ public class UndertowHelper {
     }
   }
 
-  @SuppressWarnings("unchecked")
   @Nullable
   public Context getServerContext(HttpServerExchange exchange) {
+    @SuppressWarnings("unchecked")
     AttachmentKey<Context> contextKey =
         (AttachmentKey<Context>) KeyHolder.contextKeys.get(AttachmentKey.class);
     if (contextKey == null) {
@@ -78,8 +78,8 @@ public class UndertowHelper {
     return exchange.getAttachment(contextKey);
   }
 
-  @SuppressWarnings("unchecked")
   private static void attachServerContext(Context context, HttpServerExchange exchange) {
+    @SuppressWarnings("unchecked")
     AttachmentKey<Context> contextKey =
         (AttachmentKey<Context>)
             KeyHolder.contextKeys.computeIfAbsent(

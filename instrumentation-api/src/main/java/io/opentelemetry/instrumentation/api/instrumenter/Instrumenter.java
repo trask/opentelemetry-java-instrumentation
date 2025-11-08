@@ -85,19 +85,32 @@ public class Instrumenter<REQUEST, RESPONSE> {
   private final boolean enabled;
   private final SpanSuppressor spanSuppressor;
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   Instrumenter(InstrumenterBuilder<REQUEST, RESPONSE> builder) {
     this.instrumentationName = builder.instrumentationName;
     this.tracer = builder.buildTracer();
     this.spanNameExtractor = builder.spanNameExtractor;
     this.spanKindExtractor = builder.spanKindExtractor;
     this.spanStatusExtractor = builder.spanStatusExtractor;
-    this.spanLinksExtractors = builder.spanLinksExtractors.toArray(new SpanLinksExtractor[0]);
-    this.attributesExtractors = builder.attributesExtractors.toArray(new AttributesExtractor[0]);
-    this.contextCustomizers = builder.contextCustomizers.toArray(new ContextCustomizer[0]);
-    this.operationListeners = builder.buildOperationListeners().toArray(new OperationListener[0]);
-    this.operationListenerAttributesExtractors =
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    SpanLinksExtractor<? super REQUEST>[] linksExtractors =
+        builder.spanLinksExtractors.toArray(new SpanLinksExtractor[0]);
+    this.spanLinksExtractors = linksExtractors;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    AttributesExtractor<? super REQUEST, ? super RESPONSE>[] extractors =
+        builder.attributesExtractors.toArray(new AttributesExtractor[0]);
+    this.attributesExtractors = extractors;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    ContextCustomizer<? super REQUEST>[] customizers =
+        builder.contextCustomizers.toArray(new ContextCustomizer[0]);
+    this.contextCustomizers = customizers;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    OperationListener[] listeners =
+        builder.buildOperationListeners().toArray(new OperationListener[0]);
+    this.operationListeners = listeners;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    AttributesExtractor<? super REQUEST, ? super RESPONSE>[] listenerExtractors =
         builder.operationListenerAttributesExtractors.toArray(new AttributesExtractor[0]);
+    this.operationListenerAttributesExtractors = listenerExtractors;
     this.errorCauseExtractor = builder.errorCauseExtractor;
     this.propagateOperationListenersToOnEnd = builder.propagateOperationListenersToOnEnd;
     this.enabled = builder.enabled;

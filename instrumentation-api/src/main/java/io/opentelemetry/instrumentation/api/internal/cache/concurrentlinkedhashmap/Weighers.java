@@ -61,9 +61,10 @@ public final class Weighers {
    *
    * @return A weigher where a value takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <K, V> EntryWeigher<K, V> entrySingleton() {
-    return (EntryWeigher<K, V>) SingletonEntryWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    EntryWeigher<K, V> weigher = (EntryWeigher<K, V>) SingletonEntryWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -72,9 +73,10 @@ public final class Weighers {
    *
    * @return A weigher where a value takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <V> Weigher<V> singleton() {
-    return (Weigher<V>) SingletonWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<V> weigher = (Weigher<V>) SingletonWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -108,9 +110,11 @@ public final class Weighers {
    *
    * @return A weigher where each element takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <E> Weigher<? super Iterable<E>> iterable() {
-    return (Weigher<Iterable<E>>) (Weigher<?>) IterableWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<? super Iterable<E>> weigher =
+        (Weigher<Iterable<E>>) (Weigher<?>) IterableWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -125,9 +129,11 @@ public final class Weighers {
    *
    * @return A weigher where each element takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <E> Weigher<? super Collection<E>> collection() {
-    return (Weigher<Collection<E>>) (Weigher<?>) CollectionWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<? super Collection<E>> weigher =
+        (Weigher<Collection<E>>) (Weigher<?>) CollectionWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -142,9 +148,10 @@ public final class Weighers {
    *
    * @return A weigher where each element takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <E> Weigher<? super List<E>> list() {
-    return (Weigher<List<E>>) (Weigher<?>) ListWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<? super List<E>> weigher = (Weigher<List<E>>) (Weigher<?>) ListWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -159,9 +166,10 @@ public final class Weighers {
    *
    * @return A weigher where each element takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <E> Weigher<? super Set<E>> set() {
-    return (Weigher<Set<E>>) (Weigher<?>) SetWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<? super Set<E>> weigher = (Weigher<Set<E>>) (Weigher<?>) SetWeigher.INSTANCE;
+    return weigher;
   }
 
   /**
@@ -176,9 +184,10 @@ public final class Weighers {
    *
    * @return A weigher where each entry takes one unit of capacity.
    */
-  @SuppressWarnings({"cast", "unchecked"})
   public static <A, B> Weigher<? super Map<A, B>> map() {
-    return (Weigher<Map<A, B>>) (Weigher<?>) MapWeigher.INSTANCE;
+    @SuppressWarnings({"cast", "unchecked"})
+    Weigher<? super Map<A, B>> weigher = (Weigher<Map<A, B>>) (Weigher<?>) MapWeigher.INSTANCE;
+    return weigher;
   }
 
   static final class EntryWeigherView<K, V> implements EntryWeigher<K, V>, Serializable {

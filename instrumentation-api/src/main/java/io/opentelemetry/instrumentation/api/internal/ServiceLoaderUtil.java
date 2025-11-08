@@ -18,9 +18,10 @@ public final class ServiceLoaderUtil {
 
   private ServiceLoaderUtil() {}
 
-  @SuppressWarnings("unchecked")
   public static <T> Iterable<T> load(Class<T> clazz) {
-    return (Iterable<T>) loadFunction.apply(clazz);
+    @SuppressWarnings("unchecked")
+    Iterable<T> result = (Iterable<T>) loadFunction.apply(clazz);
+    return result;
   }
 
   public static void setLoadFunction(Function<Class<?>, Iterable<?>> customLoadFunction) {

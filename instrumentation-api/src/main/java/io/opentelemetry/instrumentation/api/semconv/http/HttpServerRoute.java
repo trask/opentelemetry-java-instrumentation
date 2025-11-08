@@ -154,9 +154,10 @@ public final class HttpServerRoute {
 
     private static final OneArgAdapter<Object> INSTANCE = new OneArgAdapter<>();
 
-    @SuppressWarnings("unchecked")
     static <T> OneArgAdapter<T> getInstance() {
-      return (OneArgAdapter<T>) INSTANCE;
+      @SuppressWarnings("unchecked")
+      OneArgAdapter<T> instance = (OneArgAdapter<T>) INSTANCE;
+      return instance;
     }
 
     @Override

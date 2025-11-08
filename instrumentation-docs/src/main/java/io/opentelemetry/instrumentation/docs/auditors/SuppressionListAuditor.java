@@ -99,13 +99,13 @@ public class SuppressionListAuditor implements DocumentationAuditor {
     throw new IOException("Failed to fetch disable list: " + response);
   }
 
-  @SuppressWarnings("unchecked")
   public static List<String> parseInstrumentationList(String fileContent) {
     List<String> instrumentationList = new ArrayList<>();
     Yaml yaml = new Yaml();
     Map<String, Object> data = yaml.load(fileContent);
 
     if (data != null && data.get("libraries") instanceof Map) {
+      @SuppressWarnings("unchecked")
       Map<String, List<Map<String, Object>>> libraries =
           (Map<String, List<Map<String, Object>>>) data.get("libraries");
       for (List<Map<String, Object>> libraryGroup : libraries.values()) {

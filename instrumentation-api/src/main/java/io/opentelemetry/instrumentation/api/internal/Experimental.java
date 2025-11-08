@@ -55,11 +55,12 @@ public final class Experimental {
     }
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public static <REQUEST> void internalSetUrlTemplateExtractor(
       BiConsumer<HttpSpanNameExtractorBuilder<REQUEST>, Function<REQUEST, String>>
           urlTemplateExtractorSetter) {
-    Experimental.urlTemplateExtractorSetter = (BiConsumer) urlTemplateExtractorSetter;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    BiConsumer rawSetter = (BiConsumer) urlTemplateExtractorSetter;
+    Experimental.urlTemplateExtractorSetter = rawSetter;
   }
 
   /**
@@ -76,13 +77,13 @@ public final class Experimental {
     }
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public static <REQUEST, RESPONSE> void internalAddOperationListenerAttributesExtractor(
       BiConsumer<
               InstrumenterBuilder<REQUEST, RESPONSE>,
               AttributesExtractor<? super REQUEST, ? super RESPONSE>>
           operationListenerAttributesExtractorAdder) {
-    Experimental.operationListenerAttributesExtractorAdder =
-        (BiConsumer) operationListenerAttributesExtractorAdder;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    BiConsumer rawAdder = (BiConsumer) operationListenerAttributesExtractorAdder;
+    Experimental.operationListenerAttributesExtractorAdder = rawAdder;
   }
 }

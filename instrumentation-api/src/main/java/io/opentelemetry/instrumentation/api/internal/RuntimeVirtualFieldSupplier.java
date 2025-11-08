@@ -51,13 +51,15 @@ public final class RuntimeVirtualFieldSupplier {
         ownerToFieldToImplementationMap = Cache.weak();
 
     @Override
-    @SuppressWarnings("unchecked")
     public <U extends T, V extends F, T, F> VirtualField<U, V> find(
         Class<T> type, Class<F> fieldType) {
-      return (VirtualField<U, V>)
-          ownerToFieldToImplementationMap
-              .computeIfAbsent(type, c -> Cache.weak())
-              .computeIfAbsent(fieldType, c -> new CacheBasedVirtualField<>());
+      @SuppressWarnings("unchecked")
+      VirtualField<U, V> field =
+          (VirtualField<U, V>)
+              ownerToFieldToImplementationMap
+                  .computeIfAbsent(type, c -> Cache.weak())
+                  .computeIfAbsent(fieldType, c -> new CacheBasedVirtualField<>());
+      return field;
     }
   }
 

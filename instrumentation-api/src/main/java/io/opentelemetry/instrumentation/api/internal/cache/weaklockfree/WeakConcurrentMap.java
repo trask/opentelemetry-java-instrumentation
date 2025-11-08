@@ -117,11 +117,12 @@ public class WeakConcurrentMap<K, V>
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected LookupKey<K> getLookupKey(K key) {
     LookupKey<K> lookupKey;
     if (reuseKeys) {
-      lookupKey = (LookupKey<K>) LOOKUP_KEY_CACHE.get();
+      @SuppressWarnings("unchecked")
+      LookupKey<K> cachedKey = (LookupKey<K>) LOOKUP_KEY_CACHE.get();
+      lookupKey = cachedKey;
     } else {
       lookupKey = new LookupKey<>();
     }

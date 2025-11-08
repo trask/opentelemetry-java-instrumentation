@@ -32,9 +32,10 @@ public final class InstrumenterContext {
 
   private InstrumenterContext() {}
 
-  @SuppressWarnings("unchecked")
   public static <T> T computeIfAbsent(String key, Function<String, T> function) {
-    return (T) get().computeIfAbsent(key, function);
+    @SuppressWarnings("unchecked")
+    T result = (T) get().computeIfAbsent(key, function);
+    return result;
   }
 
   // visible for testing

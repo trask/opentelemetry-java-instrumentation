@@ -27,17 +27,19 @@ public final class ClassLoaderValue<T> {
     this.classInjector = classInjector;
   }
 
-  @SuppressWarnings("unchecked")
   public T get(ClassLoader classLoader) {
-    return (T) ClassLoaderMap.get(classLoader, classInjector, this);
+    @SuppressWarnings("unchecked")
+    T result = (T) ClassLoaderMap.get(classLoader, classInjector, this);
+    return result;
   }
 
   public void put(ClassLoader classLoader, T value) {
     ClassLoaderMap.put(classLoader, classInjector, this, value);
   }
 
-  @SuppressWarnings("unchecked")
   public T computeIfAbsent(ClassLoader classLoader, Supplier<? extends T> value) {
-    return (T) ClassLoaderMap.computeIfAbsent(classLoader, classInjector, this, value);
+    @SuppressWarnings("unchecked")
+    T result = (T) ClassLoaderMap.computeIfAbsent(classLoader, classInjector, this, value);
+    return result;
   }
 }

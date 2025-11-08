@@ -65,14 +65,16 @@ public class AbstractJvmKafkaSpringStarterSmokeTest extends AbstractKafkaSpringS
                 "spring.kafka.producer.transaction-id-prefix=test-");
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   @Test
   void shouldInstrumentProducerAndConsumer() {
     contextRunner.run(
         applicationContext -> {
           testing = new SpringSmokeTestRunner(applicationContext.getBean(OpenTelemetry.class));
-          kafkaTemplate = applicationContext.getBean(KafkaTemplate.class);
+          @SuppressWarnings("unchecked")
+          KafkaTemplate<String, String> template =
+              applicationContext.getBean(KafkaTemplate.class);
+          kafkaTemplate = template;
           super.shouldInstrumentProducerAndConsumer();
         });
   }

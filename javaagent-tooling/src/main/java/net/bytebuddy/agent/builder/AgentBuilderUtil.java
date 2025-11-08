@@ -272,16 +272,20 @@ public class AgentBuilderUtil {
     return (ElementMatcher<?>) erasureMatcherField.get(matcher);
   }
 
-  @SuppressWarnings("unchecked")
   private static List<AgentBuilder.RawMatcher> getDelegateMatchers(AgentBuilder.RawMatcher matcher)
       throws Exception {
-    return (List<AgentBuilder.RawMatcher>) rawConjunctionMatchersField.get(matcher);
+    @SuppressWarnings("unchecked")
+    List<AgentBuilder.RawMatcher> matchers =
+        (List<AgentBuilder.RawMatcher>) rawConjunctionMatchersField.get(matcher);
+    return matchers;
   }
 
-  @SuppressWarnings("unchecked")
   private static List<ElementMatcher<?>> getDelegateMatchers(
       ElementMatcher.Junction.Conjunction<?> matcher) throws Exception {
-    return (List<ElementMatcher<?>>) conjunctionMatchersField.get(matcher);
+    @SuppressWarnings("unchecked")
+    List<ElementMatcher<?>> matchers =
+        (List<ElementMatcher<?>>) conjunctionMatchersField.get(matcher);
+    return matchers;
   }
 
   /**
@@ -295,9 +299,10 @@ public class AgentBuilderUtil {
     return mode == StringMatcher.Mode.EQUALS_FULLY ? value : null;
   }
 
-  @SuppressWarnings("unchecked")
   private static Set<String> getStringSetMatcherValue(StringSetMatcher matcher) throws Exception {
-    return (Set<String>) stringSetMatcherValuesField.get(matcher);
+    @SuppressWarnings("unchecked")
+    Set<String> values = (Set<String>) stringSetMatcherValuesField.get(matcher);
+    return values;
   }
 
   private static Field getField(Class<?> clazz, String name) {

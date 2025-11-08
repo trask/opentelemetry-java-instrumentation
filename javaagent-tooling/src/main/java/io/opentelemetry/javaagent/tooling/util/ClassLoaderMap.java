@@ -58,13 +58,14 @@ class ClassLoaderMap {
       if (!initialize) {
         return Collections.emptyMap();
       }
-      map = createMap(classLoader, classInjector);
+      @SuppressWarnings("unchecked")
+      Map<Object, Object> newMap = createMap(classLoader, classInjector);
+      map = newMap;
       data.put(classLoader, new WeakReference<>(map));
     }
     return map;
   }
 
-  @SuppressWarnings("unchecked")
   private static Map<Object, Object> createMap(ClassLoader classLoader, Injector classInjector) {
     String className =
         "io.opentelemetry.javaagent.ClassLoaderData$$"

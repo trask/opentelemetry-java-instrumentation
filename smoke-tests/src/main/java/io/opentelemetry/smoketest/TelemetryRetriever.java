@@ -74,7 +74,6 @@ public class TelemetryRetriever implements AutoCloseable {
         .collect(Collectors.toList());
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private <T extends GeneratedMessage, B extends GeneratedMessage.Builder>
       Collection<T> waitForTelemetry(String path, Supplier<B> builderConstructor) {
     if (closed) {
@@ -82,21 +81,25 @@ public class TelemetryRetriever implements AutoCloseable {
     }
 
     try {
-      return OBJECT_MAPPER
-          .readTree(waitForContent(path))
-          .valueStream()
-          .map(
-              jsonNode -> {
-                B builder = builderConstructor.get();
-                // TODO: Register parser into object mapper to avoid de -> re -> deserialize.
-                try {
-                  JsonFormat.parser().merge(OBJECT_MAPPER.writeValueAsString(jsonNode), builder);
-                  return (T) builder.build();
-                } catch (InvalidProtocolBufferException | JsonProcessingException e) {
-                  throw new IllegalStateException(e);
-                }
-              })
-          .collect(Collectors.toList());
+      @SuppressWarnings({"unchecked", "rawtypes"})
+      Collection<T> telemetry =
+          OBJECT_MAPPER
+              .readTree(waitForContent(path))
+              .valueStream()
+              .map(
+                  jsonNode -> {
+                    B builder = builderConstructor.get();
+                    // TODO: Register parser into object mapper to avoid de -> re -> deserialize.
+                    try {
+                      JsonFormat.parser()
+                          .merge(OBJECT_MAPPER.writeValueAsString(jsonNode), builder);
+                      return (T) builder.build();
+                    } catch (InvalidProtocolBufferException | JsonProcessingException e) {
+                      throw new IllegalStateException(e);
+                    }
+                  })
+              .collect(Collectors.toList());
+      return telemetry;
     } catch (InterruptedException | JsonProcessingException e) {
       throw new IllegalStateException(e);
     }

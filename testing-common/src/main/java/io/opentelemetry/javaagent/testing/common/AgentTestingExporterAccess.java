@@ -79,9 +79,9 @@ public final class AgentTestingExporterAccess {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static List<SpanData> getExportedSpans() {
     try {
+      @SuppressWarnings("unchecked")
       List<byte[]> bytes = (List<byte[]>) getSpanExportRequests.invokeExact();
       List<ResourceSpans> allResourceSpans =
           bytes.stream()
@@ -102,12 +102,12 @@ public final class AgentTestingExporterAccess {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static List<MetricData> getExportedMetrics() {
     try {
+      @SuppressWarnings("unchecked")
+      List<byte[]> bytes = (List<byte[]>) getMetricExportRequests.invokeExact();
       return TelemetryConverter.getMetricsData(
-          ((List<byte[]>) getMetricExportRequests.invokeExact())
-              .stream()
+          bytes.stream()
                   .map(
                       serialized -> {
                         try {
@@ -123,12 +123,12 @@ public final class AgentTestingExporterAccess {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static List<LogRecordData> getExportedLogRecords() {
     try {
+      @SuppressWarnings("unchecked")
+      List<byte[]> bytes = (List<byte[]>) getLogExportRequests.invokeExact();
       return TelemetryConverter.getLogRecordData(
-          ((List<byte[]>) getLogExportRequests.invokeExact())
-              .stream()
+          bytes.stream()
                   .map(
                       serialized -> {
                         try {

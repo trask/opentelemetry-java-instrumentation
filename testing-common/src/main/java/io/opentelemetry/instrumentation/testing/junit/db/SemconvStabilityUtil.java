@@ -63,11 +63,12 @@ public class SemconvStabilityUtil {
 
   private SemconvStabilityUtil() {}
 
-  @SuppressWarnings("unchecked")
   public static <T> AttributeKey<T> maybeStable(AttributeKey<T> oldKey) {
     // not testing database/dup
     if (SemconvStability.emitStableDatabaseSemconv()) {
-      return (AttributeKey<T>) oldToNewMap.get(oldKey);
+      @SuppressWarnings("unchecked")
+      AttributeKey<T> newKey = (AttributeKey<T>) oldToNewMap.get(oldKey);
+      return newKey;
     }
     return oldKey;
   }

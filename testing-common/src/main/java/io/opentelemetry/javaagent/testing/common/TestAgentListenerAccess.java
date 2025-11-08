@@ -79,10 +79,11 @@ public final class TestAgentListenerAccess {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static List<String> getIgnoredButTransformedClassNames() {
     try {
-      return (List<String>) getIgnoredButTransformedClassNames.invokeExact();
+      @SuppressWarnings("unchecked")
+      List<String> result = (List<String>) getIgnoredButTransformedClassNames.invokeExact();
+      return result;
     } catch (Throwable t) {
       throw new AssertionError(
           "Could not invoke TestAgentListener.getIgnoredButTransformedClassNames", t);

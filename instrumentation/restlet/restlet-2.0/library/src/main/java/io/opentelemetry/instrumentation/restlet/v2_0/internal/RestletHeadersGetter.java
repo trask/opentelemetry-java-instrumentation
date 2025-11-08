@@ -66,15 +66,17 @@ final class RestletHeadersGetter implements TextMapGetter<Request> {
         : Arrays.asList(headers.getValuesArray(key, /* ignoreCase= */ true)).iterator();
   }
 
-  @SuppressWarnings("unchecked")
   @Nullable
   static Series<?> getHeaders(Message carrier) {
     if (GET_ATTRIBUTES == null) {
       return null;
     }
     try {
+      @SuppressWarnings("unchecked")
       Map<String, Object> attributes = (Map<String, Object>) GET_ATTRIBUTES.invoke(carrier);
-      return (Series<?>) attributes.get("org.restlet.http.headers");
+      @SuppressWarnings("unchecked")
+      Series<?> result = (Series<?>) attributes.get("org.restlet.http.headers");
+      return result;
     } catch (Throwable e) {
       return null;
     }

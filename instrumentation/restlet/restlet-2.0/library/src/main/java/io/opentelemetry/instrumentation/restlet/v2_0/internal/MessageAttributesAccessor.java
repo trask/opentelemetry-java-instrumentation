@@ -93,14 +93,15 @@ public final class MessageAttributesAccessor {
     NEW_SERIES = newSeries;
   }
 
-  @SuppressWarnings("unchecked")
   @Nullable
   public static Map<String, Object> getAttributes(Message message) {
     if (GET_ATTRIBUTES == null) {
       return null;
     }
     try {
-      return (Map<String, Object>) GET_ATTRIBUTES.invoke(message);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> result = (Map<String, Object>) GET_ATTRIBUTES.invoke(message);
+      return result;
     } catch (Throwable e) {
       return null;
     }

@@ -37,9 +37,12 @@ public abstract class AttributeResourceProvider<D> implements ConditionalResourc
 
     @CanIgnoreReturnValue
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public <T> AttributeBuilder add(AttributeKey<T> key, Function<D, Optional<T>> getter) {
-      attributeGetters.put((AttributeKey) key, Objects.requireNonNull((Function) getter));
+      @SuppressWarnings({"unchecked", "rawtypes"})
+      AttributeKey<Object> rawKey = (AttributeKey) key;
+      @SuppressWarnings({"unchecked", "rawtypes"})
+      Function<D, Optional<?>> rawGetter = (Function) getter;
+      attributeGetters.put(rawKey, Objects.requireNonNull(rawGetter));
       return this;
     }
   }

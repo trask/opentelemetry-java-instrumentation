@@ -91,16 +91,21 @@ class RestletAppTestBase {
     }
   }
 
-  @SuppressWarnings("unchecked")
   static void handleCaptureHeaders(Object request, Object response) {
     Map<String, Object> attributes;
     Map<String, Object> responseAttributes;
     try {
       Method requestAttributesMethod = request.getClass().getMethod("getAttributes");
-      attributes = (Map<String, Object>) requestAttributesMethod.invoke(request);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> reqAttrs =
+          (Map<String, Object>) requestAttributesMethod.invoke(request);
+      attributes = reqAttrs;
 
       Method responseAttributesMethod = response.getClass().getMethod("getAttributes");
-      responseAttributes = (Map<String, Object>) responseAttributesMethod.invoke(response);
+      @SuppressWarnings("unchecked")
+      Map<String, Object> respAttrs =
+          (Map<String, Object>) responseAttributesMethod.invoke(response);
+      responseAttributes = respAttrs;
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exception) {
       throw new IllegalStateException(exception);
     }

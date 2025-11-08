@@ -66,7 +66,6 @@ public abstract class AbstractSpringPulsarTest {
   protected static final String OTEL_TOPIC = "persistent://public/default/otel-topic";
 
   @BeforeAll
-  @SuppressWarnings("unchecked")
   static void setUp() throws PulsarClientException {
     pulsarContainer =
         new PulsarContainer(DEFAULT_IMAGE_NAME)
@@ -83,7 +82,9 @@ public abstract class AbstractSpringPulsarTest {
     props.put("spring.pulsar.consumer.subscription.initial-position", "earliest");
     app.setDefaultProperties(props);
     applicationContext = app.run();
-    pulsarTemplate = applicationContext.getBean(PulsarTemplate.class);
+    @SuppressWarnings("unchecked")
+    PulsarTemplate<String> template = applicationContext.getBean(PulsarTemplate.class);
+    pulsarTemplate = template;
 
     client = PulsarClient.builder().serviceUrl(pulsarContainer.getPulsarBrokerUrl()).build();
   }

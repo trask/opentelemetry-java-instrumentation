@@ -193,7 +193,6 @@ public class SpringConfigProperties implements ConfigProperties {
         otelSdkProperties.getDouble(name));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<String> getList(String name) {
     String normalizedName = ConfigUtil.normalizeEnvironmentVariableKey(name);
@@ -209,6 +208,7 @@ public class SpringConfigProperties implements ConfigProperties {
       }
     }
 
+    @SuppressWarnings("unchecked")
     List<String> envValue = (List<String>) environment.getProperty(normalizedName, List.class);
     return or(envValue, otelSdkProperties.getList(name));
   }
@@ -224,13 +224,13 @@ public class SpringConfigProperties implements ConfigProperties {
         .getDuration(name);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Map<String, String> getMap(String name) {
     Map<String, String> otelSdkMap = otelSdkProperties.getMap(name);
 
     String normalizedName = ConfigUtil.normalizeEnvironmentVariableKey(name);
     // maps from config properties are not supported by Environment, so we have to fake it
+    @SuppressWarnings("unchecked")
     Map<String, String> specialMap = getSpecialMapProperty(normalizedName, otelSdkMap);
     if (specialMap != null) {
       return specialMap;

@@ -55,7 +55,6 @@ class SystemHelper {
    * Attempts to use ProcessHandle to get the full commandline of the current process (including the
    * main method arguments). Will only succeed on java 9+.
    */
-  @SuppressWarnings("unchecked")
   String[] attemptGetCommandLineArgsViaReflection() throws Exception {
     Class<?> clazz = Class.forName("java.lang.ProcessHandle");
     Method currentMethod = clazz.getDeclaredMethod("current");
@@ -64,6 +63,7 @@ class SystemHelper {
     Object info = infoMethod.invoke(currentInstance);
     Class<?> infoClass = Class.forName("java.lang.ProcessHandle$Info");
     Method argumentsMethod = infoClass.getMethod("arguments");
+    @SuppressWarnings("unchecked")
     Optional<String[]> optionalArgs = (Optional<String[]>) argumentsMethod.invoke(info);
     return optionalArgs.orElse(new String[0]);
   }

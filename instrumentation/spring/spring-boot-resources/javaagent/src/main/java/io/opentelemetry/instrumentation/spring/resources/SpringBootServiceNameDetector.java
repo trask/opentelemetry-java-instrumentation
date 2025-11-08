@@ -218,13 +218,14 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
   }
 
   @Nullable
-  @SuppressWarnings("unchecked")
   private static String parseNameFromYaml(InputStream in) {
     try {
       LoadSettings settings = LoadSettings.builder().build();
       Load yaml = new Load(settings);
       for (Object o : yaml.loadAllFromInputStream(in)) {
+        @SuppressWarnings("unchecked")
         Map<String, Object> data = (Map<String, Object>) o;
+        @SuppressWarnings("unchecked")
         Map<String, Map<String, Object>> spring =
             (Map<String, Map<String, Object>>) data.get("spring");
         if (spring != null) {

@@ -65,7 +65,6 @@ public abstract class AbstractSpringKafkaTest {
 
   protected abstract List<Class<?>> additionalSpringConfigs();
 
-  @SuppressWarnings("unchecked")
   @BeforeEach
   void setUpApp() {
     Map<String, Object> props = new HashMap<>();
@@ -82,7 +81,10 @@ public abstract class AbstractSpringKafkaTest {
     app.addPrimarySources(additionalSpringConfigs());
     app.setDefaultProperties(props);
     applicationContext = app.run();
-    kafkaTemplate = applicationContext.getBean("kafkaTemplate", KafkaTemplate.class);
+    @SuppressWarnings("unchecked")
+    KafkaTemplate<String, String> template =
+        applicationContext.getBean("kafkaTemplate", KafkaTemplate.class);
+    kafkaTemplate = template;
   }
 
   @AfterEach

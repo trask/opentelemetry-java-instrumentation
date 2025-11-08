@@ -23,13 +23,13 @@ class ConcurrentKafkaListenerContainerFactoryPostProcessor implements BeanPostPr
     this.springKafkaTelemetry = springKafkaTelemetry;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Object postProcessAfterInitialization(Object bean, String beanName) {
     if (!(bean instanceof ConcurrentKafkaListenerContainerFactory)) {
       return bean;
     }
 
+    @SuppressWarnings("unchecked")
     ConcurrentKafkaListenerContainerFactory<Object, Object> listenerContainerFactory =
         (ConcurrentKafkaListenerContainerFactory<Object, Object>) bean;
     SpringKafkaTelemetry springKafkaTelemetry = this.springKafkaTelemetry.get();

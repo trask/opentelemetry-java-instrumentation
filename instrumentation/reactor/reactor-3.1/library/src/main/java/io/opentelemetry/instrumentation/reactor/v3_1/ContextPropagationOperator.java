@@ -205,7 +205,6 @@ public final class ContextPropagationOperator {
   }
 
   /** Forces Mono to run in traceContext scope. */
-  @SuppressWarnings("unchecked")
   public static <T> Mono<T> runWithContext(Mono<T> publisher, Context tracingContext) {
     if (!enabled || MONO_CONTEXT_WRITE_METHOD == null) {
       return publisher;
@@ -215,10 +214,13 @@ public final class ContextPropagationOperator {
     // (created for this publisher) and with current() span that refers to span created here
     // without the hack, publisher runs in the onAssembly stage, before traceContext is made current
     try {
-      return (Mono<T>)
-          MONO_CONTEXT_WRITE_METHOD.invoke(
-              ScalarPropagatingMono.create(publisher),
+      @SuppressWarnings("unchecked")
+      Mono<T> result =
+          (Mono<T>)
+              MONO_CONTEXT_WRITE_METHOD.invoke(
+                  ScalarPropagatingMono.create(publisher),
               new StoreOpenTelemetryContext(tracingContext));
+      return result;
     } catch (Throwable t) {
       // rethrowing without any wrapping to avoid any change to the underlying application behavior
       throw sneakyThrow(t);
@@ -226,7 +228,6 @@ public final class ContextPropagationOperator {
   }
 
   /** Forces Flux to run in traceContext scope. */
-  @SuppressWarnings("unchecked")
   public static <T> Flux<T> runWithContext(Flux<T> publisher, Context tracingContext) {
     if (!enabled || FLUX_CONTEXT_WRITE_METHOD == null) {
       return publisher;
@@ -236,10 +237,13 @@ public final class ContextPropagationOperator {
     // (created for this publisher) and with current() span that refers to span created here
     // without the hack, publisher runs in the onAssembly stage, before traceContext is made current
     try {
-      return (Flux<T>)
-          FLUX_CONTEXT_WRITE_METHOD.invoke(
+      @SuppressWarnings("unchecked")
+      Flux<T> result =
+          (Flux<T>)
+              FLUX_CONTEXT_WRITE_METHOD.invoke(
               ScalarPropagatingFlux.create(publisher),
               new StoreOpenTelemetryContext(tracingContext));
+      return result;
     } catch (Throwable t) {
       // rethrowing without any wrapping to avoid any change to the underlying application behavior
       throw sneakyThrow(t);

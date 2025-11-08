@@ -28,9 +28,11 @@ final class InstrumentedKafkaFlux<R extends ConsumerRecord<?, ?>> extends FluxOp
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void subscribe(CoreSubscriber<? super R> actual) {
-    source.subscribe(new InstrumentedSubscriber((CoreSubscriber<ConsumerRecord<?, ?>>) actual));
+    @SuppressWarnings("unchecked")
+    CoreSubscriber<ConsumerRecord<?, ?>> castSubscriber =
+        (CoreSubscriber<ConsumerRecord<?, ?>>) actual;
+    source.subscribe(new InstrumentedSubscriber(castSubscriber));
   }
 
   static final class InstrumentedSubscriber

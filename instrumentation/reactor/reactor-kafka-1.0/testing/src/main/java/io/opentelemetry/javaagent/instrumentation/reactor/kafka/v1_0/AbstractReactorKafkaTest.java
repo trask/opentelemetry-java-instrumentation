@@ -97,7 +97,6 @@ public abstract class AbstractReactorKafkaTest {
     kafka.stop();
   }
 
-  @SuppressWarnings("unchecked")
   private static SenderOptions<String, String> senderOptions() {
     Properties props = new Properties();
     props.put("bootstrap.servers", kafka.getBootstrapServers());
@@ -108,14 +107,16 @@ public abstract class AbstractReactorKafkaTest {
     try {
       // SenderOptions changed from a class to an interface in 1.3.3, using reflection to avoid
       // linkage error
-      return (SenderOptions<String, String>)
-          SenderOptions.class.getMethod("create", Properties.class).invoke(null, props);
+      @SuppressWarnings("unchecked")
+      SenderOptions<String, String> result =
+          (SenderOptions<String, String>)
+              SenderOptions.class.getMethod("create", Properties.class).invoke(null, props);
+      return result;
     } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
       throw new IllegalStateException(e);
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static ReceiverOptions<String, String> receiverOptions() {
     Properties props = new Properties();
     props.put("bootstrap.servers", kafka.getBootstrapServers());
@@ -130,13 +131,17 @@ public abstract class AbstractReactorKafkaTest {
     try {
       // SenderOptions changed from a class to an interface in 1.3.3, using reflection to avoid
       // linkage error
+      @SuppressWarnings("unchecked")
       ReceiverOptions<String, String> receiverOptions =
           (ReceiverOptions<String, String>)
               ReceiverOptions.class.getMethod("create", Properties.class).invoke(null, props);
-      return (ReceiverOptions<String, String>)
-          ReceiverOptions.class
-              .getMethod("subscription", Collection.class)
-              .invoke(receiverOptions, singleton("testTopic"));
+      @SuppressWarnings("unchecked")
+      ReceiverOptions<String, String> result =
+          (ReceiverOptions<String, String>)
+              ReceiverOptions.class
+                  .getMethod("subscription", Collection.class)
+                  .invoke(receiverOptions, singleton("testTopic"));
+      return result;
     } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
       throw new IllegalStateException(e);
     }

@@ -117,13 +117,14 @@ public class ApplicationLogRecordBuilder150Incubator extends ApplicationLogRecor
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public <T> ExtendedLogRecordBuilder setAttribute(ExtendedAttributeKey<T> key, T value) {
     io.opentelemetry.api.incubator.common.ExtendedAttributeKey<T> agentKey =
         convertExtendedAttributeKey(key);
     if (agentKey != null) {
       if (key.getType() == EXTENDED_ATTRIBUTES) {
-        value = (T) convertExtendedAttributes((ExtendedAttributes) value);
+        @SuppressWarnings("unchecked")
+        T convertedValue = (T) convertExtendedAttributes((ExtendedAttributes) value);
+        value = convertedValue;
       }
       agentLogRecordBuilder.setAttribute(agentKey, value);
     }
@@ -136,18 +137,20 @@ public class ApplicationLogRecordBuilder150Incubator extends ApplicationLogRecor
     return this;
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private static io.opentelemetry.api.incubator.common.ExtendedAttributes convertExtendedAttributes(
       ExtendedAttributes applicationAttributes) {
     io.opentelemetry.api.incubator.common.ExtendedAttributesBuilder agentAttributes =
         io.opentelemetry.api.incubator.common.ExtendedAttributes.builder();
     applicationAttributes.forEach(
         (key, value) -> {
+          @SuppressWarnings({"unchecked", "rawtypes"})
           io.opentelemetry.api.incubator.common.ExtendedAttributeKey agentKey =
               convertExtendedAttributeKey(key);
           if (agentKey != null) {
             if (key.getType() == EXTENDED_ATTRIBUTES) {
-              value = convertExtendedAttributes((ExtendedAttributes) value);
+              @SuppressWarnings({"unchecked", "rawtypes"})
+              Object convertedValue = convertExtendedAttributes((ExtendedAttributes) value);
+              value = convertedValue;
             }
             agentAttributes.put(agentKey, value);
           }

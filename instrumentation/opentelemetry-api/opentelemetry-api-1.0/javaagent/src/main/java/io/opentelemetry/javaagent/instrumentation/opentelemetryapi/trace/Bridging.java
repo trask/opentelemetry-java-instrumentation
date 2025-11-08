@@ -105,15 +105,16 @@ public class Bridging {
     }
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   public static io.opentelemetry.api.common.Attributes toAgent(Attributes applicationAttributes) {
     io.opentelemetry.api.common.AttributesBuilder agentAttributes =
         io.opentelemetry.api.common.Attributes.builder();
     applicationAttributes.forEach(
         (key, value) -> {
+          @SuppressWarnings({"unchecked", "rawtypes"})
           io.opentelemetry.api.common.AttributeKey agentKey = toAgent(key);
           if (agentKey != null) {
-            agentAttributes.put(agentKey, value);
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            io.opentelemetry.api.common.AttributesBuilder builder = agentAttributes.put(agentKey, value);
           }
         });
     return agentAttributes.build();

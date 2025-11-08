@@ -58,13 +58,16 @@ public final class R2dbcTelemetryBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
-  @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DbExecution>
   public R2dbcTelemetryBuilder setSpanNameExtractor(
       Function<SpanNameExtractor<DbExecution>, ? extends SpanNameExtractor<? super DbExecution>>
           spanNameExtractorTransformer) {
-    return setSpanNameExtractor(
+    @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DbExecution>
+    UnaryOperator<SpanNameExtractor<DbExecution>> op =
         (UnaryOperator<SpanNameExtractor<DbExecution>>)
-            input -> (SpanNameExtractor<DbExecution>) spanNameExtractorTransformer.apply(input));
+            (UnaryOperator<?>)
+                (input -> (SpanNameExtractor<DbExecution>)
+                    spanNameExtractorTransformer.apply(input));
+    return setSpanNameExtractor(op);
   }
 
   /** Sets custom {@link SpanNameExtractor} via transform function. */

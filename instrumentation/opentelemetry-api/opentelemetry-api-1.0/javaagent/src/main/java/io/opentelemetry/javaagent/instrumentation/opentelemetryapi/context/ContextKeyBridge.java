@@ -61,7 +61,6 @@ final class ContextKeyBridge<APPLICATION, AGENT> {
         toAgent);
   }
 
-  @SuppressWarnings("unchecked")
   ContextKeyBridge(
       Class<?> applicationKeyHolderClass,
       Class<?> agentKeyHolderClass,
@@ -74,12 +73,17 @@ final class ContextKeyBridge<APPLICATION, AGENT> {
     Field applicationContextKeyField =
         applicationKeyHolderClass.getDeclaredField(applicationFieldName);
     applicationContextKeyField.setAccessible(true);
-    this.applicationContextKey = (ContextKey<APPLICATION>) applicationContextKeyField.get(null);
+    @SuppressWarnings("unchecked")
+    ContextKey<APPLICATION> appKey =
+        (ContextKey<APPLICATION>) applicationContextKeyField.get(null);
+    this.applicationContextKey = appKey;
 
     Field agentContextKeyField = agentKeyHolderClass.getDeclaredField(agentFieldName);
     agentContextKeyField.setAccessible(true);
-    this.agentContextKey =
+    @SuppressWarnings("unchecked")
+    io.opentelemetry.context.ContextKey<AGENT> agKey =
         (io.opentelemetry.context.ContextKey<AGENT>) agentContextKeyField.get(null);
+    this.agentContextKey = agKey;
 
     this.toApplication = toApplication;
     this.toAgent = toAgent;

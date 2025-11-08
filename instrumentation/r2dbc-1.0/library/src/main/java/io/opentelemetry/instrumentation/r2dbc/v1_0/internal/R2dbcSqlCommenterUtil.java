@@ -38,9 +38,10 @@ public final class R2dbcSqlCommenterUtil {
         });
   }
 
-  @SuppressWarnings("unchecked")
   private static Map<String, String> getOriginalQueryMap(ValueStore valueStore) {
-    return valueStore.get(KEY_ORIGINAL_QUERY_MAP, Map.class);
+    @SuppressWarnings("unchecked")
+    Map<String, String> result = valueStore.get(KEY_ORIGINAL_QUERY_MAP, Map.class);
+    return result;
   }
 
   private static void storeQuery(

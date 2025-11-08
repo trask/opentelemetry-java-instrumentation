@@ -158,10 +158,10 @@ public final class OpenTelemetryInstrumentationHelper {
     return astTransformer.transform(node, sanitizingVisitor);
   }
 
-  @SuppressWarnings("rawtypes")
   private static class SanitizingVisitor extends NodeVisitorStub {
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected TraversalControl visitValue(Value<?> node, TraverserContext<Node> context) {
       // replace values with ?
       EnumValue newValue = new EnumValue("?");

@@ -76,9 +76,10 @@ class FieldMapping {
     return attributeKey.getType();
   }
 
-  @SuppressWarnings("unchecked")
   <T> AttributeKey<T> getAttributeKey() {
-    return (AttributeKey<T>) attributeKey;
+    @SuppressWarnings("unchecked")
+    AttributeKey<T> key = (AttributeKey<T>) attributeKey;
+    return key;
   }
 
   List<String> getFields() {

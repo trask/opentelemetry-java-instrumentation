@@ -71,13 +71,14 @@ public final class DubboTelemetryBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
-  @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DubboRequest>
   public DubboTelemetryBuilder setClientSpanNameExtractor(
       Function<SpanNameExtractor<DubboRequest>, ? extends SpanNameExtractor<? super DubboRequest>>
           clientSpanNameExtractor) {
-    return setClientSpanNameExtractor(
+    @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DubboRequest>
+    UnaryOperator<SpanNameExtractor<DubboRequest>> operator =
         (UnaryOperator<SpanNameExtractor<DubboRequest>>)
-            input -> (SpanNameExtractor<DubboRequest>) clientSpanNameExtractor.apply(input));
+            input -> (SpanNameExtractor<DubboRequest>) clientSpanNameExtractor.apply(input);
+    return setClientSpanNameExtractor(operator);
   }
 
   /** Sets custom client {@link SpanNameExtractor} via transform function. */
@@ -95,13 +96,14 @@ public final class DubboTelemetryBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
-  @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DubboRequest>
   public DubboTelemetryBuilder setServerSpanNameExtractor(
       Function<SpanNameExtractor<DubboRequest>, ? extends SpanNameExtractor<? super DubboRequest>>
           serverSpanNameExtractor) {
-    return setServerSpanNameExtractor(
+    @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<DubboRequest>
+    UnaryOperator<SpanNameExtractor<DubboRequest>> operator =
         (UnaryOperator<SpanNameExtractor<DubboRequest>>)
-            input -> (SpanNameExtractor<DubboRequest>) serverSpanNameExtractor.apply(input));
+            input -> (SpanNameExtractor<DubboRequest>) serverSpanNameExtractor.apply(input);
+    return setServerSpanNameExtractor(operator);
   }
 
   /** Sets custom server {@link SpanNameExtractor} via transform function. */

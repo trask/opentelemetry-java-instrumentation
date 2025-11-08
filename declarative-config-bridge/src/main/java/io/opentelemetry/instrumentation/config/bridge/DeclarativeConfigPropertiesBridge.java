@@ -106,9 +106,9 @@ final class DeclarativeConfigPropertiesBridge implements ConfigProperties {
     return Duration.ofMillis(millis);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public List<String> getList(String propertyName) {
+    @SuppressWarnings("unchecked")
     List<String> propertyValue =
         getPropertyValue(
             propertyName,
@@ -117,7 +117,6 @@ final class DeclarativeConfigPropertiesBridge implements ConfigProperties {
     return propertyValue == null ? Collections.emptyList() : propertyValue;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Map<String, String> getMap(String propertyName) {
     DeclarativeConfigProperties propertyValue =

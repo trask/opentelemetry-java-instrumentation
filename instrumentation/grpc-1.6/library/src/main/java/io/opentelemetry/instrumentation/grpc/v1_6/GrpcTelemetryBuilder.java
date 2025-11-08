@@ -102,13 +102,14 @@ public final class GrpcTelemetryBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
-  @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<GrpcRequest>
   public GrpcTelemetryBuilder setClientSpanNameExtractor(
       Function<SpanNameExtractor<GrpcRequest>, ? extends SpanNameExtractor<? super GrpcRequest>>
           clientSpanNameExtractor) {
-    return setClientSpanNameExtractor(
+    @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<GrpcRequest>
+    UnaryOperator<SpanNameExtractor<GrpcRequest>> operator =
         (UnaryOperator<SpanNameExtractor<GrpcRequest>>)
-            input -> (SpanNameExtractor<GrpcRequest>) clientSpanNameExtractor.apply(input));
+            input -> (SpanNameExtractor<GrpcRequest>) clientSpanNameExtractor.apply(input);
+    return setClientSpanNameExtractor(operator);
   }
 
   /** Sets custom client {@link SpanNameExtractor} via transform function. */
@@ -126,13 +127,14 @@ public final class GrpcTelemetryBuilder {
    */
   @Deprecated
   @CanIgnoreReturnValue
-  @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<GrpcRequest>
   public GrpcTelemetryBuilder setServerSpanNameExtractor(
       Function<SpanNameExtractor<GrpcRequest>, ? extends SpanNameExtractor<? super GrpcRequest>>
           serverSpanNameExtractor) {
-    return setServerSpanNameExtractor(
+    @SuppressWarnings("unchecked") // cast result to SpanNameExtractor<GrpcRequest>
+    UnaryOperator<SpanNameExtractor<GrpcRequest>> operator =
         (UnaryOperator<SpanNameExtractor<GrpcRequest>>)
-            input -> (SpanNameExtractor<GrpcRequest>) serverSpanNameExtractor.apply(input));
+            input -> (SpanNameExtractor<GrpcRequest>) serverSpanNameExtractor.apply(input);
+    return setServerSpanNameExtractor(operator);
   }
 
   /** Sets custom server {@link SpanNameExtractor} via transform function. */

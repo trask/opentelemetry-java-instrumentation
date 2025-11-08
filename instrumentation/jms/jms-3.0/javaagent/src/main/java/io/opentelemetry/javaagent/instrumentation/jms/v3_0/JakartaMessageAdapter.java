@@ -37,9 +37,10 @@ public final class JakartaMessageAdapter implements MessageAdapter {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public List<String> getPropertyNames() throws JMSException {
-    return Collections.list(message.getPropertyNames());
+    @SuppressWarnings("unchecked")
+    List<String> names = Collections.list(message.getPropertyNames());
+    return names;
   }
 
   @Nullable

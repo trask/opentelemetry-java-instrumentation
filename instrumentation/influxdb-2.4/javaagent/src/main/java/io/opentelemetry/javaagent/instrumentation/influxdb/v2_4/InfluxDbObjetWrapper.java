@@ -12,22 +12,27 @@ import java.util.function.Consumer;
 
 public final class InfluxDbObjetWrapper {
 
-  @SuppressWarnings("unchecked")
   public static Object wrap(Object object, Context parentContext) {
     if (object instanceof Consumer) {
-      return (Consumer<Object>)
-          o -> {
-            try (Scope ignore = parentContext.makeCurrent()) {
-              ((Consumer<Object>) object).accept(o);
-            }
-          };
+      @SuppressWarnings("unchecked")
+      Consumer<Object> wrappedConsumer =
+          (Consumer<Object>)
+              o -> {
+                try (Scope ignore = parentContext.makeCurrent()) {
+                  ((Consumer<Object>) object).accept(o);
+                }
+              };
+      return wrappedConsumer;
     } else if (object instanceof BiConsumer) {
-      return (BiConsumer<Object, Object>)
-          (o1, o2) -> {
-            try (Scope ignore = parentContext.makeCurrent()) {
-              ((BiConsumer<Object, Object>) object).accept(o1, o2);
-            }
-          };
+      @SuppressWarnings("unchecked")
+      BiConsumer<Object, Object> wrappedBiConsumer =
+          (BiConsumer<Object, Object>)
+              (o1, o2) -> {
+                try (Scope ignore = parentContext.makeCurrent()) {
+                  ((BiConsumer<Object, Object>) object).accept(o1, o2);
+                }
+              };
+      return wrappedBiConsumer;
     } else if (object instanceof Runnable) {
       return (Runnable)
           () -> {

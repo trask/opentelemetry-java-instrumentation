@@ -16,7 +16,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 public final class KafkaMetricsUtil {
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.kafka-clients-0.11";
 
-  @SuppressWarnings("unchecked")
   public static void enhanceConfig(Map<? super String, Object> config) {
     // skip enhancing configuration when we have already enhanced it
     if (config.get(OpenTelemetryMetricsReporter.CONFIG_KEY_OPENTELEMETRY_INSTRUMENTATION_NAME)
@@ -29,9 +28,13 @@ public final class KafkaMetricsUtil {
         (class1, class2) -> {
           // class1 is either a class name or List of class names or classes
           if (class1 instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Object> class1List = (List<Object>) class1;
+            @SuppressWarnings("unchecked")
+            List<Object> class2List = (List<Object>) class2;
             List<Object> result = new MetricsReporterList<>();
-            result.addAll((List<Object>) class1);
-            result.addAll((List<Object>) class2);
+            result.addAll(class1List);
+            result.addAll(class2List);
             return result;
           } else if (class1 instanceof String) {
             String className1 = (String) class1;

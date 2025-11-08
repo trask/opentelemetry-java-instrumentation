@@ -130,9 +130,9 @@ class RestClientWrapper {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static Instrumenter<ElasticsearchRestRequest, Response> getInstrumenter(Object proxy)
       throws IllegalAccessException {
+    @SuppressWarnings("unchecked")
     Supplier<Instrumenter<ElasticsearchRestRequest, Response>> supplier =
         (Supplier<Instrumenter<ElasticsearchRestRequest, Response>>)
             instrumenterSupplierField.get(proxy);
@@ -171,9 +171,10 @@ class RestClientWrapper {
 
   // create a single element array of given type, this method is used to get the default value of
   // a primitive type
-  @SuppressWarnings("unchecked")
   private static <T> T getDefaultValue(Class<T> clazz) {
-    return (T) Array.get(Array.newInstance(clazz, 1), 0);
+    @SuppressWarnings("unchecked")
+    T value = (T) Array.get(Array.newInstance(clazz, 1), 0);
+    return value;
   }
 
   static RestClient wrap(

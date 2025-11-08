@@ -308,26 +308,28 @@ public final class SqsImpl {
             });
   }
 
-  @SuppressWarnings("unchecked")
   public static SqsAsyncClient wrap(SqsAsyncClient sqsClient) {
     // proxy SqsAsyncClient so we could replace the messages list in ReceiveMessageResponse returned
     // from receiveMessage call
-    return (SqsAsyncClient)
-        Proxy.newProxyInstance(
-            sqsClient.getClass().getClassLoader(),
-            new Class<?>[] {SqsAsyncClient.class},
-            (proxy, method, args) -> {
-              if ("receiveMessage".equals(method.getName())) {
-                SqsTracingContext sqsTracingContext = new SqsTracingContext();
-                try (Scope ignored =
-                    io.opentelemetry.context.Context.current()
-                        .with(sqsTracingContext)
-                        .makeCurrent()) {
-                  Object result = invokeProxyMethod(method, sqsClient, args);
-                  CompletableFuture<ReceiveMessageResponse> originalFuture =
-                      (CompletableFuture<ReceiveMessageResponse>) result;
-                  CompletableFuture<ReceiveMessageResponse> resultFuture =
-                      new CompletableFuture<>();
+    @SuppressWarnings("unchecked")
+    SqsAsyncClient proxy =
+        (SqsAsyncClient)
+            Proxy.newProxyInstance(
+                sqsClient.getClass().getClassLoader(),
+                new Class<?>[] {SqsAsyncClient.class},
+                (proxyObj, method, args) -> {
+                  if ("receiveMessage".equals(method.getName())) {
+                    SqsTracingContext sqsTracingContext = new SqsTracingContext();
+                    try (Scope ignored =
+                        io.opentelemetry.context.Context.current()
+                            .with(sqsTracingContext)
+                            .makeCurrent()) {
+                      Object result = invokeProxyMethod(method, sqsClient, args);
+                      @SuppressWarnings("unchecked")
+                      CompletableFuture<ReceiveMessageResponse> originalFuture =
+                          (CompletableFuture<ReceiveMessageResponse>) result;
+                      CompletableFuture<ReceiveMessageResponse> resultFuture =
+                          new CompletableFuture<>();
                   originalFuture.whenComplete(
                       (response, throwable) -> {
                         if (throwable != null) {
@@ -349,6 +351,7 @@ public final class SqsImpl {
                 return invokeProxyMethod(method, sqsClient, args);
               }
             });
+    return proxy;
   }
 
   private static Object invokeProxyMethod(Method method, Object target, Object[] args)

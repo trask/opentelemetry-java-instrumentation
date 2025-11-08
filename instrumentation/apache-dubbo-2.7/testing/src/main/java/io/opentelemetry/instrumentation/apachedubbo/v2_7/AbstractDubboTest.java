@@ -87,9 +87,10 @@ public abstract class AbstractDubboTest {
     return service;
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   ReferenceConfig<GenericService> convertReference(ReferenceConfig<HelloService> config) {
-    return (ReferenceConfig) config;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    ReferenceConfig<GenericService> result = (ReferenceConfig) config;
+    return result;
   }
 
   @Test

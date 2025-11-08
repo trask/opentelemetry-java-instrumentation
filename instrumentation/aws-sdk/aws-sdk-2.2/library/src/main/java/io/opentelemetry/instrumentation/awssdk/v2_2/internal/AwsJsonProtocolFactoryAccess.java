@@ -69,7 +69,6 @@ final class AwsJsonProtocolFactoryAccess {
     INVOKE_CREATE_PROTOCOL_MARSHALLER = invokeCreateProtocolMarshaller;
   }
 
-  @SuppressWarnings("unchecked")
   @Nullable
   static ProtocolMarshaller<SdkHttpFullRequest> createMarshaller() {
     if (INVOKE_CREATE_PROTOCOL_MARSHALLER == null) {
@@ -77,7 +76,10 @@ final class AwsJsonProtocolFactoryAccess {
     }
 
     try {
-      return (ProtocolMarshaller<SdkHttpFullRequest>) INVOKE_CREATE_PROTOCOL_MARSHALLER.invoke();
+      @SuppressWarnings("unchecked")
+      ProtocolMarshaller<SdkHttpFullRequest> marshaller =
+          (ProtocolMarshaller<SdkHttpFullRequest>) INVOKE_CREATE_PROTOCOL_MARSHALLER.invoke();
+      return marshaller;
     } catch (Throwable t) {
       return null;
     }

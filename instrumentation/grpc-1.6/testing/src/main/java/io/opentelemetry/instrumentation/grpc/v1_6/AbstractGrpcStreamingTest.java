@@ -424,8 +424,9 @@ public abstract class AbstractGrpcStreamingTest {
     }
   }
 
-  @SuppressWarnings({"unchecked", "rawtypes"})
   private static Consumer<EventData>[] toArray(List<Consumer<EventData>> list) {
-    return list.toArray(new Consumer[0]);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    Consumer<EventData>[] array = list.toArray(new Consumer[0]);
+    return array;
   }
 }

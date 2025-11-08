@@ -111,9 +111,10 @@ public abstract class AbstractDubboTraceChainTest {
     return service;
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   ReferenceConfig<GenericService> convertReference(ReferenceConfig<MiddleService> config) {
-    return (ReferenceConfig) config;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    ReferenceConfig<GenericService> result = (ReferenceConfig) config;
+    return result;
   }
 
   @Test

@@ -46,9 +46,10 @@ public final class SerializationUtil {
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> PojoSerializer<T> getSerializer(Class<T> clazz) {
-    return (PojoSerializer<T>) serializerCache.get(clazz);
+    @SuppressWarnings("unchecked")
+    PojoSerializer<T> serializer = (PojoSerializer<T>) serializerCache.get(clazz);
+    return serializer;
   }
 
   public static <T> T fromJson(String json, Class<T> clazz) {
@@ -61,19 +62,19 @@ public final class SerializationUtil {
     return serializer.fromJson(inputStream);
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> void toJson(OutputStream outputStream, T obj) {
     if (obj != null) {
+      @SuppressWarnings("unchecked")
       PojoSerializer<T> serializer = getSerializer((Class<T>) obj.getClass());
       serializer.toJson(obj, outputStream);
     }
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> String toJson(T obj) {
     if (obj == null) {
       return null;
     }
+    @SuppressWarnings("unchecked")
     PojoSerializer<T> serializer = getSerializer((Class<T>) obj.getClass());
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
     serializer.toJson(obj, outputStream);

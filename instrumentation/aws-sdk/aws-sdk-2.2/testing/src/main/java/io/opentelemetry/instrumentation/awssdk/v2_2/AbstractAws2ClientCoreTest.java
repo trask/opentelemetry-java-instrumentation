@@ -302,20 +302,23 @@ public abstract class AbstractAws2ClientCoreTest {
         .hasAttributesSatisfyingExactly(assertions);
   }
 
-  @SuppressWarnings("unchecked")
   protected static <T, U> T wrapClient(
       Class<T> syncClientClass, Class<U> asyncClientClass, U asyncClient) {
-    return (T)
-        Proxy.newProxyInstance(
-            AbstractAws2ClientCoreTest.class.getClassLoader(),
-            new Class<?>[] {syncClientClass},
-            (proxy, method, args) -> {
-              Method asyncMethod =
-                  asyncClientClass.getMethod(method.getName(), method.getParameterTypes());
-              CompletableFuture<?> future =
-                  (CompletableFuture<?>) asyncMethod.invoke(asyncClient, args);
-              return future.get();
-            });
+    @SuppressWarnings("unchecked")
+    T proxy =
+        (T)
+            Proxy.newProxyInstance(
+                AbstractAws2ClientCoreTest.class.getClassLoader(),
+                new Class<?>[] {syncClientClass},
+                (proxyObj, method, args) -> {
+                  Method asyncMethod =
+                      asyncClientClass.getMethod(method.getName(), method.getParameterTypes());
+                  @SuppressWarnings("unchecked")
+                  CompletableFuture<?> future =
+                      (CompletableFuture<?>) asyncMethod.invoke(asyncClient, args);
+                  return future.get();
+                });
+    return proxy;
   }
 
   private static Stream<Arguments> provideArguments() {

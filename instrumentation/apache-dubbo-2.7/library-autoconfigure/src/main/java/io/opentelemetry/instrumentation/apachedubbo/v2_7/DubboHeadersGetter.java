@@ -31,14 +31,15 @@ enum DubboHeadersGetter implements TextMapGetter<DubboRequest> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Iterable<String> keys(DubboRequest request) {
     RpcInvocation invocation = request.invocation();
     try {
       // In 2.7.6, 2.7.7, the StringToObjectMap implementation does not correctly retrieve the
       // keySet. Therefore, it's advisable to always call getObjectAttachments when it is available.
       if (GET_OBJECT_ATTACHMENTS != null) {
-        return ((Map<String, Object>) GET_OBJECT_ATTACHMENTS.invoke(invocation)).keySet();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> attachments = (Map<String, Object>) GET_OBJECT_ATTACHMENTS.invoke(invocation);
+        return attachments.keySet();
       }
     } catch (Throwable t) {
       // ignore

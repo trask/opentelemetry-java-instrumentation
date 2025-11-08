@@ -120,10 +120,11 @@ public abstract class AbstractBaseAwsClientTest {
                     }));
   }
 
-  @SuppressWarnings("unchecked")
   protected List<RequestHandler2> extractRequestHandlers(Object client) throws Exception {
     Field requestHandler2sField = AmazonWebServiceClient.class.getDeclaredField("requestHandler2s");
     requestHandler2sField.setAccessible(true);
-    return (List<RequestHandler2>) requestHandler2sField.get(client);
+    @SuppressWarnings("unchecked")
+    List<RequestHandler2> handlers = (List<RequestHandler2>) requestHandler2sField.get(client);
+    return handlers;
   }
 }

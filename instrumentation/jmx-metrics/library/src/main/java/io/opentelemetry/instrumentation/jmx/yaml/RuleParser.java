@@ -46,16 +46,17 @@ public class RuleParser {
 
   private RuleParser() {}
 
-  @SuppressWarnings("unchecked")
   public JmxConfig loadConfig(InputStream is) {
     LoadSettings settings = LoadSettings.builder().build();
     Load yaml = new Load(settings);
 
+    @SuppressWarnings("unchecked")
     Map<String, Object> data = (Map<String, Object>) yaml.loadFromInputStream(is);
     if (data == null) {
       return new JmxConfig(emptyList());
     }
 
+    @SuppressWarnings("unchecked")
     List<Object> rules = (List<Object>) data.remove("rules");
     if (rules == null) {
       return new JmxConfig(emptyList());
@@ -64,12 +65,15 @@ public class RuleParser {
     failOnExtraKeys(data);
     return new JmxConfig(
         rules.stream()
-            .map(obj -> (Map<String, Object>) obj)
+            .map(obj -> {
+              @SuppressWarnings("unchecked")
+              Map<String, Object> map = (Map<String, Object>) obj;
+              return map;
+            })
             .map(RuleParser::parseJmxRule)
             .collect(Collectors.toList()));
   }
 
-  @SuppressWarnings("unchecked")
   private static JmxRule parseJmxRule(Map<String, Object> ruleYaml) {
     JmxRule jmxRule = new JmxRule();
 
@@ -77,6 +81,7 @@ public class RuleParser {
     if (bean != null) {
       jmxRule.addBean(bean);
     }
+    @SuppressWarnings("unchecked")
     List<String> beans = (List<String>) ruleYaml.remove("beans");
     if (beans != null) {
       beans.forEach(jmxRule::addBean);
@@ -85,14 +90,15 @@ public class RuleParser {
     if (prefix != null) {
       jmxRule.setPrefix(prefix);
     }
-    jmxRule.setMapping(parseMappings((Map<String, Object>) ruleYaml.remove("mapping")));
+    @SuppressWarnings("unchecked")
+    Map<String, Object> mappingYaml = (Map<String, Object>) ruleYaml.remove("mapping");
+    jmxRule.setMapping(parseMappings(mappingYaml));
     parseMetricStructure(ruleYaml, jmxRule);
 
     failOnExtraKeys(ruleYaml);
     return jmxRule;
   }
 
-  @SuppressWarnings("unchecked")
   private static Map<String, Metric> parseMappings(@Nullable Map<String, Object> mappingYaml) {
     Map<String, Metric> mappings = new LinkedHashMap<>();
     if (mappingYaml != null) {
@@ -100,7 +106,9 @@ public class RuleParser {
           (name, metricYaml) -> {
             Metric m = null;
             if (metricYaml != null) {
-              m = parseMetric((Map<String, Object>) metricYaml);
+              @SuppressWarnings("unchecked")
+              Map<String, Object> metricMap = (Map<String, Object>) metricYaml;
+              m = parseMetric(metricMap);
             }
             mappings.put(name, m);
           });
@@ -125,7 +133,6 @@ public class RuleParser {
     return metric;
   }
 
-  @SuppressWarnings("unchecked")
   private static void parseMetricStructure(
       Map<String, Object> metricStructureYaml, MetricStructure out) {
 
@@ -133,6 +140,7 @@ public class RuleParser {
     if (type != null) {
       out.setType(type);
     }
+    @SuppressWarnings("unchecked")
     Map<String, Object> metricAttribute =
         (Map<String, Object>) metricStructureYaml.remove("metricAttribute");
     if (metricAttribute != null) {

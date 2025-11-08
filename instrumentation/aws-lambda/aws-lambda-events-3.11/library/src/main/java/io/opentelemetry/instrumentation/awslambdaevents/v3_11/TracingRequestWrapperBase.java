@@ -56,12 +56,13 @@ abstract class TracingRequestWrapperBase<I, O> extends TracingRequestHandler<I, 
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected O doHandleRequest(I input, Context context) {
     Object[] parameters = LambdaParameters.toArray(targetMethod, input, context, parameterMapper);
     O result;
     try {
-      result = (O) targetMethod.invoke(wrappedLambda.getTargetObject(), parameters);
+      @SuppressWarnings("unchecked")
+      O tempResult = (O) targetMethod.invoke(wrappedLambda.getTargetObject(), parameters);
+      result = tempResult;
     } catch (IllegalAccessException e) {
       throw new IllegalStateException("Method is inaccessible", e);
     } catch (InvocationTargetException e) {

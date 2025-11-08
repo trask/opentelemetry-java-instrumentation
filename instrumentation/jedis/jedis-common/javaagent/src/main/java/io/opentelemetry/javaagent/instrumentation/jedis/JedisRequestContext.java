@@ -53,9 +53,10 @@ public final class JedisRequestContext<T> {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private static <T> JedisRequestContext<T> current() {
-    return (JedisRequestContext<T>) contextThreadLocal.get();
+    @SuppressWarnings("unchecked")
+    JedisRequestContext<T> ctx = (JedisRequestContext<T>) contextThreadLocal.get();
+    return ctx;
   }
 
   private static <T> void endSpan(

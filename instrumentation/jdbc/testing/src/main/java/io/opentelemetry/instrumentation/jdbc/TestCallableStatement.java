@@ -42,6 +42,8 @@ class TestCallableStatement extends TestPreparedStatement implements CallableSta
 
   @Override
   @Deprecated
+  // getBigDecimal(int, int) is deprecated in JDBC API but still required for interface implementation
+  @SuppressWarnings("deprecation")
   public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {
     return null;
   }

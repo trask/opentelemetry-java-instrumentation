@@ -272,10 +272,6 @@ class Netty41ClientPipelineTest {
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {}
-
-    @Override
-    @Deprecated
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {}
   }
 
   static class OtherSimpleHandler implements ChannelHandler {
@@ -284,10 +280,6 @@ class Netty41ClientPipelineTest {
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {}
-
-    @Override
-    @Deprecated
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {}
   }
 
   static class TracedHandlerFromInitializerHandler extends ChannelInitializer<Channel>
@@ -297,9 +289,5 @@ class Netty41ClientPipelineTest {
       // This replicates how reactor 0.8.x add the HttpClientCodec
       ch.pipeline().addLast("added_in_initializer", new HttpClientCodec());
     }
-
-    @Override
-    @Deprecated
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {}
   }
 }

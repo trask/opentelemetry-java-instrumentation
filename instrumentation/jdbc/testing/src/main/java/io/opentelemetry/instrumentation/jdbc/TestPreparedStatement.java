@@ -225,6 +225,8 @@ class TestPreparedStatement extends TestStatement implements PreparedStatement {
 
   @Override
   @Deprecated
+  // setUnicodeStream is deprecated in JDBC API but still required for interface implementation
+  @SuppressWarnings("deprecation")
   public void setUnicodeStream(int parameterIndex, InputStream x, int length) throws SQLException {}
 
   @Override

@@ -563,7 +563,8 @@ class OpenTelemetryCallableStatement<S extends CallableStatement>
     return delegate.getBigDecimal(parameterIndex);
   }
 
-  @SuppressWarnings("UngroupedOverloads")
+  // getBigDecimal(int, int) is deprecated in JDBC API but still required for interface implementation
+  @SuppressWarnings({"UngroupedOverloads", "deprecation"})
   @Override
   @Deprecated
   public BigDecimal getBigDecimal(int parameterIndex, int scale) throws SQLException {

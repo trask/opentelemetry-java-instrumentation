@@ -1,2 +1,2 @@
 paths-ignore:
-  - "**/testing/src/main/java/**"
+  - "**/testing/"

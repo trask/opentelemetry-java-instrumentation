@@ -30,6 +30,8 @@ jobs:
 
   link-check:
     uses: ./.github/workflows/reusable-link-check.yml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   markdown-lint-check:
     uses: ./.github/workflows/reusable-markdown-lint-check.yml

@@ -173,10 +173,9 @@ dependencies {
 
 testing {
   suites.withType(JvmTestSuite::class).configureEach {
+    useJUnitJupiter("5.14.0")
+
     dependencies {
-      implementation("org.junit.jupiter:junit-jupiter-api")
-      implementation("org.junit.jupiter:junit-jupiter-params")
-      runtimeOnly("org.junit.jupiter:junit-jupiter-engine")
       runtimeOnly("org.junit.vintage:junit-vintage-engine")
       implementation("org.junit-pioneer:junit-pioneer")
 

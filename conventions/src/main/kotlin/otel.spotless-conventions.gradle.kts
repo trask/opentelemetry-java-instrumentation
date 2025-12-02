@@ -103,26 +103,11 @@ if (project == rootProject) {
       trimTrailingWhitespace()
       endWithNewline()
     }
-    predeclareDeps()
-  }
-
-  with(extensions["spotlessPredeclare"] as SpotlessExtension) {
-    java {
-      googleJavaFormat()
-    }
-    scala {
-      scalafmt()
-    }
-    kotlin {
-      ktlint()
-    }
-    kotlinGradle {
-      ktlint()
-    }
   }
 }
 
-// Disable configuration cache for spotlessGroovy task which is not compatible
-tasks.matching { it.name.contains("spotlessGroovy") }.configureEach {
-  notCompatibleWithConfigurationCache("Spotless Groovy task references other Task instances which are not supported with configuration cache")
+// Disable configuration cache for spotless tasks which are not compatible
+// See https://github.com/diffplug/spotless/issues/1380
+tasks.matching { it.name.contains("spotless") }.configureEach {
+  notCompatibleWithConfigurationCache("Spotless task is not compatible with configuration cache")
 }

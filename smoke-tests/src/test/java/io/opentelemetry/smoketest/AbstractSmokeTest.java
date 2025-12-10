@@ -73,7 +73,9 @@ public abstract class AbstractSmokeTest<T> implements TelemetryRetrieverProvider
             options.waitStrategy,
             options.command,
             options.appJarPath,
-            options.appJarContainerPath));
+            options.appJarContainerPath,
+            options.appDirPath,
+            options.appDirContainerPath));
   }
 
   private static TestContainerManager createContainerManager() {

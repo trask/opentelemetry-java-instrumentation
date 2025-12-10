@@ -105,12 +105,22 @@ tasks {
       project(":smoke-tests:images:security-manager").projectDir.resolve(
         "src/main/resources/security.policy")
 
+    // Get Play distribution for on-demand container builds
+    val playInstallDistTask =
+      project(":smoke-tests:images:play").tasks.named("installDist")
+    val playDistPath =
+      project(":smoke-tests:images:play").layout.buildDirectory.dir("install/play")
+    inputs.dir(playDistPath)
+      .withPropertyName("playDist")
+    dependsOn(playInstallDistTask)
+
     doFirst {
       jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${agentJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.springboot.shadowJar.path=${springBootJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.grpc.shadowJar.path=${grpcJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.shadowJar.path=${securityManagerJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.securityPolicy.path=$securityPolicyPath")
+      jvmArgs("-Dio.opentelemetry.smoketest.play.dist.path=${playDistPath.get()}")
     }
 
     // Build smoke test images before running tests

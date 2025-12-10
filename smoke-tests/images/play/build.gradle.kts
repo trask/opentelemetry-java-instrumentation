@@ -1,4 +1,3 @@
-import com.google.cloud.tools.jib.gradle.JibTask
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import play.gradle.Language
 
@@ -6,7 +5,6 @@ plugins {
   // Don't apply java-conventions since no Java in this project and it interferes with play plugin.
   id("otel.spotless-conventions")
 
-  id("com.google.cloud.tools.jib")
   id("org.playframework.play") version "3.1.0-M4"
 }
 
@@ -29,21 +27,6 @@ dependencies {
 val targetJDK = (project.findProperty("targetJDK") as String?) ?: "17"
 val javaLanguageVersion = targetJDK.toIntOrNull() ?: 17
 
-val tag = "local"
-
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(javaLanguageVersion))
-}
-
-jib {
-  from.image = "eclipse-temurin:$targetJDK"
-  to.image = "smoke-test-play:jdk$targetJDK-$tag"
-  container.mainClass = "play.core.server.ProdServerStart"
-}
-
-tasks {
-  withType<JibTask>().configureEach {
-    // Jib tasks access Task.project at execution time which is not compatible with configuration cache
-    notCompatibleWithConfigurationCache("Jib task accesses Task.project at execution time")
-  }
 }

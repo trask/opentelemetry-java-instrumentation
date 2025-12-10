@@ -18,13 +18,7 @@ class PlaySmokeTest extends AbstractSmokeTest<Integer> {
 
   @Override
   protected void configure(SmokeTestOptions<Integer> options) {
-    options
-        .image(
-            jdk ->
-                String.format(
-                    "smoke-test-play:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG))
-        .waitStrategy(
-            new TargetWaitStrategy.Log(java.time.Duration.ofMinutes(1), ".*Listening for HTTP.*"));
+    options.play();
   }
 
   @ParameterizedTest

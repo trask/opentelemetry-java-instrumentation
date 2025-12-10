@@ -80,7 +80,9 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
       TargetWaitStrategy waitStrategy,
       String[] command,
       String appJarPath,
-      String appJarContainerPath) {
+      String appJarContainerPath,
+      String appDirPath,
+      String appDirContainerPath) {
 
     Consumer<OutputFrame> output = new ToStringConsumer();
     List<Integer> ports = new ArrayList<>();
@@ -104,6 +106,12 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
     if (appJarPath != null && appJarContainerPath != null) {
       target.withCopyFileToContainer(
           MountableFile.forHostPath(appJarPath), appJarContainerPath);
+    }
+
+    // Copy app directory if specified (for distribution-style apps like Play)
+    if (appDirPath != null && appDirContainerPath != null) {
+      target.withCopyFileToContainer(
+          MountableFile.forHostPath(appDirPath), appDirContainerPath);
     }
 
     for (ResourceMapping resource : extraResources) {

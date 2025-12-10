@@ -31,7 +31,9 @@ public interface TestContainerManager {
       TargetWaitStrategy waitStrategy,
       String[] command,
       String appJarPath,
-      String appJarContainerPath);
+      String appJarContainerPath,
+      String appDirPath,
+      String appDirContainerPath);
 
   void stopTarget();
 

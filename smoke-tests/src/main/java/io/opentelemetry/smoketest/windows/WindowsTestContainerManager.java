@@ -140,12 +140,17 @@ public class WindowsTestContainerManager extends AbstractTestContainerManager {
       TargetWaitStrategy waitStrategy,
       String[] cmd,
       String appJarPath,
-      String appJarContainerPath) {
+      String appJarContainerPath,
+      String appDirPath,
+      String appDirContainerPath) {
     if (extraPorts != null && !extraPorts.isEmpty()) {
       throw new UnsupportedOperationException("extra ports not supported");
     }
     if (appJarPath != null) {
       throw new UnsupportedOperationException("app jar copying not yet supported on Windows");
+    }
+    if (appDirPath != null) {
+      throw new UnsupportedOperationException("app dir copying not yet supported on Windows");
     }
 
     stopTarget();

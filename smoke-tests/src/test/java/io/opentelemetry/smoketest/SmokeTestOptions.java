@@ -27,6 +27,9 @@ public class SmokeTestOptions<T> {
   // Path to app JAR to copy into container (alternative to pre-built image)
   @Nullable String appJarPath;
   @Nullable String appJarContainerPath;
+  // Path to app directory to copy into container (for distribution-style apps like Play)
+  @Nullable String appDirPath;
+  @Nullable String appDirContainerPath;
 
   /** Sets the container image to run. */
   @CanIgnoreReturnValue
@@ -114,6 +117,24 @@ public class SmokeTestOptions<T> {
                   "smoke-test-security-manager:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
     }
     env("OTEL_JAVAAGENT_EXPERIMENTAL_SECURITY_MANAGER_SUPPORT_ENABLED", "true");
+    return this;
+  }
+
+  /** Configure test for Play framework test app. */
+  @CanIgnoreReturnValue
+  public SmokeTestOptions<T> play() {
+    // Use base JDK image and copy the Play distribution directory at runtime
+    String distPath = System.getProperty("io.opentelemetry.smoketest.play.dist.path");
+    if (distPath != null) {
+      this.getImage = jdk -> "eclipse-temurin:" + jdk;
+      this.appDirPath = distPath;
+      this.appDirContainerPath = "/app";
+      this.command = new String[] {"/app/bin/play"};
+    } else {
+      // Fall back to pre-built image if path not provided
+      image(jdk -> String.format("smoke-test-play:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    }
+    waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Listening for HTTP.*"));
     return this;
   }
 

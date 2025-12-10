@@ -22,8 +22,7 @@ class PlaySmokeTest extends AbstractSmokeTest<Integer> {
         .image(
             jdk ->
                 String.format(
-                    "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-play:jdk%s-%s",
-                    jdk, TestImageVersions.PLAY_VERSION))
+                    "smoke-test-play:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG))
         .waitStrategy(
             new TargetWaitStrategy.Log(java.time.Duration.ofMinutes(1), ".*Listening for HTTP.*"));
   }

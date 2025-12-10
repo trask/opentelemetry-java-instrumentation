@@ -19,8 +19,8 @@ plugins {
   // this can't live in pluginManagement currently due to
   // https://github.com/bmuschko/gradle-docker-plugin/issues/1123
   // in particular, these commands are failing (reproducible locally):
-  // ./gradlew :smoke-tests:images:servlet:buildLinuxTestImages pushMatrix -PsmokeTestServer=jetty
-  // ./gradlew :smoke-tests:images:servlet:buildWindowsTestImages pushMatrix -PsmokeTestServer=jetty
+  // ./gradlew :smoke-tests:images:servlet:buildLinuxTestImages -PsmokeTestServer=jetty -PextraTag=local
+  // ./gradlew :smoke-tests:images:servlet:buildWindowsTestImages -PsmokeTestServer=jetty -PextraTag=local
   id("com.bmuschko.docker-remote-api") version "10.0.0" apply false
   id("com.gradle.develocity") version "4.2.2"
 }

@@ -56,22 +56,31 @@ The `dev` flag will ignore warnings in tests.
 The smoke tests are not run as part of a global `test` task since they take a long time and are
 not relevant for most contributions. Explicitly specify `:smoke-tests:test` to run them.
 
+Smoke tests require Docker images to be built before running. The test task will automatically
+build the required images as dependencies, but for non-servlet tests (grpc, play, quarkus, etc.)
+you may need to build images for each JDK version manually:
+
+```bash
+# Build spring-boot image for JDK 17
+./gradlew :smoke-tests:images:spring-boot:jibDockerBuild -PtargetJDK=17 -Ptag=local
+```
+
 If you need to run a specific smoke test suite:
 
 ```
-./gradlew :smoke-tests:test -PsmokeTestSuite=payara
+./gradlew :smoke-tests:test -PsmokeTestSuite=payara -PextraTag=local
 ```
 
 If you are on Windows and you want to run the tests using linux containers:
 
 ```
-USE_LINUX_CONTAINERS=1 ./gradlew :smoke-tests:test -PsmokeTestSuite=payara
+USE_LINUX_CONTAINERS=1 ./gradlew :smoke-tests:test -PsmokeTestSuite=payara -PextraTag=local
 ```
 
 If you want to run a specific smoke test:
 
 ```
-./gradlew :smoke-tests:test --tests '*SpringBootSmokeTest*'
+./gradlew :smoke-tests:test --tests '*SpringBootSmokeTest*' -PextraTag=local
 ```
 
 ## OpenTelemetry starter smoke tests

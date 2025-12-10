@@ -1,5 +1,4 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 plugins {
   id("otel.spotless-conventions")
@@ -16,8 +15,7 @@ data class ImageTarget(
   val windows: Boolean = true
 )
 
-val extraTag = findProperty("extraTag")
-  ?: java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(java.time.LocalDateTime.now())
+val imageTag = "local"
 
 val latestJava = "25" // renovate(java-version)
 
@@ -188,16 +186,8 @@ tasks {
     description = "Builds all Windows Docker images for the test matrix"
   }
 
-  val linuxImages = createDockerTasks(buildLinuxTestImages, false)
-  val windowsImages = createDockerTasks(buildWindowsTestImages, true)
-
-  val pushMatrix by registering(DockerPushImage::class) {
-    dependsOn(buildLinuxTestImages)
-    dependsOn(buildWindowsTestImages)
-    group = "publishing"
-    description = "Push all Docker images for the test matrix"
-    images.set(linuxImages + windowsImages)
-  }
+  createDockerTasks(buildLinuxTestImages, false)
+  createDockerTasks(buildWindowsTestImages, true)
 
   val printSmokeTestsConfigurations by registering {
     doFirst {
@@ -270,9 +260,8 @@ fun configureImage(
     }
   }
 
-  val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
   val vmSuffix = if (vm == "hotspot") "" else "-$vm"
-  val image = "ghcr.io/$repo/smoke-test-servlet-$server:$version-jdk$jdk$vmSuffix$platformSuffix-$extraTag"
+  val image = "smoke-test-servlet-$server:$version-jdk$jdk$vmSuffix$platformSuffix-$imageTag"
 
   val jdkImage = if (vm == "hotspot") {
     if (jdk == "26-ea") {

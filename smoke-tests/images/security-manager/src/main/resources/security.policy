@@ -1,10 +1,5 @@
-// io.opentelemetry.context.LazyStorage reads system properties
-// grant permission to read these to test application code, but not the agent code
-grant codeBase "file:/app/classes/" {
-  permission java.util.PropertyPermission "io.opentelemetry.context.contextStorageProvider", "read";
-  permission java.util.PropertyPermission "io.opentelemetry.context.enableStrictContext", "read";
-};
-grant codeBase "file:/app/libs/-" {
+// For Shadow JAR: grant permissions to the entire JAR
+grant codeBase "file:/app.jar" {
   permission java.util.PropertyPermission "io.opentelemetry.context.contextStorageProvider", "read";
   permission java.util.PropertyPermission "io.opentelemetry.context.enableStrictContext", "read";
 };

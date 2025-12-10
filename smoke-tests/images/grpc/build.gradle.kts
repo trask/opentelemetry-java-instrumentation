@@ -1,11 +1,6 @@
-import com.google.cloud.tools.jib.gradle.JibTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 plugins {
   id("otel.java-conventions")
-
-  id("com.google.cloud.tools.jib")
+  id("com.gradleup.shadow")
 }
 
 dependencies {
@@ -24,29 +19,29 @@ dependencies {
   runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl")
 }
 
-val targetJDK = project.findProperty("targetJDK") ?: "11"
-
-val tag = findProperty("tag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
-
+// Compile to Java 8 so the same JAR can be tested on all JDK versions
 java {
-  // this is needed to avoid jib failing with
-  // "Your project is using Java 17 but the base image is for Java 8"
-  // (it seems the jib plugins does not understand toolchains yet)
   sourceCompatibility = JavaVersion.VERSION_1_8
   targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
-
-jib {
-  from.image = "eclipse-temurin:$targetJDK"
-  to.image = "ghcr.io/$repo/smoke-test-grpc:jdk$targetJDK-$tag"
-}
-
 tasks {
-  withType<JibTask>().configureEach {
-    // Jib tasks access Task.project at execution time which is not compatible with configuration cache
-    notCompatibleWithConfigurationCache("Jib task accesses Task.project at execution time")
+  shadowJar {
+    archiveClassifier.set("")
+    mergeServiceFiles()
+
+    manifest {
+      attributes["Main-Class"] = "io.opentelemetry.smoketest.grpc.TestMain"
+    }
+  }
+
+  // Expose the shadow JAR for consumption by the smoke tests
+  val grpcJar by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+  }
+
+  artifacts {
+    add("grpcJar", shadowJar)
   }
 }

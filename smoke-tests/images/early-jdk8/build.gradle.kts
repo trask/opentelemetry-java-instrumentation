@@ -1,14 +1,10 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 plugins {
   id("com.bmuschko.docker-remote-api")
 }
 
-val extraTag = findProperty("extraTag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
+val imageTag = "local"
 
 tasks {
   val dockerWorkingDir = layout.buildDirectory.dir("docker")
@@ -18,20 +14,11 @@ tasks {
     from("Dockerfile")
   }
 
-  val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
-
   val imageBuild by registering(DockerBuildImage::class) {
     dependsOn(imagePrepare)
     inputDir.set(dockerWorkingDir)
 
-    images.add("ghcr.io/$repo/smoke-test-zulu-openjdk-8u31:$extraTag")
+    images.add("smoke-test-zulu-openjdk-8u31:$imageTag")
     dockerFile.set(dockerWorkingDir.get().file("Dockerfile"))
-  }
-
-  val dockerPush by registering(DockerPushImage::class) {
-    group = "publishing"
-    description = "Push all Docker images"
-    dependsOn(imageBuild)
-    images.add("ghcr.io/$repo/smoke-test-zulu-openjdk-8u31:$extraTag")
   }
 }

@@ -1,8 +1,5 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 import com.google.cloud.tools.jib.gradle.JibTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 plugins {
   id("otel.java-conventions")
@@ -17,10 +14,7 @@ dependencies {
   runtimeOnly("org.slf4j:slf4j-simple")
 }
 
-val extraTag = findProperty("extraTag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
-
-val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
+val imageTag = "local"
 
 jib {
   from {
@@ -36,7 +30,7 @@ jib {
       }
     }
   }
-  to.image = "ghcr.io/$repo/smoke-test-fake-backend:$extraTag"
+  to.image = "smoke-test-fake-backend:$imageTag"
 }
 
 // windows containers are built manually since jib does not support windows containers yet
@@ -77,14 +71,7 @@ tasks {
     dependsOn(windowsBackendImagePrepare)
     inputDir.set(backendDockerBuildDir)
 
-    images.add("ghcr.io/$repo/smoke-test-fake-backend-windows:$extraTag")
+    images.add("smoke-test-fake-backend-windows:$imageTag")
     dockerFile.set(File(backendDockerBuildDir.get().asFile, "windows.dockerfile"))
-  }
-
-  val dockerPush by registering(DockerPushImage::class) {
-    group = "publishing"
-    description = "Push all Docker images for the test backend"
-    dependsOn(windowsBackendImageBuild)
-    images.add("ghcr.io/$repo/smoke-test-fake-backend-windows:$extraTag")
   }
 }

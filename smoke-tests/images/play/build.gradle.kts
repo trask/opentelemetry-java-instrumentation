@@ -1,8 +1,6 @@
 import com.google.cloud.tools.jib.gradle.JibTask
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import play.gradle.Language
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 plugins {
   // Don't apply java-conventions since no Java in this project and it interferes with play plugin.
@@ -31,18 +29,15 @@ dependencies {
 val targetJDK = (project.findProperty("targetJDK") as String?) ?: "17"
 val javaLanguageVersion = targetJDK.toIntOrNull() ?: 17
 
-val tag = findProperty("tag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
+val tag = "local"
 
 java {
   toolchain.languageVersion.set(JavaLanguageVersion.of(javaLanguageVersion))
 }
 
-val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
-
 jib {
   from.image = "eclipse-temurin:$targetJDK"
-  to.image = "ghcr.io/$repo/smoke-test-play:jdk$targetJDK-$tag"
+  to.image = "smoke-test-play:jdk$targetJDK-$tag"
   container.mainClass = "play.core.server.ProdServerStart"
 }
 

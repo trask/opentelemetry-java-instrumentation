@@ -14,9 +14,7 @@ abstract class PayaraSmokeTest extends AppServerTest {
   @Override
   protected void configure(SmokeTestOptions<AppServerImage> options) {
     options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-payara"))
+        .image(appServerImage("smoke-test-servlet-payara"))
         .waitStrategy(
             new TargetWaitStrategy.Log(
                 Duration.ofMinutes(3),

@@ -79,8 +79,7 @@ public class WindowsTestContainerManager extends AbstractTestContainerManager {
             .getId();
 
     String backendImageName =
-        "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-fake-backend-windows:"
-            + ImageVersions.FAKE_BACKEND_WINDOWS_VERSION;
+        "smoke-test-fake-backend-windows:" + ImageVersions.IMAGE_TAG;
     if (!imageExists(backendImageName)) {
       pullImage(backendImageName);
     }
@@ -139,9 +138,14 @@ public class WindowsTestContainerManager extends AbstractTestContainerManager {
       List<ResourceMapping> extraResources,
       List<Integer> extraPorts,
       TargetWaitStrategy waitStrategy,
-      String[] cmd) {
+      String[] cmd,
+      String appJarPath,
+      String appJarContainerPath) {
     if (extraPorts != null && !extraPorts.isEmpty()) {
       throw new UnsupportedOperationException("extra ports not supported");
+    }
+    if (appJarPath != null) {
+      throw new UnsupportedOperationException("app jar copying not yet supported on Windows");
     }
 
     stopTarget();

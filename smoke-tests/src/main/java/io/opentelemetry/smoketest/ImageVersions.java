@@ -5,14 +5,13 @@
 
 package io.opentelemetry.smoketest;
 
-// TODO configure renovate to update these versions
+/**
+ * Image tag used for locally-built smoke test images. All smoke test images are built on-demand
+ * before running smoke tests, so they use a consistent "local" tag.
+ */
 public final class ImageVersions {
 
-  // smoke-test-fake-backend
-  public static final String FAKE_BACKEND_VERSION = "20251117.19421579342";
-
-  // smoke-test-fake-backend-windows
-  public static final String FAKE_BACKEND_WINDOWS_VERSION = "20251117.19421579342";
+  public static final String IMAGE_TAG = "local";
 
   private ImageVersions() {}
 }

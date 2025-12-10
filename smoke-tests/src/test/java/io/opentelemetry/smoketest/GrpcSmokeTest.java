@@ -12,7 +12,6 @@ import io.grpc.ManagedChannelBuilder;
 import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.collector.trace.v1.TraceServiceGrpc;
 import io.opentelemetry.semconv.incubating.TelemetryIncubatingAttributes;
-import java.time.Duration;
 import org.junit.jupiter.api.condition.DisabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -22,13 +21,7 @@ class GrpcSmokeTest extends AbstractSmokeTest<Integer> {
 
   @Override
   protected void configure(SmokeTestOptions<Integer> options) {
-    options
-        .image(
-            jdk ->
-                String.format(
-                    "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-grpc:jdk%s-%s",
-                    jdk, TestImageVersions.GRPC_VERSION))
-        .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Server started.*"));
+    options.grpc();
   }
 
   @ParameterizedTest

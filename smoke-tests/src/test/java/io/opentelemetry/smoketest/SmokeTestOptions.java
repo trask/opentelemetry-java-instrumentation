@@ -24,6 +24,9 @@ public class SmokeTestOptions<T> {
   TargetWaitStrategy waitStrategy;
   List<Integer> extraPorts = List.of();
   Duration telemetryTimeout = Duration.ofSeconds(30);
+  // Path to app JAR to copy into container (alternative to pre-built image)
+  @Nullable String appJarPath;
+  @Nullable String appJarContainerPath;
 
   /** Sets the container image to run. */
   @CanIgnoreReturnValue
@@ -32,16 +35,85 @@ public class SmokeTestOptions<T> {
     return this;
   }
 
+  /**
+   * Configure test to use a base JDK image with an app JAR copied in. This avoids needing to
+   * pre-build Docker images.
+   */
+  @CanIgnoreReturnValue
+  public SmokeTestOptions<T> baseImageWithAppJar(
+      Function<T, String> baseImage, String appJarPath, String containerPath, String... command) {
+    this.getImage = baseImage;
+    this.appJarPath = appJarPath;
+    this.appJarContainerPath = containerPath;
+    this.command = command;
+    return this;
+  }
+
   /** Configure test for spring boot test app. */
   @CanIgnoreReturnValue
   public SmokeTestOptions<T> springBoot() {
-    image(
-        jdk ->
-            String.format(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-spring-boot:jdk%s-%s",
-                jdk, TestImageVersions.SPRING_BOOT_VERSION));
+    // Use base JDK image and copy the spring boot JAR at runtime
+    String jarPath = System.getProperty("io.opentelemetry.smoketest.springboot.shadowJar.path");
+    if (jarPath != null) {
+      baseImageWithAppJar(
+          jdk -> "eclipse-temurin:" + jdk,
+          jarPath,
+          "/app.jar",
+          "java", "-jar", "/app.jar");
+    } else {
+      // Fall back to pre-built image if JAR path not provided
+      image(
+          jdk ->
+              String.format(
+                  "smoke-test-spring-boot:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    }
     waitStrategy(
         new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Started SpringbootApplication in.*"));
+    return this;
+  }
+
+  /** Configure test for grpc test app. */
+  @CanIgnoreReturnValue
+  public SmokeTestOptions<T> grpc() {
+    // Use base JDK image and copy the grpc JAR at runtime
+    String jarPath = System.getProperty("io.opentelemetry.smoketest.grpc.shadowJar.path");
+    if (jarPath != null) {
+      baseImageWithAppJar(
+          jdk -> "eclipse-temurin:" + jdk, jarPath, "/app.jar", "java", "-jar", "/app.jar");
+    } else {
+      // Fall back to pre-built image if JAR path not provided
+      image(jdk -> String.format("smoke-test-grpc:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    }
+    waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Server started.*"));
+    return this;
+  }
+
+  /** Configure test for security-manager test app. */
+  @CanIgnoreReturnValue
+  public SmokeTestOptions<T> securityManager() {
+    // Use base JDK image and copy the security-manager JAR at runtime
+    String jarPath = System.getProperty("io.opentelemetry.smoketest.securitymanager.shadowJar.path");
+    String policyPath =
+        System.getProperty("io.opentelemetry.smoketest.securitymanager.securityPolicy.path");
+    if (jarPath != null && policyPath != null) {
+      baseImageWithAppJar(
+          jdk -> "eclipse-temurin:" + jdk,
+          jarPath,
+          "/app.jar",
+          "java",
+          "-Djava.security.manager",
+          "-Djava.security.policy=/security.policy",
+          "-jar",
+          "/app.jar");
+      extraResources(ResourceMapping.of(policyPath, "/security.policy"));
+    } else {
+      // Fall back to pre-built image if paths not provided
+      image(
+          jdk ->
+              String.format(
+                  "smoke-test-security-manager:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    }
+    env("OTEL_JAVAAGENT_EXPERIMENTAL_SECURITY_MANAGER_SUPPORT_ENABLED", "true");
     return this;
   }
 

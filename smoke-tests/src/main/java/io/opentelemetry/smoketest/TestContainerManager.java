@@ -29,7 +29,9 @@ public interface TestContainerManager {
       List<ResourceMapping> extraResources,
       List<Integer> extraPorts,
       TargetWaitStrategy waitStrategy,
-      String[] command);
+      String[] command,
+      String appJarPath,
+      String appJarContainerPath);
 
   void stopTarget();
 

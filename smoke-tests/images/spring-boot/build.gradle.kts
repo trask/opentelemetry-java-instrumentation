@@ -1,6 +1,4 @@
 import com.google.cloud.tools.jib.gradle.JibTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 plugins {
   id("otel.java-conventions")
@@ -26,10 +24,8 @@ configurations.runtimeClasspath {
   }
 }
 
-val targetJDK = project.findProperty("targetJDK") ?: "17"
-
-val tag = findProperty("tag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
+val tag = "local"
+val targetJDK = project.findProperty("targetJDK") ?: "8"
 
 java {
   // Jib detects the Java version from sourceCompatibility to determine the entrypoint format.
@@ -38,12 +34,6 @@ java {
   if (targetJDK == "8") {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-  } else if (targetJDK == "11") {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  } else if (targetJDK == "17") {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
   }
 }
 
@@ -55,17 +45,14 @@ springBoot {
   }
 }
 
-val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
-
 jib {
   from.image = "eclipse-temurin:$targetJDK"
-  to.image = "ghcr.io/$repo/smoke-test-spring-boot:jdk$targetJDK-$tag"
+  to.image = "smoke-test-spring-boot:jdk$targetJDK-$tag"
   container.ports = listOf("8080")
 }
 
 tasks {
   withType<JibTask>().configureEach {
-    // Jib tasks access Task.project at execution time which is not compatible with configuration cache
     notCompatibleWithConfigurationCache("Jib task accesses Task.project at execution time")
   }
 

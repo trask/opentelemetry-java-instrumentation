@@ -19,9 +19,7 @@ abstract class LibertySmokeTest extends AppServerTest {
   static SmokeTestOptions<AppServerImage> configureOptions(
       SmokeTestOptions<AppServerImage> options) {
     return options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-liberty"))
+        .image(appServerImage("smoke-test-servlet-liberty"))
         .waitStrategy(
             new TargetWaitStrategy.Log(
                 Duration.ofMinutes(3), ".*server is ready to run a smarter planet.*"));

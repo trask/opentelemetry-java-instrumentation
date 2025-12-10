@@ -38,8 +38,7 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
     backend =
         new GenericContainer<>(
                 DockerImageName.parse(
-                    "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-fake-backend:"
-                        + ImageVersions.FAKE_BACKEND_VERSION))
+                    "smoke-test-fake-backend:" + ImageVersions.IMAGE_TAG))
             .withExposedPorts(BACKEND_PORT)
             .withEnv("JAVA_TOOL_OPTIONS", "-Xmx128m")
             .waitingFor(Wait.forHttp("/health").forPort(BACKEND_PORT))
@@ -79,7 +78,9 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
       List<ResourceMapping> extraResources,
       List<Integer> extraPorts,
       TargetWaitStrategy waitStrategy,
-      String[] command) {
+      String[] command,
+      String appJarPath,
+      String appJarContainerPath) {
 
     Consumer<OutputFrame> output = new ToStringConsumer();
     List<Integer> ports = new ArrayList<>();
@@ -99,9 +100,21 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
             .withEnv(getAgentEnvironment(jvmArgsEnvVarName, setServiceName))
             .withEnv(extraEnv);
 
-    for (ResourceMapping resource : extraResources) {
+    // Copy app JAR if specified (allows using base JDK image instead of pre-built image)
+    if (appJarPath != null && appJarContainerPath != null) {
       target.withCopyFileToContainer(
-          MountableFile.forClasspathResource(resource.resourcePath()), resource.containerPath());
+          MountableFile.forHostPath(appJarPath), appJarContainerPath);
+    }
+
+    for (ResourceMapping resource : extraResources) {
+      MountableFile file;
+      // Check if the resource path looks like a file system path (contains path separators)
+      if (resource.resourcePath().contains("/") || resource.resourcePath().contains("\\")) {
+        file = MountableFile.forHostPath(resource.resourcePath());
+      } else {
+        file = MountableFile.forClasspathResource(resource.resourcePath());
+      }
+      target.withCopyFileToContainer(file, resource.containerPath());
     }
 
     if (waitStrategy != null) {

@@ -1,6 +1,4 @@
 import com.google.cloud.tools.jib.gradle.JibTask
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 buildscript {
   dependencies {
@@ -28,8 +26,7 @@ dependencies {
 // Quarkus 3.7+ requires Java 17+
 val targetJDK = project.findProperty("targetJDK") ?: "17"
 
-val tag = findProperty("tag")
-  ?: DateTimeFormatter.ofPattern("yyyyMMdd.HHmmSS").format(LocalDateTime.now())
+val tag = "local"
 
 java {
   // this is needed to avoid jib failing with
@@ -39,11 +36,9 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
-val repo = System.getenv("GITHUB_REPOSITORY") ?: "open-telemetry/opentelemetry-java-instrumentation"
-
 jib {
   from.image = "eclipse-temurin:$targetJDK"
-  to.image = "ghcr.io/$repo/smoke-test-quarkus:jdk$targetJDK-$tag"
+  to.image = "smoke-test-quarkus:jdk$targetJDK-$tag"
   container {
     mainClass = "bogus" // to suppress Jib warning about missing main class
   }

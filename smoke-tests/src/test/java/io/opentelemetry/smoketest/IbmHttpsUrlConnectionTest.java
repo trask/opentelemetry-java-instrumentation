@@ -46,8 +46,7 @@ class IbmHttpsUrlConnectionTest {
     backend =
         new GenericContainer<>(
                 DockerImageName.parse(
-                    "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-fake-backend:"
-                        + ImageVersions.FAKE_BACKEND_VERSION))
+                    "smoke-test-fake-backend:" + ImageVersions.IMAGE_TAG))
             .withExposedPorts(BACKEND_PORT)
             .withEnv("JAVA_TOOL_OPTIONS", "-Xmx128m")
             .waitingFor(Wait.forHttp("/health").forPort(BACKEND_PORT))

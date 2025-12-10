@@ -14,9 +14,7 @@ abstract class WildflySmokeTest extends AppServerTest {
   @Override
   protected void configure(SmokeTestOptions<AppServerImage> options) {
     options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-wildfly"))
+        .image(appServerImage("smoke-test-servlet-wildfly"))
         .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*started in.*"));
   }
 

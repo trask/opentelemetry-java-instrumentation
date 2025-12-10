@@ -77,8 +77,64 @@ tasks {
       .withPropertyName("javaagent")
       .withNormalizer(ClasspathNormalizer::class)
 
+    // Get spring boot JAR for on-demand container builds
+    val springBootJarTask = project(":smoke-tests:images:spring-boot").tasks.named<Jar>("bootJar")
+    val springBootJarPath = springBootJarTask.flatMap { it.archiveFile }
+    inputs.files(springBootJarPath)
+      .withPropertyName("springBootJar")
+      .withNormalizer(ClasspathNormalizer::class)
+    dependsOn(springBootJarTask)
+
+    // Get gRPC shadow JAR for on-demand container builds
+    val grpcJarTask = project(":smoke-tests:images:grpc").tasks.named<Jar>("shadowJar")
+    val grpcJarPath = grpcJarTask.flatMap { it.archiveFile }
+    inputs.files(grpcJarPath)
+      .withPropertyName("grpcJar")
+      .withNormalizer(ClasspathNormalizer::class)
+    dependsOn(grpcJarTask)
+
+    // Get security-manager shadow JAR and security policy for on-demand container builds
+    val securityManagerJarTask =
+      project(":smoke-tests:images:security-manager").tasks.named<Jar>("shadowJar")
+    val securityManagerJarPath = securityManagerJarTask.flatMap { it.archiveFile }
+    inputs.files(securityManagerJarPath)
+      .withPropertyName("securityManagerJar")
+      .withNormalizer(ClasspathNormalizer::class)
+    dependsOn(securityManagerJarTask)
+    val securityPolicyPath =
+      project(":smoke-tests:images:security-manager").projectDir.resolve(
+        "src/main/resources/security.policy")
+
     doFirst {
       jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${agentJarPath.get()}")
+      jvmArgs("-Dio.opentelemetry.smoketest.springboot.shadowJar.path=${springBootJarPath.get()}")
+      jvmArgs("-Dio.opentelemetry.smoketest.grpc.shadowJar.path=${grpcJarPath.get()}")
+      jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.shadowJar.path=${securityManagerJarPath.get()}")
+      jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.securityPolicy.path=$securityPolicyPath")
     }
+
+    // Build smoke test images before running tests
+    // The images to build depend on which test suite is being run
+    val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+    val useLinuxContainers = System.getenv("USE_LINUX_CONTAINERS") == "1"
+    val targetWindows = isWindows && !useLinuxContainers
+
+    // Always build the fake backend image
+    dependsOn(":smoke-tests:images:fake-backend:jibDockerBuild")
+    if (targetWindows) {
+      dependsOn(":smoke-tests:images:fake-backend:windowsBackendImageBuild")
+    }
+
+    // Build servlet images for app server suites
+    if (smokeTestSuite in suites.keys) {
+      if (targetWindows) {
+        dependsOn(":smoke-tests:images:servlet:buildWindowsTestImages")
+      } else {
+        dependsOn(":smoke-tests:images:servlet:buildLinuxTestImages")
+      }
+    }
+
+    // Non-servlet images (spring-boot, grpc, play, etc.) now use on-demand JAR copying
+    // No pre-built images needed for "other" suite
   }
 }

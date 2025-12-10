@@ -19,9 +19,7 @@ abstract class JettySmokeTest extends AppServerTest {
   static SmokeTestOptions<AppServerImage> configureOptions(
       SmokeTestOptions<AppServerImage> options) {
     return options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-jetty"))
+        .image(appServerImage("smoke-test-servlet-jetty"))
         .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Started Server.*"));
   }
 

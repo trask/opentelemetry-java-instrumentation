@@ -14,9 +14,7 @@ abstract class TomeeSmokeTest extends AppServerTest {
   @Override
   protected void configure(SmokeTestOptions<AppServerImage> options) {
     options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-tomee"))
+        .image(appServerImage("smoke-test-servlet-tomee"))
         .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(3), ".*Server startup in.*"));
   }
 

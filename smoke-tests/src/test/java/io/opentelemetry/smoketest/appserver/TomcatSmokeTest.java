@@ -14,9 +14,7 @@ abstract class TomcatSmokeTest extends AppServerTest {
   @Override
   protected void configure(SmokeTestOptions<AppServerImage> options) {
     options
-        .image(
-            appServerImage(
-                "ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-servlet-tomcat"))
+        .image(appServerImage("smoke-test-servlet-tomcat"))
         .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Server startup in.*"));
   }
 

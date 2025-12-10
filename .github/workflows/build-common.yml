@@ -461,7 +461,7 @@ jobs:
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
-          ./gradlew :smoke-tests:images:fake-backend:jibDockerBuild :smoke-tests:images:early-jdk8:imageBuild
+          ./gradlew :smoke-tests:images:fake-backend:jibDockerBuild
           for jdk in 8 11 17 21 25; do
             ./gradlew :smoke-tests:images:grpc:jibDockerBuild -PtargetJDK=$jdk
           done

@@ -18,7 +18,7 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 // Hotspot versions before 8u40 crash in jit compiled lambdas when javaagent initializes
@@ -37,10 +37,13 @@ class CrashEarlyJdk8Test {
 
   @BeforeEach
   void setUp() {
+    // Build the early JDK 8 image on-demand from Dockerfile in classpath resources
+    ImageFromDockerfile earlyJdk8Image =
+        new ImageFromDockerfile()
+            .withFileFromClasspath("Dockerfile", "crashearlyjdk8/Dockerfile");
+
     target =
-        new GenericContainer<>(
-                DockerImageName.parse(
-                    "smoke-test-zulu-openjdk-8u31:" + TestImageVersions.IMAGE_TAG))
+        new GenericContainer<>(earlyJdk8Image)
             .withStartupTimeout(Duration.ofMinutes(5))
             .withLogConsumer(new Slf4jLogConsumer(logger))
             .withCopyFileToContainer(

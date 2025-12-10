@@ -2,24 +2,31 @@
 
 Assert that various applications will start up with the JavaAgent without any obvious ill effects.
 
-Each subproject underneath `smoke-tests` produces one or more docker images containing some application
-under test. Various tests in the main module then use them to run the appropriate tests.
+Each subproject underneath `smoke-tests/images` contains a sample application used for testing.
+The tests use Testcontainers to run these applications with the javaagent attached.
 
-## Building Smoke Test Images
+## Running Smoke Tests
 
-The smoke test images are built on-demand locally before running tests. They are not published to any
-container registry.
-
-To build and run smoke tests locally:
+Most smoke test applications are built on-demand and copied into containers at test time.
+No pre-built Docker images are required for most tests.
 
 ```bash
-# Run smoke tests (images are built automatically via task dependencies)
-./gradlew :smoke-tests:test -PextraTag=local
+# Run all smoke tests in the "other" suite (non-servlet apps)
+./gradlew :smoke-tests:test -PsmokeTestSuite=other
 
-# Or build images explicitly first
-./gradlew :smoke-tests:images:spring-boot:jibDockerBuild -PtargetJDK=8 -PextraTag=local
-./gradlew :smoke-tests:images:spring-boot:jibDockerBuild -PtargetJDK=11 -PextraTag=local
-# etc.
+# Run a specific smoke test
+./gradlew :smoke-tests:test --tests "SpringBootSmokeTest"
+./gradlew :smoke-tests:test --tests "GrpcSmokeTest"
 ```
 
-The `-PextraTag=local` property sets the image tag that the tests will use when looking for images.
+## Smoke Test Applications
+
+| Application | JDK Support | Build Method |
+|-------------|-------------|--------------|
+| spring-boot | 17, 21, 25 | bootJar copied at runtime |
+| grpc | 8, 11, 17, 21, 25 | Shadow JAR copied at runtime |
+| play | 17, 21, 25 | Distribution dir copied at runtime |
+| quarkus | 17, 21, 25 | Fast-jar dir copied at runtime |
+| security-manager | 8, 11, 17, 21 | Shadow JAR copied at runtime |
+| early-jdk8 | 8 | Dockerfile built at runtime |
+| servlet (app servers) | varies | Docker images built before tests |

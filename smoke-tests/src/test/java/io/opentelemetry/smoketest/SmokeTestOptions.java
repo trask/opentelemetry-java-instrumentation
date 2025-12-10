@@ -52,24 +52,17 @@ public class SmokeTestOptions<T> {
     return this;
   }
 
-  /** Configure test for spring boot test app. */
+  /** Configure test for spring boot test app. Spring Boot 3.x requires JDK 17+. */
   @CanIgnoreReturnValue
   public SmokeTestOptions<T> springBoot() {
     // Use base JDK image and copy the spring boot JAR at runtime
     String jarPath = System.getProperty("io.opentelemetry.smoketest.springboot.shadowJar.path");
-    if (jarPath != null) {
-      baseImageWithAppJar(
-          jdk -> "eclipse-temurin:" + jdk,
-          jarPath,
-          "/app.jar",
-          "java", "-jar", "/app.jar");
-    } else {
-      // Fall back to pre-built image if JAR path not provided
-      image(
-          jdk ->
-              String.format(
-                  "smoke-test-spring-boot:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    if (jarPath == null) {
+      throw new IllegalStateException(
+          "Spring Boot JAR path not set. Set io.opentelemetry.smoketest.springboot.shadowJar.path");
     }
+    baseImageWithAppJar(
+        jdk -> "eclipse-temurin:" + jdk, jarPath, "/app.jar", "java", "-jar", "/app.jar");
     waitStrategy(
         new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Started SpringbootApplication in.*"));
     return this;

@@ -114,6 +114,15 @@ tasks {
       .withPropertyName("playDist")
     dependsOn(playInstallDistTask)
 
+    // Get Quarkus fast-jar distribution for on-demand container builds
+    val quarkusBuildTask =
+      project(":smoke-tests:images:quarkus").tasks.named("quarkusBuild")
+    val quarkusDistPath =
+      project(":smoke-tests:images:quarkus").layout.buildDirectory.dir("quarkus-app")
+    inputs.dir(quarkusDistPath)
+      .withPropertyName("quarkusDist")
+    dependsOn(quarkusBuildTask)
+
     doFirst {
       jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${agentJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.springboot.shadowJar.path=${springBootJarPath.get()}")
@@ -121,6 +130,7 @@ tasks {
       jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.shadowJar.path=${securityManagerJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.securityPolicy.path=$securityPolicyPath")
       jvmArgs("-Dio.opentelemetry.smoketest.play.dist.path=${playDistPath.get()}")
+      jvmArgs("-Dio.opentelemetry.smoketest.quarkus.dist.path=${quarkusDistPath.get()}")
     }
 
     // Build smoke test images before running tests

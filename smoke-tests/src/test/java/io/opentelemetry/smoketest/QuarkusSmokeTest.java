@@ -7,7 +7,6 @@ package io.opentelemetry.smoketest;
 
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.incubating.TelemetryIncubatingAttributes;
-import java.time.Duration;
 import org.junit.jupiter.api.condition.DisabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,13 +16,7 @@ class QuarkusSmokeTest extends AbstractSmokeTest<Integer> {
 
   @Override
   protected void configure(SmokeTestOptions<Integer> options) {
-    options
-        .image(
-            jdk ->
-                String.format(
-                    "smoke-test-quarkus:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG))
-        .waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Listening on.*"))
-        .setServiceName(false);
+    options.quarkus();
   }
 
   @ParameterizedTest

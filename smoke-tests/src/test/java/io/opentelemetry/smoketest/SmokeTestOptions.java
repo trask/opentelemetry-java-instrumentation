@@ -138,6 +138,25 @@ public class SmokeTestOptions<T> {
     return this;
   }
 
+  /** Configure test for Quarkus framework test app. */
+  @CanIgnoreReturnValue
+  public SmokeTestOptions<T> quarkus() {
+    // Use base JDK image and copy the Quarkus fast-jar directory at runtime
+    String distPath = System.getProperty("io.opentelemetry.smoketest.quarkus.dist.path");
+    if (distPath != null) {
+      this.getImage = jdk -> "eclipse-temurin:" + jdk;
+      this.appDirPath = distPath;
+      this.appDirContainerPath = "/app";
+      this.command = new String[] {"java", "-jar", "/app/quarkus-run.jar"};
+    } else {
+      // Fall back to pre-built image if path not provided
+      image(jdk -> String.format("smoke-test-quarkus:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    }
+    waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Listening on.*"));
+    setServiceName(false);
+    return this;
+  }
+
   /** Sets the command to run in the target container. */
   @CanIgnoreReturnValue
   public SmokeTestOptions<T> command(String... command) {

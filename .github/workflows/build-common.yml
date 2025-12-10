@@ -455,25 +455,14 @@ jobs:
         run: ./gradlew :smoke-tests:test -PsmokeTestSuite=none --no-daemon ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
 
       # Build smoke test images for the "other" suite (non-servlet images)
-      # Note: spring-boot tests use on-demand JAR copying, no image build needed
+      # Note: Most tests use on-demand JAR copying, only fake-backend needs pre-built image
+      # gRPC smoke test is now in its own module (:smoke-tests:grpc)
       - name: Build smoke test images for other suite
         if: matrix.smoke-test-suite == 'other'
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
           ./gradlew :smoke-tests:images:fake-backend:jibDockerBuild
-          for jdk in 8 11 17 21 25; do
-            ./gradlew :smoke-tests:images:grpc:jibDockerBuild -PtargetJDK=$jdk
-          done
-          for jdk in 17 21 25; do
-            ./gradlew :smoke-tests:images:play:jibDockerBuild -PtargetJDK=$jdk
-          done
-          for jdk in 17 21 25; do
-            ./gradlew :smoke-tests:images:quarkus:jibDockerBuild -PtargetJDK=$jdk
-          done
-          for jdk in 8 11 17 21; do
-            ./gradlew :smoke-tests:images:security-manager:jibDockerBuild -PtargetJDK=$jdk
-          done
 
       # Build smoke test images for servlet suites
       - name: Build smoke test images for servlet suite (Linux)
@@ -496,7 +485,13 @@ jobs:
       - name: Test
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }} ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+        run: |
+          ./gradlew :smoke-tests:test -PsmokeTestSuite=${{ matrix.smoke-test-suite }} ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+          if [ "${{ matrix.smoke-test-suite }}" = "other" ]; then
+            ./gradlew :smoke-tests:grpc:test ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+            ./gradlew :smoke-tests:play:test ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+            ./gradlew :smoke-tests:security-manager:test ${{ inputs.no-build-cache && ' --no-build-cache' || '' }}
+          fi
 
       - name: Build scan
         if: ${{ !cancelled() && hashFiles('build-scan.txt') != '' }}

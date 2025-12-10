@@ -85,35 +85,6 @@ tasks {
       .withNormalizer(ClasspathNormalizer::class)
     dependsOn(springBootJarTask)
 
-    // Get gRPC shadow JAR for on-demand container builds
-    val grpcJarTask = project(":smoke-tests:images:grpc").tasks.named<Jar>("shadowJar")
-    val grpcJarPath = grpcJarTask.flatMap { it.archiveFile }
-    inputs.files(grpcJarPath)
-      .withPropertyName("grpcJar")
-      .withNormalizer(ClasspathNormalizer::class)
-    dependsOn(grpcJarTask)
-
-    // Get security-manager shadow JAR and security policy for on-demand container builds
-    val securityManagerJarTask =
-      project(":smoke-tests:images:security-manager").tasks.named<Jar>("shadowJar")
-    val securityManagerJarPath = securityManagerJarTask.flatMap { it.archiveFile }
-    inputs.files(securityManagerJarPath)
-      .withPropertyName("securityManagerJar")
-      .withNormalizer(ClasspathNormalizer::class)
-    dependsOn(securityManagerJarTask)
-    val securityPolicyPath =
-      project(":smoke-tests:images:security-manager").projectDir.resolve(
-        "src/main/resources/security.policy")
-
-    // Get Play distribution for on-demand container builds
-    val playInstallDistTask =
-      project(":smoke-tests:images:play").tasks.named("installDist")
-    val playDistPath =
-      project(":smoke-tests:images:play").layout.buildDirectory.dir("install/play")
-    inputs.dir(playDistPath)
-      .withPropertyName("playDist")
-    dependsOn(playInstallDistTask)
-
     // Get Quarkus fast-jar distribution for on-demand container builds
     val quarkusBuildTask =
       project(":smoke-tests:images:quarkus").tasks.named("quarkusBuild")
@@ -126,10 +97,6 @@ tasks {
     doFirst {
       jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${agentJarPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.springboot.shadowJar.path=${springBootJarPath.get()}")
-      jvmArgs("-Dio.opentelemetry.smoketest.grpc.shadowJar.path=${grpcJarPath.get()}")
-      jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.shadowJar.path=${securityManagerJarPath.get()}")
-      jvmArgs("-Dio.opentelemetry.smoketest.securitymanager.securityPolicy.path=$securityPolicyPath")
-      jvmArgs("-Dio.opentelemetry.smoketest.play.dist.path=${playDistPath.get()}")
       jvmArgs("-Dio.opentelemetry.smoketest.quarkus.dist.path=${quarkusDistPath.get()}")
     }
 
@@ -154,7 +121,8 @@ tasks {
       }
     }
 
-    // Non-servlet images (spring-boot, grpc, play, etc.) now use on-demand JAR copying
+    // Note: gRPC smoke test is now in its own module (:smoke-tests:grpc)
+    // Non-servlet images (spring-boot, play, etc.) use on-demand JAR copying
     // No pre-built images needed for "other" suite
   }
 }

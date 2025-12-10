@@ -73,13 +73,12 @@ public class SmokeTestOptions<T> {
   public SmokeTestOptions<T> grpc() {
     // Use base JDK image and copy the grpc JAR at runtime
     String jarPath = System.getProperty("io.opentelemetry.smoketest.grpc.shadowJar.path");
-    if (jarPath != null) {
-      baseImageWithAppJar(
-          jdk -> "eclipse-temurin:" + jdk, jarPath, "/app.jar", "java", "-jar", "/app.jar");
-    } else {
-      // Fall back to pre-built image if JAR path not provided
-      image(jdk -> String.format("smoke-test-grpc:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    if (jarPath == null) {
+      throw new IllegalStateException(
+          "gRPC JAR path not set. Set io.opentelemetry.smoketest.grpc.shadowJar.path");
     }
+    baseImageWithAppJar(
+        jdk -> "eclipse-temurin:" + jdk, jarPath, "/app.jar", "java", "-jar", "/app.jar");
     waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Server started.*"));
     return this;
   }
@@ -91,24 +90,20 @@ public class SmokeTestOptions<T> {
     String jarPath = System.getProperty("io.opentelemetry.smoketest.securitymanager.shadowJar.path");
     String policyPath =
         System.getProperty("io.opentelemetry.smoketest.securitymanager.securityPolicy.path");
-    if (jarPath != null && policyPath != null) {
-      baseImageWithAppJar(
-          jdk -> "eclipse-temurin:" + jdk,
-          jarPath,
-          "/app.jar",
-          "java",
-          "-Djava.security.manager",
-          "-Djava.security.policy=/security.policy",
-          "-jar",
-          "/app.jar");
-      extraResources(ResourceMapping.of(policyPath, "/security.policy"));
-    } else {
-      // Fall back to pre-built image if paths not provided
-      image(
-          jdk ->
-              String.format(
-                  "smoke-test-security-manager:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    if (jarPath == null || policyPath == null) {
+      throw new IllegalStateException(
+          "Security manager JAR and policy paths must be provided via system properties");
     }
+    baseImageWithAppJar(
+        jdk -> "eclipse-temurin:" + jdk,
+        jarPath,
+        "/app.jar",
+        "java",
+        "-Djava.security.manager",
+        "-Djava.security.policy=/security.policy",
+        "-jar",
+        "/app.jar");
+    extraResources(ResourceMapping.of(policyPath, "/security.policy"));
     env("OTEL_JAVAAGENT_EXPERIMENTAL_SECURITY_MANAGER_SUPPORT_ENABLED", "true");
     return this;
   }
@@ -118,15 +113,14 @@ public class SmokeTestOptions<T> {
   public SmokeTestOptions<T> play() {
     // Use base JDK image and copy the Play distribution directory at runtime
     String distPath = System.getProperty("io.opentelemetry.smoketest.play.dist.path");
-    if (distPath != null) {
-      this.getImage = jdk -> "eclipse-temurin:" + jdk;
-      this.appDirPath = distPath;
-      this.appDirContainerPath = "/app";
-      this.command = new String[] {"/app/bin/play"};
-    } else {
-      // Fall back to pre-built image if path not provided
-      image(jdk -> String.format("smoke-test-play:jdk%s-%s", jdk, TestImageVersions.IMAGE_TAG));
+    if (distPath == null) {
+      throw new IllegalStateException(
+          "Play distribution path must be provided via system property");
     }
+    this.getImage = jdk -> "eclipse-temurin:" + jdk;
+    this.appDirPath = distPath;
+    this.appDirContainerPath = "/app";
+    this.command = new String[] {"/app/bin/play"};
     waitStrategy(new TargetWaitStrategy.Log(Duration.ofMinutes(1), ".*Listening for HTTP.*"));
     return this;
   }

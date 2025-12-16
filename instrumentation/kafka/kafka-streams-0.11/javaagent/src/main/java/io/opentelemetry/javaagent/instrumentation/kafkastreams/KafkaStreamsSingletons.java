@@ -6,25 +6,36 @@
 package io.opentelemetry.javaagent.instrumentation.kafkastreams;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.ExtendedDeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal.KafkaInstrumenterFactory;
 import io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal.KafkaProcessRequest;
-import io.opentelemetry.javaagent.bootstrap.internal.AgentInstrumentationConfig;
-import io.opentelemetry.javaagent.bootstrap.internal.ExperimentalConfig;
+import java.util.Collections;
 
 public final class KafkaStreamsSingletons {
 
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.kafka-streams-0.11";
 
-  private static final Instrumenter<KafkaProcessRequest, Void> INSTRUMENTER =
-      new KafkaInstrumenterFactory(GlobalOpenTelemetry.get(), INSTRUMENTATION_NAME)
-          .setCapturedHeaders(ExperimentalConfig.get().getMessagingHeaders())
-          .setCaptureExperimentalSpanAttributes(
-              AgentInstrumentationConfig.get()
-                  .getBoolean("otel.instrumentation.kafka.experimental-span-attributes", false))
-          .setMessagingReceiveInstrumentationEnabled(
-              ExperimentalConfig.get().messagingReceiveInstrumentationEnabled())
-          .createConsumerProcessInstrumenter();
+  private static final Instrumenter<KafkaProcessRequest, Void> INSTRUMENTER;
+
+  static {
+    ExtendedDeclarativeConfigProperties config =
+        DeclarativeConfigUtil.get(GlobalOpenTelemetry.get());
+    INSTRUMENTER =
+        new KafkaInstrumenterFactory(GlobalOpenTelemetry.get(), INSTRUMENTATION_NAME)
+            .setCapturedHeaders(
+                config
+                    .getScalarList(String.class, "messaging", "capture_headers/development")
+                    .orElse(Collections.emptyList()))
+            .setCaptureExperimentalSpanAttributes(
+                config.getBoolean("kafka", "experimental_span_attributes").orElse(false))
+            .setMessagingReceiveInstrumentationEnabled(
+                config
+                    .getBoolean("messaging", "receive_telemetry/development", "enabled")
+                    .orElse(false))
+            .createConsumerProcessInstrumenter();
+  }
 
   public static Instrumenter<KafkaProcessRequest, Void> instrumenter() {
     return INSTRUMENTER;

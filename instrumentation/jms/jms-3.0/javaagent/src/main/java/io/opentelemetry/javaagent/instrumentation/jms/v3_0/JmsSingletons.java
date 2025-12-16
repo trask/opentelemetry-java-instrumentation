@@ -6,10 +6,12 @@
 package io.opentelemetry.javaagent.instrumentation.jms.v3_0;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.ExtendedDeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
-import io.opentelemetry.javaagent.bootstrap.internal.ExperimentalConfig;
 import io.opentelemetry.javaagent.instrumentation.jms.JmsInstrumenterFactory;
 import io.opentelemetry.javaagent.instrumentation.jms.MessageWithDestination;
+import java.util.Collections;
 
 public final class JmsSingletons {
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.jms-3.0";
@@ -19,11 +21,18 @@ public final class JmsSingletons {
   private static final Instrumenter<MessageWithDestination, Void> CONSUMER_PROCESS_INSTRUMENTER;
 
   static {
+    ExtendedDeclarativeConfigProperties config =
+        DeclarativeConfigUtil.get(GlobalOpenTelemetry.get());
     JmsInstrumenterFactory factory =
         new JmsInstrumenterFactory(GlobalOpenTelemetry.get(), INSTRUMENTATION_NAME)
-            .setCapturedHeaders(ExperimentalConfig.get().getMessagingHeaders())
+            .setCapturedHeaders(
+                config
+                    .getScalarList(String.class, "messaging", "capture_headers/development")
+                    .orElse(Collections.emptyList()))
             .setMessagingReceiveInstrumentationEnabled(
-                ExperimentalConfig.get().messagingReceiveInstrumentationEnabled());
+                config
+                    .getBoolean("messaging", "receive_telemetry/development", "enabled")
+                    .orElse(false));
 
     PRODUCER_INSTRUMENTER = factory.createProducerInstrumenter();
     CONSUMER_RECEIVE_INSTRUMENTER = factory.createConsumerReceiveInstrumenter();

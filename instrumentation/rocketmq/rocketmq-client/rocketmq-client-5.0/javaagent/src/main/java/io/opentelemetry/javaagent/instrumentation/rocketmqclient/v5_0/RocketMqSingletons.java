@@ -8,8 +8,10 @@ package io.opentelemetry.javaagent.instrumentation.rocketmqclient.v5_0;
 import apache.rocketmq.v2.ReceiveMessageRequest;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.ExtendedDeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
-import io.opentelemetry.javaagent.bootstrap.internal.ExperimentalConfig;
+import java.util.Collections;
 import java.util.List;
 import org.apache.rocketmq.client.apis.consumer.ConsumeResult;
 import org.apache.rocketmq.client.apis.message.MessageView;
@@ -25,9 +27,13 @@ public final class RocketMqSingletons {
 
   static {
     OpenTelemetry openTelemetry = GlobalOpenTelemetry.get();
-    List<String> messagingHeaders = ExperimentalConfig.get().getMessagingHeaders();
+    ExtendedDeclarativeConfigProperties config = DeclarativeConfigUtil.get(openTelemetry);
+    List<String> messagingHeaders =
+        config
+            .getScalarList(String.class, "messaging", "capture_headers/development")
+            .orElse(Collections.emptyList());
     boolean receiveInstrumentationEnabled =
-        ExperimentalConfig.get().messagingReceiveInstrumentationEnabled();
+        config.getBoolean("messaging", "receive_telemetry/development", "enabled").orElse(false);
 
     PRODUCER_INSTRUMENTER =
         RocketMqInstrumenterFactory.createProducerInstrumenter(openTelemetry, messagingHeaders);

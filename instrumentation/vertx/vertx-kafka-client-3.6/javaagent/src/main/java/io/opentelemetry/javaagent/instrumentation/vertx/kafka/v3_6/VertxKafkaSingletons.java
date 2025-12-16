@@ -6,12 +6,13 @@
 package io.opentelemetry.javaagent.instrumentation.vertx.kafka.v3_6;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
+import io.opentelemetry.instrumentation.api.incubator.config.internal.ExtendedDeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal.KafkaInstrumenterFactory;
 import io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal.KafkaProcessRequest;
 import io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal.KafkaReceiveRequest;
-import io.opentelemetry.javaagent.bootstrap.internal.AgentInstrumentationConfig;
-import io.opentelemetry.javaagent.bootstrap.internal.ExperimentalConfig;
+import java.util.Collections;
 
 public final class VertxKafkaSingletons {
 
@@ -21,14 +22,20 @@ public final class VertxKafkaSingletons {
   private static final Instrumenter<KafkaProcessRequest, Void> PROCESS_INSTRUMENTER;
 
   static {
+    ExtendedDeclarativeConfigProperties config =
+        DeclarativeConfigUtil.get(GlobalOpenTelemetry.get());
     KafkaInstrumenterFactory factory =
         new KafkaInstrumenterFactory(GlobalOpenTelemetry.get(), INSTRUMENTATION_NAME)
-            .setCapturedHeaders(ExperimentalConfig.get().getMessagingHeaders())
+            .setCapturedHeaders(
+                config
+                    .getScalarList(String.class, "messaging", "capture_headers/development")
+                    .orElse(Collections.emptyList()))
             .setCaptureExperimentalSpanAttributes(
-                AgentInstrumentationConfig.get()
-                    .getBoolean("otel.instrumentation.kafka.experimental-span-attributes", false))
+                config.getBoolean("kafka", "experimental_span_attributes").orElse(false))
             .setMessagingReceiveInstrumentationEnabled(
-                ExperimentalConfig.get().messagingReceiveInstrumentationEnabled());
+                config
+                    .getBoolean("messaging", "receive_telemetry/development", "enabled")
+                    .orElse(false));
     BATCH_PROCESS_INSTRUMENTER = factory.createBatchProcessInstrumenter();
     PROCESS_INSTRUMENTER = factory.createConsumerProcessInstrumenter();
   }

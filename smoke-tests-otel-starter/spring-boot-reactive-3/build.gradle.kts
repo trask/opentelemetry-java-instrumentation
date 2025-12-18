@@ -56,7 +56,10 @@ tasks {
 }
 
 graalvmNative {
+  // Disable metadata repository to avoid configuration cache issues
   // See https://github.com/graalvm/native-build-tools/issues/572
+  // See https://github.com/gradle/gradle/issues/17559
+  // See https://github.com/graalvm/native-build-tools/issues/760
   metadataRepository {
     enabled.set(false)
   }
@@ -65,10 +68,4 @@ graalvmNative {
     useJUnitPlatform()
     setForkEvery(1)
   }
-}
-
-tasks.named("collectReachabilityMetadata").configure {
-  // See https://github.com/gradle/gradle/issues/17559
-  // See https://github.com/graalvm/native-build-tools/issues/760
-  notCompatibleWithConfigurationCache("GraalVM native-build-tools plugin is incompatible with configuration cache")
 }

@@ -47,7 +47,7 @@ class SqlStatementSanitizerTest {
   @MethodSource("sensitiveArgs")
   void sanitizeSensitive(String original, String expected) {
     SqlStatementInfo result = SqlStatementSanitizer.create(true).sanitize(original);
-    assertThat(result.getFullStatement()).isEqualTo(expected);
+    assertThat(result.getQueryText()).isEqualTo(expected);
   }
 
   private static Stream<Arguments> sensitiveArgs() {

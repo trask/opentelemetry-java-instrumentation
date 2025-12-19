@@ -102,9 +102,7 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
     if (target == null) {
       target = getter.getDbNamespace(request);
     }
-    // Only use server address as target if we have an operation or meaningful target already
-    // Don't use server address alone as it makes a poor span name
-    if (target == null && operation != null) {
+    if (target == null) {
       String serverAddress = getter.getServerAddress(request);
       if (serverAddress != null) {
         Integer serverPort = getter.getServerPort(request);
@@ -124,13 +122,14 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
       return operation;
     }
 
-    // No operation - use target alone only if it's a meaningful target (not server address)
+    // No operation - use target alone
     if (target != null) {
       return target;
     }
 
     // Final fallback to db.system.name (required attribute per spec)
-    return getter.getDbSystem(request);
+    String dbSystem = getter.getDbSystem(request);
+    return dbSystem != null ? dbSystem : DEFAULT_SPAN_NAME;
   }
 
   private static final class GenericDbClientSpanNameExtractor<REQUEST>

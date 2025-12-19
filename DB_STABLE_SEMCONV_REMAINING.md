@@ -7,11 +7,13 @@ This document tracks the audit of all database instrumentations to ensure proper
 ### Key Findings
 
 **Architecture:**
+
 - SQL databases use `SqlClientAttributesExtractor` which **automatically computes** `db.query.summary` from SQL statements
 - NoSQL databases use `DbClientAttributesExtractor` which requires manual implementation of `getDbQuerySummary()` in getters
 - Higher-level abstractions (Hibernate, MyBatis, Spring Data) create **INTERNAL spans** with code attributes - they delegate to underlying DB for CLIENT spans
 
 **Current Status:**
+
 - ✅ SQL instrumentations (JDBC, R2DBC, Cassandra, Vertx SQL) - automatically get `db.query.summary` via `SqlClientAttributesExtractor`
 - ✅ NoSQL instrumentations (MongoDB, Couchbase, Elasticsearch, ClickHouse, InfluxDB) - `getDbQuerySummary()` implemented
 - ✅ Redis instrumentations (Redisson, Rediscala, Jedis, Lettuce) - `getDbQuerySummary()` implemented
@@ -19,11 +21,13 @@ This document tracks the audit of all database instrumentations to ensure proper
 - ➖ Connection pools (Apache DBCP, Vibur DBCP) - N/A, pool instrumentation not query instrumentation
 
 **Remaining Work:**
+
 - Span name verification for NoSQL/Redis instrumentations in stable semconv mode
 
 ## Checklist
 
 For each instrumentation, check:
+
 1. **Implementation**: Does it set `db.query.summary` when stable semconv is enabled?
 2. **Tests**: Do tests assert `db.query.summary` attribute?
 3. **Span Name**: Does span name use query summary format in stable semconv mode?
@@ -133,6 +137,7 @@ For each instrumentation, check:
 ### SQL Databases (Automatic via SqlClientAttributesExtractor)
 
 For SQL databases, `db.query.summary` is **automatically computed** by `SqlClientAttributesExtractor`:
+
 - Parses SQL statement to extract operation and table
 - Sets `db.query.summary` = `"<operation> <table>"` (e.g., `"SELECT users"`)
 - No additional implementation needed!
@@ -212,15 +217,18 @@ grep -r "SqlClientAttributesExtractor\|DbClientAttributesExtractor" instrumentat
 ## Architecture Reference
 
 ### SqlClientAttributesExtractor
+
 - Used by: JDBC, R2DBC, Cassandra, Vertx SQL Client
 - Automatically computes `db.query.summary` from SQL via `SqlStatementSanitizerUtil`
 - No manual implementation needed
 
 ### DbClientAttributesExtractor
+
 - Used by: MongoDB, Couchbase, Elasticsearch, ClickHouse, InfluxDB, Redisson, Rediscala
 - Reads `db.query.summary` from `DbClientAttributesGetter.getDbQuerySummary()`
 - Default implementation returns `null` - must override to provide value
 
 ### DbClientSpanNameExtractor
+
 - For SQL: Uses query summary as span name in stable semconv
 - For NoSQL: Uses `"<operation> <namespace>"` format (doesn't use query summary for span name)

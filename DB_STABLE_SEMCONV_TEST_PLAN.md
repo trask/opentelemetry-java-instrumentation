@@ -19,32 +19,39 @@ equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? querySummary(operation, 
 ## Instrumentations to Check
 
 ### 1. R2DBC (Reactive Relational Database Connectivity)
+
 - **Location:** `instrumentation/r2dbc-1.0/`
 - **Test command:** `./gradlew :instrumentation:r2dbc-1.0:javaagent:testStableSemconv --fail-fast`
 - **Expected changes:** Similar to JDBC - update span name expectations and add `DB_QUERY_SUMMARY` assertions
 
 ### 2. Hibernate
+
 - **Location:** `instrumentation/hibernate/`
 - **Test command:** `./gradlew :instrumentation:hibernate:hibernate-6.0:javaagent:testStableSemconv --fail-fast`
 - **Note:** May generate SQL queries internally - check if tests validate SQL spans
 
 ### 3. jOOQ
+
 - **Location:** `instrumentation/jooq-3.0/`
 - **Test command:** `./gradlew :instrumentation:jooq-3.0:javaagent:testStableSemconv --fail-fast`
 
 ### 4. Spring Data
+
 - **Location:** `instrumentation/spring/spring-data/`
 - **Test command:** `./gradlew :instrumentation:spring:spring-data:spring-data-3.0:testing:testStableSemconv --fail-fast`
 
 ### 5. MyBatis
+
 - **Location:** `instrumentation/mybatis-3.2/`
 - **Test command:** `./gradlew :instrumentation:mybatis-3.2:javaagent:testStableSemconv --fail-fast`
 
 ### 6. Vertx SQL Client
+
 - **Location:** `instrumentation/vertx/`
 - **Test command:** `./gradlew :instrumentation:vertx:vertx-sql-client-4.0:javaagent:testStableSemconv --fail-fast`
 
 ### 7. OpenTelemetry Extension Annotations (with SQL)
+
 - **Location:** `instrumentation/opentelemetry-extension-annotations-1.0/`
 
 ## Execution Steps
@@ -61,11 +68,13 @@ equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? querySummary(operation, 
 ## Quick Discovery Command
 
 Find all `testStableSemconv` tasks:
+
 ```bash
 ./gradlew tasks --all | grep -i "testStableSemconv"
 ```
 
 Or check which modules have stable semconv test configurations:
+
 ```bash
 grep -r "testStableSemconv" --include="*.gradle.kts" instrumentation/
 ```

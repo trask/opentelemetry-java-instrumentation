@@ -1,7 +1,9 @@
 # db.query.summary Implementation Progress
 
 ## Overview
+
 Implementing `db.query.summary` attribute from OpenTelemetry semantic conventions.
+
 - Format: `{operation} {target}` (e.g., "SELECT users", "INSERT orders")
 - Max length: 255 characters
 - Span name in stable semconv should be `db.query.summary`
@@ -9,18 +11,22 @@ Implementing `db.query.summary` attribute from OpenTelemetry semantic convention
 ## Completed Work
 
 ### 1. SqlStatementInfo.java
+
 **File:** `instrumentation-api-incubator/src/main/java/io/opentelemetry/instrumentation/api/incubator/semconv/db/SqlStatementInfo.java`
 
 Added:
+
 - `querySummary` field to AutoValue class
 - `getQuerySummary()` method
 - `truncateQuerySummary()` helper (max 255 chars, truncates at word boundary)
 - Updated `create()` factory method signature
 
 ### 2. SqlSanitizer.jflex
+
 **File:** `instrumentation-api-incubator/src/jflex/SqlSanitizer.jflex`
 
 Added:
+
 - `querySummaryBuilder` StringBuilder field
 - `appendOperationToSummary()` - appends operation (SELECT, INSERT, etc.)
 - `appendTargetToSummary()` - appends table name after operation
@@ -29,30 +35,38 @@ Added:
 **Note:** After editing, regenerate with: `./gradlew :instrumentation-api-incubator:generateJflex`
 
 ### 3. SqlClientAttributesExtractor.java
+
 **File:** `instrumentation-api-incubator/src/main/java/io/opentelemetry/instrumentation/api/incubator/semconv/db/SqlClientAttributesExtractor.java`
 
 Added:
+
 - Import for `DB_QUERY_SUMMARY`
 - Sets `db.query.summary` attribute from `SqlStatementInfo.getQuerySummary()`
 
 ### 4. MultiQuery.java
+
 **File:** `instrumentation-api-incubator/src/main/java/io/opentelemetry/instrumentation/api/incubator/semconv/db/MultiQuery.java`
 
 Added:
+
 - `querySummary` tracking for multi-statement queries
 - `getQuerySummary()` method
 
 ### 5. DbClientSpanNameExtractor.java
+
 **File:** `instrumentation-api-incubator/src/main/java/io/opentelemetry/instrumentation/api/incubator/semconv/db/DbClientSpanNameExtractor.java`
 
 Updated `SqlClientSpanNameExtractor.extract()`:
+
 - In stable semconv mode: returns `querySummary` directly as span name
 - In old semconv mode: uses existing `computeSpanName(namespace, operation, mainIdentifier)`
 
 ### 6. AbstractJdbcInstrumentationTest.java
+
 **File:** `instrumentation/jdbc/testing/src/main/java/io/opentelemetry/instrumentation/jdbc/testing/AbstractJdbcInstrumentationTest.java`
 
 Added:
+
 - Import: `import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;`
 - Assertion for `DB_QUERY_SUMMARY` attribute in `testBasicStatement`
 - Helper method: `querySummary(String table)` - returns `"SELECT"` or `"SELECT " + table`
@@ -61,6 +75,7 @@ Added:
 ## Test Status
 
 ### Passing
+
 - ✅ `./gradlew :instrumentation:jdbc:javaagent:test` (old semconv) - BUILD SUCCESSFUL
 - ✅ `./gradlew :instrumentation:jdbc:javaagent:testStableSemconv` (stable semconv) - BUILD SUCCESSFUL (107 tests)
 
@@ -82,6 +97,7 @@ Tests updated to use conditional span names and `DB_QUERY_SUMMARY` assertions:
 10. `testPreparedStatementExecute`
 
 **Pattern applied:**
+
 ```java
 // Span name conditional
 span.hasName(emitStableDatabaseSemconv() ? querySummary(operation, table) : oldSpanName)
@@ -93,6 +109,7 @@ equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? querySummary(operation, 
 ## Previous Issue (Resolved)
 
 Tests were failing because span names in stable semconv mode should match `db.query.summary` format:
+
 - Old format: `{operation} {namespace}.{table}` (e.g., "SELECT jdbcunittest")
 - New format: `{operation} {table}` or just `{operation}` (e.g., "SELECT" or "SELECT users")
 
@@ -130,6 +147,7 @@ Tests were failing because span names in stable semconv mode should match `db.qu
 ```
 
 ## Semantic Convention Reference
+
 - `db.query.summary`: A low-cardinality string describing the performed operation
 - Format: `{operation}` or `{operation} {target}`
 - Max length: 255 characters

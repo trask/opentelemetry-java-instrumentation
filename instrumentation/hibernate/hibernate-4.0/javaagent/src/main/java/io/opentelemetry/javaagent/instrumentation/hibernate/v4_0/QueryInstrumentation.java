@@ -61,8 +61,7 @@ public class QueryInstrumentation implements TypeInstrumentation {
 
       Context parentContext = Java8BytecodeBridge.currentContext();
       HibernateOperation hibernateOperation =
-          HibernateOperation.fromSpanName(
-              getSpanNameForQuery(query.getQueryString()), sessionInfo);
+          HibernateOperation.fromSpanName(getSpanNameForQuery(query.getQueryString()), sessionInfo);
 
       return HibernateOperationScope.start(hibernateOperation, parentContext, instrumenter());
     }

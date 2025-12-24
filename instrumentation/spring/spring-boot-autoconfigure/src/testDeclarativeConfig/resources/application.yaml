@@ -14,4 +14,7 @@ otel:
   instrumentation/development:
     java:
       foo:
-        bar: baz
+        string_key: string_value
+        int_key: 42
+        bool_key: true
+

@@ -66,9 +66,13 @@ class DeclarativeConfigTest {
                         assertThat(c.getDeclarativeConfig("foo"))
                             .isNotNull()
                             .satisfies(
-                                instrumentationConfig ->
-                                    assertThat(instrumentationConfig.getString("bar"))
-                                        .isEqualTo("baz"))));
+                                instrumentationConfig -> {
+                                  assertThat(instrumentationConfig.getString("string_key"))
+                                      .isEqualTo("string_value");
+                                  assertThat(instrumentationConfig.getBoolean("bool_key")).isTrue();
+                                  assertThat(instrumentationConfig.getLong("int_key"))
+                                      .isEqualTo(42);
+                                })));
   }
 
   @Test

@@ -8,6 +8,7 @@ package io.opentelemetry.instrumentation.spring.autoconfigure;
 import static java.util.Objects.requireNonNull;
 
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.incubator.ExtendedOpenTelemetry;
 import io.opentelemetry.api.incubator.config.ConfigProvider;
 import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.common.ComponentLoader;
@@ -61,7 +62,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 
 /**
- * Create {@link io.opentelemetry.api.OpenTelemetry} bean if bean is missing.
+ * Create {@link OpenTelemetry} bean if bean is missing.
  *
  * <p>Adds span exporter beans to the active tracer provider.
  *
@@ -176,8 +177,8 @@ public class OpenTelemetryAutoConfiguration {
       }
 
       @Bean
-      public ConfigProvider configProvider(OpenTelemetryConfigurationModel model) {
-        return SpringConfigProvider.create(model);
+      public ConfigProvider configProvider(OpenTelemetry openTelemetry) {
+        return ((ExtendedOpenTelemetry) openTelemetry).getConfigProvider();
       }
 
       /**

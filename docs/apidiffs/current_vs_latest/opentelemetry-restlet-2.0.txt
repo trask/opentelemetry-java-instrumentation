@@ -1,0 +1,16 @@
+Comparing source compatibility of opentelemetry-restlet-2.0-2.24.0-SNAPSHOT.jar against 
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetry  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW METHOD: PUBLIC(+) STATIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder builder(io.opentelemetry.api.OpenTelemetry)
+	+++  NEW METHOD: PUBLIC(+) STATIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetry create(io.opentelemetry.api.OpenTelemetry)
+	+++  NEW METHOD: PUBLIC(+) org.restlet.routing.Filter newFilter(java.lang.String)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder addAttributesExtractor(io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor<org.restlet.Request,org.restlet.Response>)
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetry build()
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder setCapturedRequestHeaders(java.util.Collection<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder setCapturedResponseHeaders(java.util.Collection<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder setKnownMethods(java.util.Collection<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.restlet.v2_0.RestletTelemetryBuilder setSpanNameExtractorCustomizer(java.util.function.UnaryOperator<io.opentelemetry.instrumentation.api.instrumenter.SpanNameExtractor<org.restlet.Request>>)

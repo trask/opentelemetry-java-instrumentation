@@ -1,0 +1,80 @@
+Comparing source compatibility of opentelemetry-ktor-1.0-2.24.0-SNAPSHOT.jar against 
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.ApplicationRequestGetter  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.ApplicationRequestGetter INSTANCE
+	+++  NEW METHOD: PUBLIC(+) java.lang.String get(io.ktor.request.ApplicationRequest, java.lang.String)
+	+++  NEW METHOD: PUBLIC(+) java.util.Iterator<java.lang.String> getAll(io.ktor.request.ApplicationRequest, java.lang.String)
+	+++  NEW METHOD: PUBLIC(+) java.lang.Iterable<java.lang.String> keys(io.ktor.request.ApplicationRequest)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�$&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;��(&#xA;�&#xA;���&#xA;��À���2�����0�0�B���¢����J�������0�2�������0�2�����0�H�J ��������0�0&#x9;2�������0�2�����0�H�J��&#xA;������0�0�2�����0�H�¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v1_0/ApplicationRequestGetter;,Lio/opentelemetry/context/propagation/TextMapGetter;,Lio/ktor/request/ApplicationRequest;,()V,get,,carrier,name,getAll,,keys,,opentelemetry-ktor-1.0 (+)
++++  NEW ENUM: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorHttpServerAttributesGetter  (compatible)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Enum
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorHttpServerAttributesGetter INSTANCE
+	+++  NEW METHOD: PUBLIC(+) java.util.List<java.lang.String> getHttpRequestHeader(io.ktor.request.ApplicationRequest, java.lang.String)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getHttpRequestMethod(io.ktor.request.ApplicationRequest)
+	+++  NEW METHOD: PUBLIC(+) java.util.List<java.lang.String> getHttpResponseHeader(io.ktor.request.ApplicationRequest, io.ktor.response.ApplicationResponse, java.lang.String)
+	+++  NEW METHOD: PUBLIC(+) java.lang.Integer getHttpResponseStatusCode(io.ktor.request.ApplicationRequest, io.ktor.response.ApplicationResponse, java.lang.Throwable)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getNetworkPeerAddress(io.ktor.request.ApplicationRequest, io.ktor.response.ApplicationResponse)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getNetworkProtocolName(io.ktor.request.ApplicationRequest, io.ktor.response.ApplicationResponse)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getNetworkProtocolVersion(io.ktor.request.ApplicationRequest, io.ktor.response.ApplicationResponse)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getUrlPath(io.ktor.request.ApplicationRequest)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getUrlQuery(io.ktor.request.ApplicationRequest)
+	+++  NEW METHOD: PUBLIC(+) java.lang.String getUrlScheme(io.ktor.request.ApplicationRequest)
+	+++  NEW METHOD: PUBLIC(+) STATIC(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorHttpServerAttributesGetter valueOf(java.lang.String)
+	+++  NEW METHOD: PUBLIC(+) STATIC(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorHttpServerAttributesGetter[] values()
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�2&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�� &#xA;���&#xA;���&#xA;���&#xA;�&#xA;���&#xA;��&#x9;����2�����0�0�2�����0�����0�0�B���¢����J���������0�0�2��&#x9;��0�2��&#xA;��0�H�J�����0�2��&#x9;��0�H�J&amp;��������0�0�2��&#x9;��0�2��&#xD;��0�2��&#xA;��0�H�J)������0�2��&#x9;��0�2��&#xD;��0�2�������0�H�¢����J�������0�2��&#x9;��0�2��&#xD;����0�H�J�������0�2��&#x9;��0�2��&#xD;����0�H�J�������0�2��&#x9;��0�2��&#xD;����0�H�J�����0�2��&#x9;��0�H�J�����0�2��&#x9;��0�H�J�����0�2��&#x9;��0�H�j���¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v1_0/KtorHttpServerAttributesGetter;,,Lio/opentelemetry/instrumentation/api/semconv/http/HttpServerAttributesGetter;,Lio/ktor/request/ApplicationRequest;,Lio/ktor/response/ApplicationResponse;,(Ljava/lang/String;I)V,getHttpRequestHeader,,,request,name,getHttpRequestMethod,getHttpResponseHeader,response,getHttpResponseStatusCode,,error,,(Lio/ktor/request/ApplicationRequest;Lio/ktor/response/ApplicationResponse;Ljava/lang/Throwable;)Ljava/lang/Integer;,getNetworkPeerAddress,getNetworkProtocolName,getNetworkProtocolVersion,getUrlPath,getUrlQuery,getUrlScheme,INSTANCE,opentelemetry-ktor-1.0 (+)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry$Feature Feature
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�4&#xA;���&#xA;���&#xA;�&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�&#xA;���&#xA;�&#xA;���&#xA;�&#xA;���&#xA;����� �2�0�:���B�������������0�����0�0�¢����J&quot;����0�2��&#x9;��0&#xA;2�����0�2��&#xD;����0�H�J�������0&#xA;2�����0�H�R���������0�����0�0�X�¢��&#xA;�¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v1_0/KtorServerTelemetry;,,instrumenter,Lio/opentelemetry/instrumentation/api/instrumenter/Instrumenter;,Lio/ktor/request/ApplicationRequest;,Lio/ktor/response/ApplicationResponse;,(Lio/opentelemetry/instrumentation/api/instrumenter/Instrumenter;)V,end,,context,Lio/opentelemetry/context/Context;,call,Lio/ktor/application/ApplicationCall;,error,,start,Configuration,Feature,opentelemetry-ktor-1.0 (+)
++++  NEW CLASS: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry$Configuration  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW FIELD: PUBLIC(+) io.opentelemetry.instrumentation.api.incubator.builder.internal.DefaultHttpServerInstrumenterBuilder<io.ktor.request.ApplicationRequest,io.ktor.response.ApplicationResponse> builder
+	+++  NEW CONSTRUCTOR: PUBLIC(+) KtorServerTelemetry$Configuration()
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void addAttributesExtractor(io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor<io.ktor.request.ApplicationRequest,io.ktor.response.ApplicationResponse>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.api.incubator.builder.internal.DefaultHttpServerInstrumenterBuilder<io.ktor.request.ApplicationRequest,io.ktor.response.ApplicationResponse> getBuilder$opentelemetry_ktor_1_0()
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) kotlin.jvm.functions.Function1<io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<io.ktor.request.ApplicationRequest>,io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<io.ktor.request.ApplicationRequest>> getSpanKindExtractor$opentelemetry_ktor_1_0()
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) boolean isOpenTelemetryInitialized$opentelemetry_ktor_1_0()
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setBuilder$opentelemetry_ktor_1_0(io.opentelemetry.instrumentation.api.incubator.builder.internal.DefaultHttpServerInstrumenterBuilder<io.ktor.request.ApplicationRequest,io.ktor.response.ApplicationResponse>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setCapturedRequestHeaders(java.util.List<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setCapturedResponseHeaders(java.util.List<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setKnownMethods(java.util.Collection<java.lang.String>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setOpenTelemetry(io.opentelemetry.api.OpenTelemetry)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setSpanKindExtractor(kotlin.jvm.functions.Function1<? super io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<? super io.ktor.request.ApplicationRequest>,? extends io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<? extends io.ktor.request.ApplicationRequest>>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setSpanKindExtractor$opentelemetry_ktor_1_0(kotlin.jvm.functions.Function1<? super io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<? super io.ktor.request.ApplicationRequest>,? extends io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor<? extends io.ktor.request.ApplicationRequest>>)
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) void setStatusExtractor(kotlin.jvm.functions.Function1<? super io.opentelemetry.instrumentation.api.instrumenter.SpanStatusExtractor<? super io.ktor.request.ApplicationRequest,? super io.ktor.response.ApplicationResponse>,? extends io.opentelemetry.instrumentation.api.instrumenter.SpanStatusExtractor<? extends io.ktor.request.ApplicationRequest,? extends io.ktor.response.ApplicationResponse>>)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�^&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�&#xA;���&#xA;�&#xA;���&#xA;���&#xA;�� &#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���2�0�B�¢����J�����0�2���������0�����0�0�J&#xD;����0�H�¢����J�����0�2���������0�0�J�����0�2���������0�0�J�����0�2�� ������0�0!J��&quot;��0�2��#��0$J&amp;�%��0�2������&#xA;������0�0&#xD;�&#xA;������0�0&#xD;0�J2�&amp;��0�2*���&amp;��������0�����0�0&apos;��������0�����0�0&apos;0�R&amp;��������0�����0�0�X.¢��&#xA;�������&quot;��&#x9;�&#xA;R2�����&#xA;������0�0&#xD;�&#xA;������0�0&#xD;0�X�¢��&#xA;�������&quot;�����¨�( (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v1_0/KtorServerTelemetry$Configuration;,,()V,builder,Lio/opentelemetry/instrumentation/api/incubator/builder/internal/DefaultHttpServerInstrumenterBuilder;,Lio/ktor/request/ApplicationRequest;,Lio/ktor/response/ApplicationResponse;,getBuilder$opentelemetry_ktor_1_0,()Lio/opentelemetry/instrumentation/api/incubator/builder/internal/DefaultHttpServerInstrumenterBuilder;,setBuilder$opentelemetry_ktor_1_0,(Lio/opentelemetry/instrumentation/api/incubator/builder/internal/DefaultHttpServerInstrumenterBuilder;)V,spanKindExtractor,Lkotlin/Function1;,Lio/opentelemetry/instrumentation/api/instrumenter/SpanKindExtractor;,getSpanKindExtractor$opentelemetry_ktor_1_0,()Lkotlin/jvm/functions/Function1;,setSpanKindExtractor$opentelemetry_ktor_1_0,(Lkotlin/jvm/functions/Function1;)V,addAttributesExtractor,,extractor,Lio/opentelemetry/instrumentation/api/instrumenter/AttributesExtractor;,isOpenTelemetryInitialized,,isOpenTelemetryInitialized$opentelemetry_ktor_1_0,setCapturedRequestHeaders,requestHeaders,,,setCapturedResponseHeaders,responseHeaders,setKnownMethods,knownMethods,,setOpenTelemetry,openTelemetry,Lio/opentelemetry/api/OpenTelemetry;,setSpanKindExtractor,setStatusExtractor,Lio/opentelemetry/instrumentation/api/instrumenter/SpanStatusExtractor;,opentelemetry-ktor-1.0 (+)
++++  NEW CLASS: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry$Feature  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW METHOD: PUBLIC(+) io.ktor.util.AttributeKey<io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry> getKey()
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry install(io.ktor.application.Application, kotlin.jvm.functions.Function1<? super io.opentelemetry.instrumentation.ktor.v1_0.KtorServerTelemetry$Configuration,kotlin.Unit>)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�&gt;&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�&#xA;���&#xA;���&#xA;�&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�����2�����0�����0�����0�0�B���¢����J)����0�2�����0�2���������0�����0�0�¢����H�R�����0�XT¢��&#xA;�R���������0&#xA;0&#x9;X�¢��&#xA;�R���������0�0&#x9;X�¢��&#xA;�R��&#xD;������0�0&#x9;X�¢��&#xA;�������¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v1_0/KtorServerTelemetry$Feature;,Lio/ktor/application/ApplicationFeature;,Lio/ktor/application/Application;,Lio/opentelemetry/instrumentation/ktor/v1_0/KtorServerTelemetry$Configuration;,Lio/opentelemetry/instrumentation/ktor/v1_0/KtorServerTelemetry;,()V,INSTRUMENTATION_NAME,,contextKey,Lio/ktor/util/AttributeKey;,Lio/opentelemetry/context/Context;,errorKey,,key,getKey,()Lio/ktor/util/AttributeKey;,install,pipeline,configure,Lkotlin/Function1;,,Lkotlin/ExtensionFunctionType;,opentelemetry-ktor-1.0 (+)

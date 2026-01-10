@@ -1,0 +1,66 @@
+Comparing source compatibility of opentelemetry-ktor-2.0-2.24.0-SNAPSHOT.jar against 
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.InstrumentationProperties  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.InstrumentationProperties INSTANCE
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) java.lang.String INSTRUMENTATION_NAME
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=��&#xA;���&#xA;���&#xA;���&#xA;���&#xA;��À���2�0�B���¢����R�����0�XT¢��&#xA;�¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v2_0/InstrumentationProperties;,,()V,INSTRUMENTATION_NAME,,opentelemetry-ktor-2.0 (+)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	===  UNCHANGED SUPERCLASS: n.a.
+	+++  NEW FIELD: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry$Companion Companion
+	+++  NEW CONSTRUCTOR: PUBLIC(+) KtorClientTelemetry(io.opentelemetry.instrumentation.api.instrumenter.Instrumenter<io.ktor.client.request.HttpRequestData,io.ktor.client.statement.HttpResponse>, io.opentelemetry.context.propagation.ContextPropagators)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=� &#xA;���&#xA;���&#xA;�&#xA;���&#xA;���&#xA;���&#xA;�&#xA;���&#xA;����� &#x9;2�0�:�&#x9;B#������������0�����0�0�������0�¢����¨�&#xA; (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetry;,Lio/opentelemetry/instrumentation/ktor/v2_0/common/AbstractKtorClientTelemetry;,instrumenter,Lio/opentelemetry/instrumentation/api/instrumenter/Instrumenter;,Lio/ktor/client/request/HttpRequestData;,Lio/ktor/client/statement/HttpResponse;,propagators,Lio/opentelemetry/context/propagation/ContextPropagators;,(Lio/opentelemetry/instrumentation/api/instrumenter/Instrumenter;Lio/opentelemetry/context/propagation/ContextPropagators;)V,Companion,opentelemetry-ktor-2.0 (+)
++++  NEW CLASS: PUBLIC(+) STATIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry$Companion  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW METHOD: PUBLIC(+) io.ktor.util.AttributeKey<io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry> getKey()
+	+++  NEW METHOD: PUBLIC(+) void install(io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry, io.ktor.client.HttpClient)
+	+++  NEW METHOD: PUBLIC(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry prepare(kotlin.jvm.functions.Function1<? super io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetryBuilder,kotlin.Unit>)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=�6&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�����2�����0�����0�0�B���¢����J��&#x9;��0&#xA;2�����0�2�����0&#xD;H�J!����0�2���������0�����0&#xA;0�¢����H�R���������0�0�X�¢��&#xA;�������¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetry$Companion;,Lio/ktor/client/plugins/HttpClientPlugin;,Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetryBuilder;,Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetry;,()V,key,Lio/ktor/util/AttributeKey;,getKey,()Lio/ktor/util/AttributeKey;,install,,plugin,scope,Lio/ktor/client/HttpClient;,prepare,block,Lkotlin/Function1;,Lkotlin/ExtensionFunctionType;,opentelemetry-ktor-2.0 (+)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetryBuilder  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	===  UNCHANGED SUPERCLASS: n.a.
+	+++  NEW CONSTRUCTOR: PUBLIC(+) KtorClientTelemetryBuilder()
+	+++  NEW METHOD: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorClientTelemetry build$opentelemetry_ktor_2_0()
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=��&#xA;���&#xA;���&#xA;���&#xA;���&#xA;�����2�0�B�¢����J&#xD;����0�H�¢����¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetryBuilder;,Lio/opentelemetry/instrumentation/ktor/v2_0/common/AbstractKtorClientTelemetryBuilder;,()V,build,Lio/opentelemetry/instrumentation/ktor/v2_0/KtorClientTelemetry;,build$opentelemetry_ktor_2_0,opentelemetry-ktor-2.0 (+)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorServerTelemetryBuilder  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	===  UNCHANGED SUPERCLASS: n.a.
+	+++  NEW CONSTRUCTOR: PUBLIC(+) KtorServerTelemetryBuilder(java.lang.String)
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=1 (+)
+		+++  NEW ELEMENT: d1=��&#xA;���&#xA;���&#xA;�&#xA;���&#xA;�����2�0�B���������0�¢����¨�� (+)
+		+++  NEW ELEMENT: d2=Lio/opentelemetry/instrumentation/ktor/v2_0/KtorServerTelemetryBuilder;,Lio/opentelemetry/instrumentation/ktor/v2_0/common/AbstractKtorServerTelemetryBuilder;,instrumentationName,,(Ljava/lang/String;)V,opentelemetry-ktor-2.0 (+)
++++  NEW CLASS: PUBLIC(+) FINAL(+) io.opentelemetry.instrumentation.ktor.v2_0.KtorServerTelemetryBuilderKt  (not serializable)
+	+++  CLASS FILE FORMAT VERSION: 52.0 <- n.a.
+	+++  NEW SUPERCLASS: java.lang.Object
+	+++  NEW METHOD: PUBLIC(+) STATIC(+) FINAL(+) io.ktor.server.application.RouteScopedPlugin<io.opentelemetry.instrumentation.ktor.v2_0.KtorServerTelemetryBuilder> getKtorServerTelemetry()
+	+++  NEW ANNOTATION: kotlin.Metadata
+		+++  NEW ELEMENT: xi=48 (+)
+		+++  NEW ELEMENT: mv=1,8,0 (+)
+		+++  NEW ELEMENT: k=2 (+)
+		+++  NEW ELEMENT: d1=��&#xA;�&#xA;���&#xA;���&#xA;���&quot;���������0�0�¢��&#xA;�������¨�� (+)
+		+++  NEW ELEMENT: d2=KtorServerTelemetry,Lio/ktor/server/application/RouteScopedPlugin;,Lio/opentelemetry/instrumentation/ktor/v2_0/KtorServerTelemetryBuilder;,getKtorServerTelemetry,()Lio/ktor/server/application/RouteScopedPlugin;,opentelemetry-ktor-2.0 (+)

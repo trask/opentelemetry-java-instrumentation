@@ -38,7 +38,8 @@ public final class JettyClientTelemetry {
   }
 
   /**
-   * @deprecated Use {@link #newHttpClient()} or {@link #newHttpClient(HttpClientTransport)} instead.
+   * @deprecated Use {@link #newHttpClient()} or {@link #newHttpClient(HttpClientTransport)}
+   *     instead.
    */
   @Deprecated
   public HttpClient getHttpClient() {

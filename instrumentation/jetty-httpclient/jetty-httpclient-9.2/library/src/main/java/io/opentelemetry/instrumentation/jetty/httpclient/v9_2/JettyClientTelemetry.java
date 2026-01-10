@@ -44,7 +44,8 @@ public final class JettyClientTelemetry {
   }
 
   /**
-   * @deprecated Use {@link #newHttpClient()}, {@link #newHttpClient(SslContextFactory)}, or {@link #newHttpClient(HttpClientTransport, SslContextFactory)} instead.
+   * @deprecated Use {@link #newHttpClient()}, {@link #newHttpClient(SslContextFactory)}, or {@link
+   *     #newHttpClient(HttpClientTransport, SslContextFactory)} instead.
    */
   @Deprecated
   public HttpClient getHttpClient() {
@@ -57,8 +58,7 @@ public final class JettyClientTelemetry {
   }
 
   /**
-   * Returns a new {@link HttpClient} with the specified SSL context factory and tracing
-   * configured.
+   * Returns a new {@link HttpClient} with the specified SSL context factory and tracing configured.
    *
    * @param sslContextFactory the SSL context factory to use for HTTPS support
    */

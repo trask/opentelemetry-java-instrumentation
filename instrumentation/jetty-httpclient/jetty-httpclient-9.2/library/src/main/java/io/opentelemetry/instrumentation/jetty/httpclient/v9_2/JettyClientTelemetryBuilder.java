@@ -37,7 +37,8 @@ public final class JettyClientTelemetryBuilder {
   }
 
   /**
-   * @deprecated Use {@link JettyClientTelemetry#newHttpClient(HttpClientTransport, SslContextFactory)} instead.
+   * @deprecated Use {@link JettyClientTelemetry#newHttpClient(HttpClientTransport,
+   *     SslContextFactory)} instead.
    */
   @Deprecated
   @CanIgnoreReturnValue
@@ -48,7 +49,9 @@ public final class JettyClientTelemetryBuilder {
   }
 
   /**
-   * @deprecated Use {@link org.eclipse.jetty.client.HttpClient#setSslContextFactory(SslContextFactory)} on the HttpClient returned by {@link JettyClientTelemetry#newHttpClient()} instead.
+   * @deprecated Use {@link
+   *     org.eclipse.jetty.client.HttpClient#setSslContextFactory(SslContextFactory)} on the
+   *     HttpClient returned by {@link JettyClientTelemetry#newHttpClient()} instead.
    */
   @Deprecated
   @CanIgnoreReturnValue

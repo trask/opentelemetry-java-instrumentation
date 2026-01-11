@@ -17,6 +17,7 @@ import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_BATCH_SIZE;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;
+import static io.opentelemetry.semconv.DbAttributes.DB_STORED_PROCEDURE_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_SYSTEM_NAME;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.incubating.DbIncubatingAttributes.DB_CONNECTION_STRING;
@@ -1220,7 +1221,7 @@ public abstract class AbstractJdbcInstrumentationTest {
                 trace.hasSpansSatisfyingExactly(
                     span -> span.hasName("parent").hasKind(SpanKind.INTERNAL).hasNoParent(),
                     span ->
-                        span.hasName(emitStableDatabaseSemconv() ? "other_sql" : "DB Query")
+                        span.hasName(emitStableDatabaseSemconv() ? "localhost" : "DB Query")
                             .hasKind(SpanKind.CLIENT)
                             .hasParent(trace.getSpan(0))
                             .hasAttributesSatisfyingExactly(
@@ -2063,5 +2064,201 @@ public abstract class AbstractJdbcInstrumentationTest {
                                 emitStableDatabaseSemconv() ? "SELECT" : "SELECT " + dbNameLower)
                             .hasKind(SpanKind.CLIENT)
                             .hasParent(trace.getSpan(1))));
+  }
+
+  static Stream<Arguments> callStatementStream() throws SQLException {
+    // Note: Using built-in H2 functions for testing CALL statement instrumentation
+    // ABS is a built-in function that takes one parameter, perfect for testing
+    return Stream.of(
+        Arguments.of(
+            "h2",
+            new org.h2.Driver().connect(jdbcUrls.get("h2"), null),
+            null,
+            "h2:mem:",
+            "CALL ABS(?)",
+            "CALL ABS(5)",
+            "CALL ABS(?)",
+            emitStableDatabaseSemconv() ? "CALL ABS" : "CALL " + dbNameLower + ".ABS",
+            "CALL"),
+        Arguments.of(
+            "h2",
+            cpDatasources.get("tomcat").get("h2").getConnection(),
+            null,
+            "h2:mem:",
+            "CALL ABS(?)",
+            "CALL ABS(5)",
+            "CALL ABS(?)",
+            emitStableDatabaseSemconv() ? "CALL ABS" : "CALL " + dbNameLower + ".ABS",
+            "CALL"),
+        Arguments.of(
+            "h2",
+            cpDatasources.get("hikari").get("h2").getConnection(),
+            null,
+            "h2:mem:",
+            "CALL ABS(?)",
+            "CALL ABS(5)",
+            "CALL ABS(?)",
+            emitStableDatabaseSemconv() ? "CALL ABS" : "CALL " + dbNameLower + ".ABS",
+            "CALL"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("callStatementStream")
+  void testStoredProcedureViaCallableStatement(
+      String system,
+      Connection conn,
+      String username,
+      String url,
+      String callStatement,
+      String callStatementWithValue,
+      String sanitizedStatement,
+      String spanName,
+      String operation)
+      throws SQLException {
+    Connection connection = wrap(conn);
+    cleanup.deferCleanup(connection);
+
+    CallableStatement callableStatement = connection.prepareCall(callStatement);
+    cleanup.deferCleanup(callableStatement);
+    callableStatement.setInt(1, 5);
+
+    testing()
+        .runWithSpan(
+            "parent",
+            () -> {
+              callableStatement.execute();
+            });
+
+    testing()
+        .waitAndAssertTraces(
+            trace ->
+                trace.hasSpansSatisfyingExactly(
+                    span -> span.hasName("parent").hasKind(SpanKind.INTERNAL).hasNoParent(),
+                    span ->
+                        span.hasName(spanName)
+                            .hasKind(SpanKind.CLIENT)
+                            .hasParent(trace.getSpan(0))
+                            .hasAttributesSatisfyingExactly(
+                                equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName(system)),
+                                equalTo(maybeStable(DB_NAME), dbNameLower),
+                                equalTo(DB_USER, emitStableDatabaseSemconv() ? null : username),
+                                equalTo(
+                                    DB_CONNECTION_STRING, emitStableDatabaseSemconv() ? null : url),
+                                equalTo(maybeStable(DB_STATEMENT), sanitizedStatement),
+                                equalTo(maybeStable(DB_OPERATION), operation),
+                                equalTo(maybeStable(DB_SQL_TABLE), null),
+                                equalTo(
+                                    DB_STORED_PROCEDURE_NAME,
+                                    emitStableDatabaseSemconv() ? "ABS" : null),
+                                equalTo(
+                                    DB_QUERY_SUMMARY,
+                                    emitStableDatabaseSemconv() ? spanName : null))));
+  }
+
+  @ParameterizedTest
+  @MethodSource("callStatementStream")
+  void testStoredProcedureViaSqlStatement(
+      String system,
+      Connection conn,
+      String username,
+      String url,
+      String callStatement,
+      String callStatementWithValue,
+      String sanitizedStatement,
+      String spanName,
+      String operation)
+      throws SQLException {
+    Connection connection = wrap(conn);
+    cleanup.deferCleanup(connection);
+
+    Statement statement = connection.createStatement();
+    cleanup.deferCleanup(statement);
+
+    testing()
+        .runWithSpan(
+            "parent",
+            () -> {
+              statement.execute(callStatementWithValue);
+            });
+
+    testing()
+        .waitAndAssertTraces(
+            trace ->
+                trace.hasSpansSatisfyingExactly(
+                    span -> span.hasName("parent").hasKind(SpanKind.INTERNAL).hasNoParent(),
+                    span ->
+                        span.hasName(spanName)
+                            .hasKind(SpanKind.CLIENT)
+                            .hasParent(trace.getSpan(0))
+                            .hasAttributesSatisfyingExactly(
+                                equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName(system)),
+                                equalTo(maybeStable(DB_NAME), dbNameLower),
+                                equalTo(DB_USER, emitStableDatabaseSemconv() ? null : username),
+                                equalTo(
+                                    DB_CONNECTION_STRING, emitStableDatabaseSemconv() ? null : url),
+                                equalTo(maybeStable(DB_STATEMENT), sanitizedStatement),
+                                equalTo(maybeStable(DB_OPERATION), operation),
+                                equalTo(maybeStable(DB_SQL_TABLE), null),
+                                equalTo(
+                                    DB_STORED_PROCEDURE_NAME,
+                                    emitStableDatabaseSemconv() ? "ABS" : null),
+                                equalTo(
+                                    DB_QUERY_SUMMARY,
+                                    emitStableDatabaseSemconv() ? spanName : null))));
+  }
+
+  @ParameterizedTest
+  @MethodSource("callStatementStream")
+  void testStoredProcedureViaStatementExecuteQuery(
+      String system,
+      Connection conn,
+      String username,
+      String url,
+      String callStatement,
+      String callStatementWithValue,
+      String sanitizedStatement,
+      String spanName,
+      String operation)
+      throws SQLException {
+    Connection connection = wrap(conn);
+    cleanup.deferCleanup(connection);
+
+    Statement statement = connection.createStatement();
+    cleanup.deferCleanup(statement);
+
+    testing()
+        .runWithSpan(
+            "parent",
+            () -> {
+              ResultSet rs = statement.executeQuery(callStatementWithValue);
+              rs.next();
+              assertThat(rs.getInt(1)).isEqualTo(5);
+              rs.close();
+            });
+
+    testing()
+        .waitAndAssertTraces(
+            trace ->
+                trace.hasSpansSatisfyingExactly(
+                    span -> span.hasName("parent").hasKind(SpanKind.INTERNAL).hasNoParent(),
+                    span ->
+                        span.hasName(spanName)
+                            .hasKind(SpanKind.CLIENT)
+                            .hasParent(trace.getSpan(0))
+                            .hasAttributesSatisfyingExactly(
+                                equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName(system)),
+                                equalTo(maybeStable(DB_NAME), dbNameLower),
+                                equalTo(DB_USER, emitStableDatabaseSemconv() ? null : username),
+                                equalTo(
+                                    DB_CONNECTION_STRING, emitStableDatabaseSemconv() ? null : url),
+                                equalTo(maybeStable(DB_STATEMENT), sanitizedStatement),
+                                equalTo(maybeStable(DB_OPERATION), operation),
+                                equalTo(maybeStable(DB_SQL_TABLE), null),
+                                equalTo(
+                                    DB_STORED_PROCEDURE_NAME,
+                                    emitStableDatabaseSemconv() ? "ABS" : null),
+                                equalTo(
+                                    DB_QUERY_SUMMARY,
+                                    emitStableDatabaseSemconv() ? spanName : null))));
   }
 }

@@ -217,7 +217,7 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
         return querySummary;
       }
       return computeSpanNameStable(
-          getter, request, multiQuery.getOperationName(), multiQuery.getCollectionName(), null);
+          getter, request, multiQuery.getOperationName(), multiQuery.getCollectionName(), multiQuery.getStoredProcedureName());
     }
 
     private boolean isBatch(REQUEST request) {

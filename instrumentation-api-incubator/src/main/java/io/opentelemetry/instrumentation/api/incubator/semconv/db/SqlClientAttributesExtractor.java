@@ -11,6 +11,7 @@ import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_BATCH_SIZE;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;
 import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_TEXT;
+import static io.opentelemetry.semconv.DbAttributes.DB_STORED_PROCEDURE_NAME;
 
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -122,6 +123,7 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
             DB_QUERY_SUMMARY,
             isBatch && querySummary != null ? "BATCH " + querySummary : querySummary);
         internalSet(attributes, DB_COLLECTION_NAME, sanitizedStatement.getCollectionName());
+        internalSet(attributes, DB_STORED_PROCEDURE_NAME, sanitizedStatement.getStoredProcedureName());
       } else if (rawQueryTexts.size() > 1) {
         MultiQuery multiQuery =
             MultiQuery.analyze(getter.getRawQueryTexts(request), statementSanitizationEnabled);
@@ -129,6 +131,7 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
         internalSet(attributes, DB_OPERATION_NAME, multiQuery.getOperationName());
         internalSet(attributes, DB_QUERY_SUMMARY, multiQuery.getQuerySummary());
         internalSet(attributes, DB_COLLECTION_NAME, multiQuery.getCollectionName());
+        internalSet(attributes, DB_STORED_PROCEDURE_NAME, multiQuery.getStoredProcedureName());
       }
     }
 

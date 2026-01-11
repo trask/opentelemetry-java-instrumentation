@@ -11,8 +11,13 @@ import javax.annotation.Nullable;
 @AutoValue
 public abstract class SqlStatementInfo {
 
+  private static final String SQL_CALL = "CALL";
+
   public static SqlStatementInfo create(
-      @Nullable String queryText, @Nullable String operationName, @Nullable String target) {
+      @Nullable String queryText,
+      @Nullable String operationName,
+      // collectionName and storedProcedureName are compressed into this one field for efficiency
+      @Nullable String target) {
     return new AutoValue_SqlStatementInfo(queryText, operationName, target);
   }
 
@@ -38,6 +43,22 @@ public abstract class SqlStatementInfo {
   @Nullable
   public String getOperation() {
     return getOperationName();
+  }
+
+  /**
+   * Returns the table/collection name, or null for CALL operations.
+   *
+   * @see #getStoredProcedureName()
+   */
+  @Nullable
+  public String getCollectionName() {
+    return SQL_CALL.equals(getOperationName()) ? null : getTarget();
+  }
+
+  /** Returns the stored procedure name for CALL operations, or null for other operations. */
+  @Nullable
+  public String getStoredProcedureName() {
+    return SQL_CALL.equals(getOperationName()) ? getTarget() : null;
   }
 
   @Nullable

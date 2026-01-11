@@ -123,7 +123,9 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
       MultiQuery multiQuery = MultiQuery.analyze(rawQueryTexts, false);
       return computeSpanName(
           namespace,
-          multiQuery.getOperationName() != null ? "BATCH " + multiQuery.getOperationName() : "BATCH",
+          multiQuery.getOperationName() != null
+              ? "BATCH " + multiQuery.getOperationName()
+              : "BATCH",
           multiQuery.getTarget());
     }
 

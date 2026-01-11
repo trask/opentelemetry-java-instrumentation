@@ -128,11 +128,14 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
         internalSet(attributes, DB_QUERY_TEXT, join("; ", multiQuery.getStatements()));
 
         String operation =
-            multiQuery.getOperationName() != null ? "BATCH " + multiQuery.getOperationName() : "BATCH";
+            multiQuery.getOperationName() != null
+                ? "BATCH " + multiQuery.getOperationName()
+                : "BATCH";
         internalSet(attributes, DB_OPERATION_NAME, operation);
 
         if (multiQuery.getTarget() != null
-            && (multiQuery.getOperationName() == null || !SQL_CALL.equals(multiQuery.getOperationName()))) {
+            && (multiQuery.getOperationName() == null
+                || !SQL_CALL.equals(multiQuery.getOperationName()))) {
           internalSet(attributes, DB_COLLECTION_NAME, multiQuery.getTarget());
         }
       }

@@ -8,6 +8,7 @@ package io.opentelemetry.instrumentation.api.incubator.semconv.db;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.semconv.DbAttributes.DB_COLLECTION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
+import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;
 import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_TEXT;
 import static io.opentelemetry.semconv.DbAttributes.DB_STORED_PROCEDURE_NAME;
 
@@ -109,6 +110,11 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
             statementSanitizationEnabled ? sanitizedStatement.getQueryText() : rawQueryText);
         internalSet(
             attributes, DB_OPERATION_NAME, isBatch ? "BATCH " + operationName : operationName);
+        String querySummary = sanitizedStatement.getQuerySummary();
+        internalSet(
+            attributes,
+            DB_QUERY_SUMMARY,
+            isBatch && querySummary != null ? "BATCH " + querySummary : querySummary);
         internalSet(attributes, DB_COLLECTION_NAME, sanitizedStatement.getCollectionName());
         internalSet(
             attributes, DB_STORED_PROCEDURE_NAME, sanitizedStatement.getStoredProcedureName());
@@ -117,6 +123,7 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
             MultiQuery.analyze(getter.getRawQueryTexts(request), statementSanitizationEnabled);
         internalSet(attributes, DB_QUERY_TEXT, join("; ", multiQuery.getQueryTexts()));
         internalSet(attributes, DB_OPERATION_NAME, multiQuery.getOperationName());
+        internalSet(attributes, DB_QUERY_SUMMARY, multiQuery.getQuerySummary());
         internalSet(attributes, DB_COLLECTION_NAME, multiQuery.getCollectionName());
         internalSet(attributes, DB_STORED_PROCEDURE_NAME, multiQuery.getStoredProcedureName());
       }

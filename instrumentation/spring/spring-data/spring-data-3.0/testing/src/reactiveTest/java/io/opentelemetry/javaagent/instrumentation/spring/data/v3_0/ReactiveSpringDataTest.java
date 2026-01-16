@@ -88,8 +88,8 @@ class ReactiveSpringDataTest {
                             equalTo(maybeStable(DB_NAME), "db"),
                             equalTo(DB_USER, emitStableDatabaseSemconv() ? null : "sa"),
                             equalTo(maybeStable(DB_STATEMENT), "SELECT CUSTOMER.* FROM CUSTOMER"),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"),
-                            equalTo(maybeStable(DB_SQL_TABLE), "CUSTOMER"),
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"),
+                            equalTo(maybeStable(DB_SQL_TABLE), emitStableDatabaseSemconv() ? null : "CUSTOMER"),
                             equalTo(
                                 DB_CONNECTION_STRING,
                                 emitStableDatabaseSemconv() ? null : "h2:mem://localhost"),

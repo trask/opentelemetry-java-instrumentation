@@ -1690,10 +1690,10 @@ public abstract class AbstractJdbcInstrumentationTest {
                                         : null),
                                 equalTo(
                                     maybeStable(DB_OPERATION),
-                                    emitStableDatabaseSemconv() ? null : null),
+                                    emitStableDatabaseSemconv() ? null : "BATCH INSERT"),
                                 equalTo(
                                     maybeStable(DB_SQL_TABLE),
-                                    emitStableDatabaseSemconv() ? null : null),
+                                    emitStableDatabaseSemconv() ? null : tableName),
                                 equalTo(
                                     DB_OPERATION_BATCH_SIZE,
                                     emitStableDatabaseSemconv() ? 2L : null),
@@ -1755,7 +1755,7 @@ public abstract class AbstractJdbcInstrumentationTest {
                                         : null),
                                 equalTo(
                                     maybeStable(DB_OPERATION),
-                                    emitStableDatabaseSemconv() ? null : null),
+                                    emitStableDatabaseSemconv() ? null : "BATCH INSERT"),
                                 equalTo(
                                     DB_OPERATION_BATCH_SIZE,
                                     emitStableDatabaseSemconv() ? 2L : null),

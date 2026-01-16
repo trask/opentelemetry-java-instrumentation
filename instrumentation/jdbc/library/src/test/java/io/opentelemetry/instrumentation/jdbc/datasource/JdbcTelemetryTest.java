@@ -308,10 +308,10 @@ class JdbcTelemetryTest {
                                 maybeStable(DB_OPERATION),
                                 SemconvStability.emitStableDatabaseSemconv()
                                     ? null
-                                    : null),
+                                    : "BATCH INSERT"),
                             equalTo(
                                 maybeStable(DB_SQL_TABLE),
-                                SemconvStability.emitStableDatabaseSemconv() ? null : null),
+                                SemconvStability.emitStableDatabaseSemconv() ? null : "test"),
                             equalTo(
                                 maybeStable(DB_STATEMENT),
                                 SemconvStability.emitStableDatabaseSemconv()

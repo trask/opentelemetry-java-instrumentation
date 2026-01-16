@@ -35,6 +35,16 @@ final class CouchbaseAttributesGetter
   @Override
   @Nullable
   public String getDbOperationName(CouchbaseRequestInfo couchbaseRequest) {
+    // Under stable semconv, DB_OPERATION_NAME should not be extracted from query text
+    // For N1QL queries, the operation name is derived from the query text
+    // For method calls, the operation name is the method name (not from query text)
+    if (io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv()) {
+      // Only return operation for non-query operations (method calls)
+      if (couchbaseRequest.isMethodCall()) {
+        return couchbaseRequest.operation();
+      }
+      return null;
+    }
     return couchbaseRequest.operation();
   }
 

@@ -34,6 +34,10 @@ final class ClickHouseAttributesGetter
     if (request.getSqlStatementInfo() == null) {
       return null;
     }
+    // Under stable semconv, DB_OPERATION_NAME should not be extracted from query text
+    if (io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv()) {
+      return null;
+    }
     return request.getSqlStatementInfo().getOperationName();
   }
 

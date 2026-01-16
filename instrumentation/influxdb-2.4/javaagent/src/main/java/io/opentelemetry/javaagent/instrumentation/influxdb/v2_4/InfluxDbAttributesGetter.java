@@ -19,6 +19,10 @@ final class InfluxDbAttributesGetter implements DbClientAttributesGetter<InfluxD
   @Nullable
   @Override
   public String getDbOperationName(InfluxDbRequest request) {
+    // Under stable semconv, DB_OPERATION_NAME should not be extracted from query text
+    if (io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv()) {
+      return null;
+    }
     if (request.getOperation() != null) {
       return request.getOperation();
     }

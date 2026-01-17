@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.instrumentation.clickhouse.common;
 
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientAttributesGetter;
+import io.opentelemetry.instrumentation.api.internal.SemconvStability;
 import io.opentelemetry.semconv.incubating.DbIncubatingAttributes;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -31,6 +32,10 @@ final class ClickHouseAttributesGetter
   @Nullable
   @Override
   public String getDbOperationName(ClickHouseDbRequest request) {
+    // Under stable semconv, DB_OPERATION_NAME should not be extracted from query text
+    if (SemconvStability.emitStableDatabaseSemconv()) {
+      return null;
+    }
     if (request.getSqlStatementInfo() == null) {
       return null;
     }

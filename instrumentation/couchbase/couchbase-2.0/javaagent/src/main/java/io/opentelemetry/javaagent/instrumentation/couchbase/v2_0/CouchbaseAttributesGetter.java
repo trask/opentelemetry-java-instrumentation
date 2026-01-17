@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.instrumentation.couchbase.v2_0;
 
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientAttributesGetter;
+import io.opentelemetry.instrumentation.api.internal.SemconvStability;
 import io.opentelemetry.semconv.incubating.DbIncubatingAttributes;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -35,6 +36,11 @@ final class CouchbaseAttributesGetter
   @Override
   @Nullable
   public String getDbOperationName(CouchbaseRequestInfo couchbaseRequest) {
+    // Under stable semconv, DB_OPERATION_NAME should not be extracted from query text
+    // For N1QL queries (isMethodCall() == false), the operation is extracted from query text
+    if (SemconvStability.emitStableDatabaseSemconv() && !couchbaseRequest.isMethodCall()) {
+      return null;
+    }
     return couchbaseRequest.operation();
   }
 

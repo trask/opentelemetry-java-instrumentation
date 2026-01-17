@@ -68,14 +68,24 @@ class JdbcTelemetryTest {
                                 : "SELECT dbname")
                         .hasAttribute(equalTo(maybeStable(DB_STATEMENT), "SELECT ?;"))));
 
-    assertDurationMetric(
-        testing,
-        "io.opentelemetry.jdbc",
-        DB_NAMESPACE,
-        DB_OPERATION_NAME,
-        DB_SYSTEM_NAME,
-        SERVER_ADDRESS,
-        SERVER_PORT);
+    if (SemconvStability.emitStableDatabaseSemconv()) {
+      assertDurationMetric(
+          testing,
+          "io.opentelemetry.jdbc",
+          DB_NAMESPACE,
+          DB_SYSTEM_NAME,
+          SERVER_ADDRESS,
+          SERVER_PORT);
+    } else {
+      assertDurationMetric(
+          testing,
+          "io.opentelemetry.jdbc",
+          DB_NAMESPACE,
+          DB_OPERATION_NAME,
+          DB_SYSTEM_NAME,
+          SERVER_ADDRESS,
+          SERVER_PORT);
+    }
   }
 
   @Test
@@ -120,16 +130,28 @@ class JdbcTelemetryTest {
                             equalTo(SERVER_PORT, 5432),
                             equalTo(ERROR_TYPE, "java.sql.SQLException"))));
 
-    assertDurationMetric(
-        testing,
-        "io.opentelemetry.jdbc",
-        DB_NAMESPACE,
-        DB_OPERATION_NAME,
-        DB_RESPONSE_STATUS_CODE,
-        DB_SYSTEM_NAME,
-        ERROR_TYPE,
-        SERVER_ADDRESS,
-        SERVER_PORT);
+    if (SemconvStability.emitStableDatabaseSemconv()) {
+      assertDurationMetric(
+          testing,
+          "io.opentelemetry.jdbc",
+          DB_NAMESPACE,
+          DB_RESPONSE_STATUS_CODE,
+          DB_SYSTEM_NAME,
+          ERROR_TYPE,
+          SERVER_ADDRESS,
+          SERVER_PORT);
+    } else {
+      assertDurationMetric(
+          testing,
+          "io.opentelemetry.jdbc",
+          DB_NAMESPACE,
+          DB_OPERATION_NAME,
+          DB_RESPONSE_STATUS_CODE,
+          DB_SYSTEM_NAME,
+          ERROR_TYPE,
+          SERVER_ADDRESS,
+          SERVER_PORT);
+    }
   }
 
   @Test
@@ -285,11 +307,11 @@ class JdbcTelemetryTest {
                             equalTo(
                                 maybeStable(DB_OPERATION),
                                 SemconvStability.emitStableDatabaseSemconv()
-                                    ? "BATCH INSERT"
-                                    : null),
+                                    ? null
+                                    : "BATCH INSERT"),
                             equalTo(
                                 maybeStable(DB_SQL_TABLE),
-                                SemconvStability.emitStableDatabaseSemconv() ? "test" : null),
+                                SemconvStability.emitStableDatabaseSemconv() ? null : "test"),
                             equalTo(
                                 maybeStable(DB_STATEMENT),
                                 SemconvStability.emitStableDatabaseSemconv()

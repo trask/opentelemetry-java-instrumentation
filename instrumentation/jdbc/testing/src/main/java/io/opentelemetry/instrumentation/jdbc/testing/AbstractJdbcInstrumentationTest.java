@@ -1384,7 +1384,7 @@ public abstract class AbstractJdbcInstrumentationTest {
                                     DB_CONNECTION_STRING,
                                     emitStableDatabaseSemconv() ? null : "testdb://localhost"),
                                 equalTo(maybeStable(DB_STATEMENT), sanitizedQuery),
-                                equalTo(maybeStable(DB_OPERATION), operation),
+                                equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : operation),
                                 equalTo(maybeStable(DB_SQL_TABLE), emitStableDatabaseSemconv() ? null : table),
                                 equalTo(
                                     PEER_SERVICE, hasPeerService() ? "test-peer-service" : null),
@@ -1445,7 +1445,7 @@ public abstract class AbstractJdbcInstrumentationTest {
                                 maybeStable(DB_STATEMENT),
                                 "SELECT ? FROM INFORMATION_SCHEMA.SYSTEM_USERS"),
                             equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"),
-                            equalTo(maybeStable(DB_SQL_TABLE), "INFORMATION_SCHEMA.SYSTEM_USERS"),
+                            equalTo(maybeStable(DB_SQL_TABLE), emitStableDatabaseSemconv() ? null : "INFORMATION_SCHEMA.SYSTEM_USERS"),
                             equalTo(
                                 DB_QUERY_SUMMARY,
                                 emitStableDatabaseSemconv()
@@ -1522,7 +1522,7 @@ public abstract class AbstractJdbcInstrumentationTest {
                                     emitStableDatabaseSemconv() ? null : "testdb://localhost"),
                                 equalTo(maybeStable(DB_STATEMENT), "SELECT * FROM table"),
                                 equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"),
-                                equalTo(maybeStable(DB_SQL_TABLE), "table"),
+                                equalTo(maybeStable(DB_SQL_TABLE), emitStableDatabaseSemconv() ? null : "table"),
                                 equalTo(
                                     PEER_SERVICE, hasPeerService() ? "test-peer-service" : null),
                                 equalTo(SERVER_ADDRESS, "localhost"),

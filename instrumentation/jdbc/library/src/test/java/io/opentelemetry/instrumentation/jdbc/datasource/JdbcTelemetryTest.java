@@ -119,7 +119,6 @@ class JdbcTelemetryTest {
                                 : "SELECT dbname")
                         .hasAttributesSatisfyingExactly(
                             equalTo(DB_SYSTEM_NAME, "postgresql"),
-                            equalTo(DB_OPERATION_NAME, "SELECT"),
                             equalTo(DB_NAMESPACE, "dbname"),
                             equalTo(DB_QUERY_TEXT, "SELECT ?;"),
                             equalTo(DB_RESPONSE_STATUS_CODE, "42"),

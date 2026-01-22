@@ -47,4 +47,10 @@ final class CouchbaseAttributesGetter
     }
     return null;
   }
+
+  @Override
+  @Nullable
+  public String getDbResponseStatusCode(@Nullable Void response, @Nullable Throwable error) {
+    return null; // Couchbase SDK 2.x does not expose status codes
+  }
 }

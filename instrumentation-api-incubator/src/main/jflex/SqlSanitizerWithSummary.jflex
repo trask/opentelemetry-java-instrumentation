@@ -185,6 +185,13 @@ WHITESPACE           = [ \t\r\n]+
     // Track if we're inside a column alias list (after derived table AS alias(...))
     boolean inColumnAliasList = false;
     int columnAliasListParenLevel = -1;
+    // Track if we just saw a set operator (UNION/INTERSECT/EXCEPT/MINUS)
+    boolean afterSetOperator = false;
+
+    /** Called when a set operator (UNION/INTERSECT/EXCEPT/MINUS) is encountered. */
+    void resetForSetOperator() {
+      afterSetOperator = true;
+    }
 
     void handleFrom() {
       // Set expectingTableName to capture tables
@@ -258,7 +265,28 @@ WHITESPACE           = [ \t\r\n]+
     }
 
     void handleSelect() {
-      // SELECT inside a JOIN subquery
+      if (afterSetOperator) {
+        // This is a SELECT after UNION/INTERSECT/EXCEPT/MINUS - reset state
+        afterSetOperator = false;
+        expectingTableName = false;
+        mainTableSetAlready = false;
+        identifiersAfterMainFromClause = 0;
+        expectingJoinTableName = false;
+        identifiersAfterJoin = 0;
+        inJoinSubquery = false;
+        inImplicitJoin = false;
+        identifiersAfterComma = 0;
+        fromClauseParenLevel = -1;
+        expectingSubqueryOrTable = false;
+        sawAsKeyword = false;
+        inColumnAliasList = false;
+        columnAliasListParenLevel = -1;
+      }
+      // If we're expecting a join table name and see SELECT, it's a subquery in JOIN
+      if (expectingJoinTableName) {
+        inJoinSubquery = true;
+        expectingJoinTableName = false;
+      }
     }
 
     void handleIdentifier() {
@@ -669,6 +697,14 @@ WHITESPACE           = [ \t\r\n]+
   "AS" {
           if (!insideComment && operation != null) {
             operation.handleAs();
+          }
+          appendCurrentFragment();
+          if (isOverLimit()) return YYEOF;
+      }
+  "UNION" | "INTERSECT" | "EXCEPT" | "MINUS" {
+          if (!insideComment && operation instanceof Select) {
+            // Mark that we saw a set operator - state will be reset when SELECT is seen
+            ((Select) operation).resetForSetOperator();
           }
           appendCurrentFragment();
           if (isOverLimit()) return YYEOF;

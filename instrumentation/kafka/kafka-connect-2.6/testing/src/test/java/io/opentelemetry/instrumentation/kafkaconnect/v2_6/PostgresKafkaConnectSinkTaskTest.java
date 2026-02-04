@@ -6,6 +6,7 @@
 package io.opentelemetry.instrumentation.kafkaconnect.v2_6;
 
 import static io.opentelemetry.api.trace.SpanKind.CONSUMER;
+import static io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_BATCH_MESSAGE_COUNT;
@@ -18,6 +19,7 @@ import static io.opentelemetry.semconv.incubating.ThreadIncubatingAttributes.THR
 import static io.opentelemetry.semconv.incubating.ThreadIncubatingAttributes.THREAD_NAME;
 import static io.restassured.RestAssured.given;
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
 import io.opentelemetry.api.trace.Span;
@@ -65,6 +67,15 @@ class PostgresKafkaConnectSinkTaskTest extends KafkaConnectSinkTaskBaseTest {
   private static final String DB_USERNAME = "postgres";
   private static final String DB_PASSWORD = "password";
   private static final String DB_TABLE_PERSON = "person";
+  private static final String DB_SELECT_SPAN_NAME = "SELECT " + DATABASE_NAME;
+  private static final String DB_INSERT_SPAN_NAME =
+      emitStableDatabaseSemconv()
+          ? "INSERT \"" + DB_TABLE_PERSON + "\""
+          : "INSERT " + DATABASE_NAME + "." + DB_TABLE_PERSON;
+  private static final String DB_BATCH_INSERT_SPAN_NAME =
+      emitStableDatabaseSemconv()
+          ? "BATCH INSERT \"" + DB_TABLE_PERSON + "\""
+          : "INSERT " + DATABASE_NAME + "." + DB_TABLE_PERSON;
   private static final String CONNECTOR_NAME = "test-postgres-connector";
   private static final String TOPIC_NAME = "test-postgres-topic";
 
@@ -160,8 +171,14 @@ class PostgresKafkaConnectSinkTaskTest extends KafkaConnectSinkTaskBaseTest {
         trace -> {
           // kafka connect consumer trace, linked to producer span via a span link
           Consumer<SpanDataAssert> selectAssertion =
-              span ->
-                  span.hasName("SELECT test").hasKind(SpanKind.CLIENT).hasParent(trace.getSpan(0));
+              span -> {
+                if (emitStableDatabaseSemconv()) {
+                  span.satisfies(spanData -> assertThat(spanData.getName()).startsWith("SELECT"));
+                } else {
+                  span.hasName(DB_SELECT_SPAN_NAME);
+                }
+                span.hasKind(SpanKind.CLIENT).hasParent(trace.getSpan(0));
+              };
 
           trace.hasSpansSatisfyingExactly(
               span ->
@@ -182,7 +199,7 @@ class PostgresKafkaConnectSinkTaskTest extends KafkaConnectSinkTaskBaseTest {
               selectAssertion,
               selectAssertion,
               span ->
-                  span.hasName("INSERT test." + DB_TABLE_PERSON)
+                  span.hasName(DB_INSERT_SPAN_NAME)
                       .hasKind(SpanKind.CLIENT)
                       .hasParent(trace.getSpan(0)));
         },
@@ -285,8 +302,14 @@ class PostgresKafkaConnectSinkTaskTest extends KafkaConnectSinkTaskBaseTest {
         trace -> {
           // kafka connect consumer trace, linked to producer span via a span link
           Consumer<SpanDataAssert> selectAssertion =
-              span ->
-                  span.hasName("SELECT test").hasKind(SpanKind.CLIENT).hasParent(trace.getSpan(0));
+              span -> {
+                if (emitStableDatabaseSemconv()) {
+                  span.satisfies(spanData -> assertThat(spanData.getName()).startsWith("SELECT"));
+                } else {
+                  span.hasName(DB_SELECT_SPAN_NAME);
+                }
+                span.hasKind(SpanKind.CLIENT).hasParent(trace.getSpan(0));
+              };
 
           trace.hasSpansSatisfyingExactly(
               span ->
@@ -309,7 +332,7 @@ class PostgresKafkaConnectSinkTaskTest extends KafkaConnectSinkTaskBaseTest {
               selectAssertion,
               selectAssertion,
               span ->
-                  span.hasName("INSERT test." + DB_TABLE_PERSON)
+                  span.hasName(DB_BATCH_INSERT_SPAN_NAME)
                       .hasKind(SpanKind.CLIENT)
                       .hasParent(trace.getSpan(0)));
         },

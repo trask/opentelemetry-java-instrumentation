@@ -5,6 +5,9 @@
 
 package io.opentelemetry.instrumentation.iceberg.v1_8;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -25,14 +28,11 @@ import org.apache.iceberg.metrics.TimerResult;
 
 final class IcebergMetricsReporter implements MetricsReporter {
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.iceberg-1.8";
-  private static final AttributeKey<Long> SCHEMA_ID = AttributeKey.longKey("iceberg.schema.id");
-  private static final AttributeKey<String> TABLE_NAME =
-      AttributeKey.stringKey("iceberg.table.name");
-  private static final AttributeKey<Long> SNAPSHOT_ID = AttributeKey.longKey("iceberg.snapshot.id");
-  private static final AttributeKey<String> SCAN_STATE =
-      AttributeKey.stringKey("iceberg.scan.state");
-  private static final AttributeKey<String> DELETE_TYPE =
-      AttributeKey.stringKey("iceberg.delete_file.type");
+  private static final AttributeKey<Long> SCHEMA_ID = longKey("iceberg.schema.id");
+  private static final AttributeKey<String> TABLE_NAME = stringKey("iceberg.table.name");
+  private static final AttributeKey<Long> SNAPSHOT_ID = longKey("iceberg.snapshot.id");
+  private static final AttributeKey<String> SCAN_STATE = stringKey("iceberg.scan.state");
+  private static final AttributeKey<String> DELETE_TYPE = stringKey("iceberg.delete_file.type");
   private static final List<AttributeKey<?>> BASE_ADVICE = List.of(SCHEMA_ID, TABLE_NAME);
   private static final List<AttributeKey<?>> ADVICE_FOR_DATA_AND_MANIFEST_FILE_COUNTS =
       List.of(SCHEMA_ID, TABLE_NAME, SCAN_STATE);

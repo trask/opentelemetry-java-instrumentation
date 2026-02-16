@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -17,9 +19,8 @@ import javax.annotation.Nullable;
 public final class OsResource {
 
   // copied from OsIncubatingAttributes
-  private static final AttributeKey<String> OS_DESCRIPTION =
-      AttributeKey.stringKey("os.description");
-  private static final AttributeKey<String> OS_TYPE = AttributeKey.stringKey("os.type");
+  private static final AttributeKey<String> OS_DESCRIPTION = stringKey("os.description");
+  private static final AttributeKey<String> OS_TYPE = stringKey("os.type");
 
   private static final Resource INSTANCE = buildResource();
 

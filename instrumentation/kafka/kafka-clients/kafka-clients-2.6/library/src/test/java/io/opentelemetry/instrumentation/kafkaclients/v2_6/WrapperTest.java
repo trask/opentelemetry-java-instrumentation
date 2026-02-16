@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.kafkaclients.v2_6;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_BATCH_MESSAGE_COUNT;
@@ -17,7 +19,6 @@ import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.sdk.testing.assertj.AttributeAssertion;
@@ -96,7 +97,7 @@ class WrapperTest extends AbstractWrapperTest {
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     return assertions;
@@ -114,16 +115,14 @@ class WrapperTest extends AbstractWrapperTest {
                     MESSAGING_MESSAGE_BODY_SIZE, greeting.getBytes(StandardCharsets.UTF_8).length),
                 satisfies(MESSAGING_DESTINATION_PARTITION_ID, AbstractStringAssert::isNotEmpty),
                 satisfies(MESSAGING_KAFKA_MESSAGE_OFFSET, AbstractLongAssert::isNotNegative),
-                satisfies(
-                    AttributeKey.longKey("kafka.record.queue_time_ms"),
-                    AbstractLongAssert::isNotNegative),
+                satisfies(longKey("kafka.record.queue_time_ms"), AbstractLongAssert::isNotNegative),
                 equalTo(MESSAGING_KAFKA_CONSUMER_GROUP, "test"),
                 satisfies(
                     MESSAGING_CLIENT_ID, stringAssert -> stringAssert.startsWith("consumer"))));
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     return assertions;
@@ -143,7 +142,7 @@ class WrapperTest extends AbstractWrapperTest {
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     return assertions;

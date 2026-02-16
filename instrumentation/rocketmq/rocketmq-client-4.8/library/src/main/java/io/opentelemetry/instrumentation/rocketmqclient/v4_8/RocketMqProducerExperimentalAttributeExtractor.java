@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.rocketmqclient.v4_8;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -18,12 +20,12 @@ enum RocketMqProducerExperimentalAttributeExtractor
 
   // copied from MessagingIncubatingAttributes
   private static final AttributeKey<String> MESSAGING_ROCKETMQ_MESSAGE_TAG =
-      AttributeKey.stringKey("messaging.rocketmq.message.tag");
+      stringKey("messaging.rocketmq.message.tag");
 
   private static final AttributeKey<String> MESSAGING_ROCKETMQ_BROKER_ADDRESS =
-      AttributeKey.stringKey("messaging.rocketmq.broker_address");
+      stringKey("messaging.rocketmq.broker_address");
   private static final AttributeKey<String> MESSAGING_ROCKETMQ_SEND_RESULT =
-      AttributeKey.stringKey("messaging.rocketmq.send_result");
+      stringKey("messaging.rocketmq.send_result");
 
   @Override
   public void onStart(

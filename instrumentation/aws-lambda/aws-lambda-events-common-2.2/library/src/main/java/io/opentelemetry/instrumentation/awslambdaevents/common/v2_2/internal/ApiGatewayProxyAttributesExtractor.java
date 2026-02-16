@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.awslambdaevents.common.v2_2.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.instrumentation.api.internal.HttpConstants._OTHER;
 import static io.opentelemetry.instrumentation.awslambdacore.v1_0.internal.MapUtils.emptyIfNull;
@@ -32,7 +33,7 @@ final class ApiGatewayProxyAttributesExtractor
     implements AttributesExtractor<AwsLambdaRequest, Object> {
 
   // copied from FaasIncubatingAttributes
-  private static final AttributeKey<String> FAAS_TRIGGER = AttributeKey.stringKey("faas.trigger");
+  private static final AttributeKey<String> FAAS_TRIGGER = stringKey("faas.trigger");
   // copied from FaasIncubatingAttributes.FaasTriggerValues
   private static final String HTTP = "http";
 

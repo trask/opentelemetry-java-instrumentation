@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.apacheshenyu.v2_4;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
 
@@ -31,35 +33,33 @@ import reactor.netty.http.client.HttpClient;
     classes = {ShenYuBootstrapApplication.class})
 class ShenYuRouteTest {
 
-  private static final AttributeKey<String> META_ID_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.id");
+  private static final AttributeKey<String> META_ID_ATTRIBUTE = stringKey("apache-shenyu.meta.id");
 
   private static final AttributeKey<String> APP_NAME_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.app-name");
+      stringKey("apache-shenyu.meta.app-name");
 
   private static final AttributeKey<String> CONTEXT_PATH_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.context-path");
+      stringKey("apache-shenyu.meta.context-path");
 
-  private static final AttributeKey<String> PATH_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.path");
+  private static final AttributeKey<String> PATH_ATTRIBUTE = stringKey("apache-shenyu.meta.path");
 
   private static final AttributeKey<String> RPC_TYPE_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.rpc-type");
+      stringKey("apache-shenyu.meta.rpc-type");
 
   private static final AttributeKey<String> SERVICE_NAME_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.service-name");
+      stringKey("apache-shenyu.meta.service-name");
 
   private static final AttributeKey<String> METHOD_NAME_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.method-name");
+      stringKey("apache-shenyu.meta.method-name");
 
   private static final AttributeKey<String> PARAMETER_TYPES_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.param-types");
+      stringKey("apache-shenyu.meta.param-types");
 
   private static final AttributeKey<String> RPC_EXT_ATTRIBUTE =
-      AttributeKey.stringKey("apache-shenyu.meta.rpc-ext");
+      stringKey("apache-shenyu.meta.rpc-ext");
 
   private static final AttributeKey<Boolean> META_ENABLED_ATTRIBUTE =
-      AttributeKey.booleanKey("apache-shenyu.meta.enabled");
+      booleanKey("apache-shenyu.meta.enabled");
 
   @Value("${local.server.port}")
   private int port;

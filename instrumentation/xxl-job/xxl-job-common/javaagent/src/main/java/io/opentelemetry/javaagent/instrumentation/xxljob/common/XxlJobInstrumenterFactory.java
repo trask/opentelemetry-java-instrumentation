@@ -5,8 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.xxljob.common;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttributesExtractor;
@@ -35,7 +36,7 @@ public final class XxlJobInstrumenterFactory {
                 });
     if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
       builder.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "xxl-job"));
+          AttributesExtractor.constant(stringKey("job.system"), "xxl-job"));
       builder.addAttributesExtractor(new XxlJobExperimentalAttributeExtractor());
     }
     return builder.buildInstrumenter();

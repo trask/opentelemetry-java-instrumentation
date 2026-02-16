@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.grpc.Status;
 import io.opentelemetry.api.OpenTelemetry;
@@ -34,7 +36,7 @@ public final class GrpcTelemetryBuilder {
 
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.grpc-1.6";
   // copied from PeerIncubatingAttributes
-  private static final AttributeKey<String> PEER_SERVICE = AttributeKey.stringKey("peer.service");
+  private static final AttributeKey<String> PEER_SERVICE = stringKey("peer.service");
 
   private final OpenTelemetry openTelemetry;
   @Nullable private String peerService;
@@ -122,7 +124,7 @@ public final class GrpcTelemetryBuilder {
    * @deprecated Use {@link #addAttributesExtractor(AttributesExtractor)} instead:
    *     <pre>{@code
    * builder.addAttributesExtractor(
-   *     AttributesExtractor.constant(AttributeKey.stringKey("peer.service"), "service-name"));
+   *     AttributesExtractor.constant(stringKey("peer.service"), "service-name"));
    * }</pre>
    */
   @Deprecated

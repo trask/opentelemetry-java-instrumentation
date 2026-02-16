@@ -5,6 +5,10 @@
 
 package io.opentelemetry.instrumentation.cassandra.v4_4;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
 import com.datastax.oss.driver.api.core.cql.ExecutionInfo;
@@ -33,31 +37,30 @@ final class CassandraAttributesExtractor
 
   // copied from DbIncubatingAttributes
   private static final AttributeKey<String> DB_CASSANDRA_CONSISTENCY_LEVEL =
-      AttributeKey.stringKey("db.cassandra.consistency_level");
+      stringKey("db.cassandra.consistency_level");
   private static final AttributeKey<String> DB_CASSANDRA_COORDINATOR_DC =
-      AttributeKey.stringKey("db.cassandra.coordinator.dc");
+      stringKey("db.cassandra.coordinator.dc");
   private static final AttributeKey<String> DB_CASSANDRA_COORDINATOR_ID =
-      AttributeKey.stringKey("db.cassandra.coordinator.id");
+      stringKey("db.cassandra.coordinator.id");
   private static final AttributeKey<Boolean> DB_CASSANDRA_IDEMPOTENCE =
-      AttributeKey.booleanKey("db.cassandra.idempotence");
+      booleanKey("db.cassandra.idempotence");
   private static final AttributeKey<Long> DB_CASSANDRA_PAGE_SIZE =
-      AttributeKey.longKey("db.cassandra.page_size");
+      longKey("db.cassandra.page_size");
   private static final AttributeKey<Long> DB_CASSANDRA_SPECULATIVE_EXECUTION_COUNT =
-      AttributeKey.longKey("db.cassandra.speculative_execution_count");
+      longKey("db.cassandra.speculative_execution_count");
 
   // copied from CassandraIncubatingAttributes
   private static final AttributeKey<String> CASSANDRA_CONSISTENCY_LEVEL =
-      AttributeKey.stringKey("cassandra.consistency.level");
+      stringKey("cassandra.consistency.level");
   private static final AttributeKey<String> CASSANDRA_COORDINATOR_DC =
-      AttributeKey.stringKey("cassandra.coordinator.dc");
+      stringKey("cassandra.coordinator.dc");
   private static final AttributeKey<String> CASSANDRA_COORDINATOR_ID =
-      AttributeKey.stringKey("cassandra.coordinator.id");
-  private static final AttributeKey<Long> CASSANDRA_PAGE_SIZE =
-      AttributeKey.longKey("cassandra.page.size");
+      stringKey("cassandra.coordinator.id");
+  private static final AttributeKey<Long> CASSANDRA_PAGE_SIZE = longKey("cassandra.page.size");
   private static final AttributeKey<Boolean> CASSANDRA_QUERY_IDEMPOTENT =
-      AttributeKey.booleanKey("cassandra.query.idempotent");
+      booleanKey("cassandra.query.idempotent");
   private static final AttributeKey<Long> CASSANDRA_SPECULATIVE_EXECUTION_COUNT =
-      AttributeKey.longKey("cassandra.speculative_execution.count");
+      longKey("cassandra.speculative_execution.count");
 
   private static final Field proxyAddressField = getProxyAddressField();
 

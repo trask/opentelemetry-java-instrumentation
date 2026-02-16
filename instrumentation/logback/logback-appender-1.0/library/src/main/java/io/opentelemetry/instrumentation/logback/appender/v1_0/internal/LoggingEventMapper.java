@@ -5,6 +5,12 @@
 
 package io.opentelemetry.instrumentation.logback.appender.v1_0.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.doubleArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.longArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.semconv.CodeAttributes.CODE_FILE_PATH;
 import static io.opentelemetry.semconv.CodeAttributes.CODE_FUNCTION_NAME;
 import static io.opentelemetry.semconv.CodeAttributes.CODE_LINE_NUMBER;
@@ -51,16 +57,15 @@ import org.slf4j.event.KeyValuePair;
  */
 public final class LoggingEventMapper {
   // copied from CodeIncubatingAttributes
-  private static final AttributeKey<String> CODE_FILEPATH = AttributeKey.stringKey("code.filepath");
-  private static final AttributeKey<String> CODE_NAMESPACE =
-      AttributeKey.stringKey("code.namespace");
-  private static final AttributeKey<String> CODE_FUNCTION = AttributeKey.stringKey("code.function");
-  private static final AttributeKey<Long> CODE_LINENO = AttributeKey.longKey("code.lineno");
+  private static final AttributeKey<String> CODE_FILEPATH = stringKey("code.filepath");
+  private static final AttributeKey<String> CODE_NAMESPACE = stringKey("code.namespace");
+  private static final AttributeKey<String> CODE_FUNCTION = stringKey("code.function");
+  private static final AttributeKey<Long> CODE_LINENO = longKey("code.lineno");
   // copied from ThreadIncubatingAttributes
-  private static final AttributeKey<Long> THREAD_ID = AttributeKey.longKey("thread.id");
-  private static final AttributeKey<String> THREAD_NAME = AttributeKey.stringKey("thread.name");
+  private static final AttributeKey<Long> THREAD_ID = longKey("thread.id");
+  private static final AttributeKey<String> THREAD_NAME = stringKey("thread.name");
   // copied from EventIncubatingAttributes
-  private static final AttributeKey<String> EVENT_NAME = AttributeKey.stringKey("event.name");
+  private static final AttributeKey<String> EVENT_NAME = stringKey("event.name");
 
   private static final boolean supportsInstant = supportsInstant();
   private static final boolean supportsKeyValuePairs = supportsKeyValuePairs();
@@ -70,12 +75,10 @@ public final class LoggingEventMapper {
       supportsLogstashStructuredArguments();
   private static final Cache<String, AttributeKey<String>> attributeKeys = Cache.bounded(100);
 
-  private static final AttributeKey<List<String>> LOG_MARKER =
-      AttributeKey.stringArrayKey("logback.marker");
-  private static final AttributeKey<String> LOG_BODY_TEMPLATE =
-      AttributeKey.stringKey("log.body.template");
+  private static final AttributeKey<List<String>> LOG_MARKER = stringArrayKey("logback.marker");
+  private static final AttributeKey<String> LOG_BODY_TEMPLATE = stringKey("log.body.template");
   private static final AttributeKey<List<String>> LOG_BODY_PARAMETERS =
-      AttributeKey.stringArrayKey("log.body.parameters");
+      stringArrayKey("log.body.parameters");
 
   private final boolean captureExperimentalAttributes;
   private final List<String> captureMdcAttributes;
@@ -342,8 +345,7 @@ public final class LoggingEventMapper {
         builder.setAttribute(keyStr, ((Number) value).doubleValue());
       } else if (value.getClass().isArray()) {
         if (value instanceof boolean[] || value instanceof Boolean[]) {
-          captureArrayValueAttribute(
-              builder, AttributeKey.booleanArrayKey(keyStr), value, o -> (Boolean) o);
+          captureArrayValueAttribute(builder, booleanArrayKey(keyStr), value, o -> (Boolean) o);
         } else if (value instanceof byte[]
             || value instanceof Byte[]
             || value instanceof int[]
@@ -353,23 +355,19 @@ public final class LoggingEventMapper {
             || value instanceof short[]
             || value instanceof Short[]) {
           captureArrayValueAttribute(
-              builder, AttributeKey.longArrayKey(keyStr), value, o -> ((Number) o).longValue());
+              builder, longArrayKey(keyStr), value, o -> ((Number) o).longValue());
         } else if (value instanceof float[]
             || value instanceof Float[]
             || value instanceof double[]
             || value instanceof Double[]) {
           captureArrayValueAttribute(
-              builder, AttributeKey.doubleArrayKey(keyStr), value, o -> ((Number) o).doubleValue());
+              builder, doubleArrayKey(keyStr), value, o -> ((Number) o).doubleValue());
         } else {
-          captureArrayValueAttribute(
-              builder, AttributeKey.stringArrayKey(keyStr), value, String::valueOf);
+          captureArrayValueAttribute(builder, stringArrayKey(keyStr), value, String::valueOf);
         }
       } else if (value instanceof Collection) {
         captureArrayValueAttribute(
-            builder,
-            AttributeKey.stringArrayKey(keyStr),
-            ((Collection<?>) value).toArray(),
-            String::valueOf);
+            builder, stringArrayKey(keyStr), ((Collection<?>) value).toArray(), String::valueOf);
       } else {
         setAttributeOrEventName(builder, captureEventName, getAttributeKey(keyStr), value);
       }

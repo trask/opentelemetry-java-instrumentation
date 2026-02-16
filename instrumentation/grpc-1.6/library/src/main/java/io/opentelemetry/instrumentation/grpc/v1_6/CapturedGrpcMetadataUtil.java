@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
 import static java.util.Collections.unmodifiableList;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -31,7 +32,7 @@ final class CapturedGrpcMetadataUtil {
   }
 
   private static AttributeKey<List<String>> createRequestKey(String metadataKey) {
-    return AttributeKey.stringArrayKey(RPC_REQUEST_METADATA_KEY_ATTRIBUTE_PREFIX + metadataKey);
+    return stringArrayKey(RPC_REQUEST_METADATA_KEY_ATTRIBUTE_PREFIX + metadataKey);
   }
 
   private CapturedGrpcMetadataUtil() {}

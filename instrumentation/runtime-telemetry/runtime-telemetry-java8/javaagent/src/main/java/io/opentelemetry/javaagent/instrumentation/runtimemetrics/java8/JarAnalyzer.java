@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.runtimemetrics.java8;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.javaagent.instrumentation.runtimemetrics.java8.JarDetails.EAR_EXTENSION;
 import static io.opentelemetry.javaagent.instrumentation.runtimemetrics.java8.JarDetails.JAR_EXTENSION;
 import static io.opentelemetry.javaagent.instrumentation.runtimemetrics.java8.JarDetails.WAR_EXTENSION;
@@ -44,15 +45,14 @@ final class JarAnalyzer implements ClassFileTransformer {
   private static final Logger logger = Logger.getLogger(JarAnalyzer.class.getName());
 
   private static final String EVENT_NAME_INFO = "package.info";
-  static final AttributeKey<String> PACKAGE_NAME = AttributeKey.stringKey("package.name");
-  static final AttributeKey<String> PACKAGE_VERSION = AttributeKey.stringKey("package.version");
-  static final AttributeKey<String> PACKAGE_TYPE = AttributeKey.stringKey("package.type");
-  static final AttributeKey<String> PACKAGE_DESCRIPTION =
-      AttributeKey.stringKey("package.description");
-  static final AttributeKey<String> PACKAGE_CHECKSUM = AttributeKey.stringKey("package.checksum");
+  static final AttributeKey<String> PACKAGE_NAME = stringKey("package.name");
+  static final AttributeKey<String> PACKAGE_VERSION = stringKey("package.version");
+  static final AttributeKey<String> PACKAGE_TYPE = stringKey("package.type");
+  static final AttributeKey<String> PACKAGE_DESCRIPTION = stringKey("package.description");
+  static final AttributeKey<String> PACKAGE_CHECKSUM = stringKey("package.checksum");
   static final AttributeKey<String> PACKAGE_CHECKSUM_ALGORITHM =
-      AttributeKey.stringKey("package.checksum_algorithm");
-  static final AttributeKey<String> PACKAGE_PATH = AttributeKey.stringKey("package.path");
+      stringKey("package.checksum_algorithm");
+  static final AttributeKey<String> PACKAGE_PATH = stringKey("package.path");
 
   private final Set<URI> seenUris = new HashSet<>();
   private final BlockingQueue<URL> toProcess = new LinkedBlockingDeque<>();

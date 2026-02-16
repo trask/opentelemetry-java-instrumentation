@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.oshi;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -19,10 +21,10 @@ import oshi.hardware.NetworkIF;
 
 /** System Metrics Utility. */
 public class SystemMetrics {
-  private static final AttributeKey<String> DEVICE_KEY = AttributeKey.stringKey("device");
-  private static final AttributeKey<String> DIRECTION_KEY = AttributeKey.stringKey("direction");
+  private static final AttributeKey<String> DEVICE_KEY = stringKey("device");
+  private static final AttributeKey<String> DIRECTION_KEY = stringKey("direction");
 
-  private static final AttributeKey<String> STATE_KEY = AttributeKey.stringKey("state");
+  private static final AttributeKey<String> STATE_KEY = stringKey("state");
 
   private static final Attributes ATTRIBUTES_USED = Attributes.of(STATE_KEY, "used");
   private static final Attributes ATTRIBUTES_FREE = Attributes.of(STATE_KEY, "free");

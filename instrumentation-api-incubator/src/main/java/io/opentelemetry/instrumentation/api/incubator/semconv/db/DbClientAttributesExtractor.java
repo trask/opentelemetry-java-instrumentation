@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.db;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_BATCH_SIZE;
@@ -40,13 +41,13 @@ public final class DbClientAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE>, SpanKeyProvider {
 
   // copied from DbIncubatingAttributes
-  private static final AttributeKey<String> DB_NAME = AttributeKey.stringKey("db.name");
-  private static final AttributeKey<String> DB_SYSTEM = AttributeKey.stringKey("db.system");
-  private static final AttributeKey<String> DB_USER = AttributeKey.stringKey("db.user");
+  private static final AttributeKey<String> DB_NAME = stringKey("db.name");
+  private static final AttributeKey<String> DB_SYSTEM = stringKey("db.system");
+  private static final AttributeKey<String> DB_USER = stringKey("db.user");
   private static final AttributeKey<String> DB_CONNECTION_STRING =
-      AttributeKey.stringKey("db.connection_string");
-  private static final AttributeKey<String> DB_STATEMENT = AttributeKey.stringKey("db.statement");
-  private static final AttributeKey<String> DB_OPERATION = AttributeKey.stringKey("db.operation");
+      stringKey("db.connection_string");
+  private static final AttributeKey<String> DB_STATEMENT = stringKey("db.statement");
+  private static final AttributeKey<String> DB_OPERATION = stringKey("db.operation");
   private static final AttributeKeyTemplate<String> DB_QUERY_PARAMETER =
       AttributeKeyTemplate.stringKeyTemplate("db.query.parameter");
 

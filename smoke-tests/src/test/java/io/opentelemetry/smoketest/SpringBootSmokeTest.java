@@ -5,10 +5,10 @@
 
 package io.opentelemetry.smoketest;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.incubating.OsIncubatingAttributes;
 import io.opentelemetry.semconv.incubating.TelemetryIncubatingAttributes;
@@ -55,7 +55,7 @@ class SpringBootSmokeTest extends AbstractSmokeTest<Integer> {
                                     .hasAttribute(
                                         satisfies(
                                             OsIncubatingAttributes.OS_TYPE, a -> a.isNotNull()))
-                                    .hasAttribute(AttributeKey.stringKey("foo"), "bar")
+                                    .hasAttribute(stringKey("foo"), "bar")
                                     .hasAttribute(
                                         ServiceAttributes.SERVICE_NAME, "otel-spring-test-app")
                                     .hasAttribute(ServiceAttributes.SERVICE_VERSION, "1.2.3")),

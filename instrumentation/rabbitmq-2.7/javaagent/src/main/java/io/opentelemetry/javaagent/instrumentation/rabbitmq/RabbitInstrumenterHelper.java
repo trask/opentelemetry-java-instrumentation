@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.rabbitmq;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.javaagent.instrumentation.rabbitmq.RabbitSingletons.CHANNEL_AND_METHOD_CONTEXT_KEY;
 
 import com.rabbitmq.client.AMQP;
@@ -18,7 +19,7 @@ import io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes;
 import java.util.Map;
 
 public class RabbitInstrumenterHelper {
-  static final AttributeKey<String> RABBITMQ_COMMAND = AttributeKey.stringKey("rabbitmq.command");
+  static final AttributeKey<String> RABBITMQ_COMMAND = stringKey("rabbitmq.command");
 
   private static final boolean CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES =
       DeclarativeConfigUtil.getInstrumentationConfig(GlobalOpenTelemetry.get(), "rabbitmq")

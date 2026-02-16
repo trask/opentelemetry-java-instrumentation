@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.code;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -24,9 +25,8 @@ public final class CodeAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE> {
 
   // copied from CodeIncubatingAttributes
-  private static final AttributeKey<String> CODE_NAMESPACE =
-      AttributeKey.stringKey("code.namespace");
-  private static final AttributeKey<String> CODE_FUNCTION = AttributeKey.stringKey("code.function");
+  private static final AttributeKey<String> CODE_NAMESPACE = stringKey("code.namespace");
+  private static final AttributeKey<String> CODE_FUNCTION = stringKey("code.function");
 
   /** Creates the code attributes extractor. */
   public static <REQUEST, RESPONSE> AttributesExtractor<REQUEST, RESPONSE> create(

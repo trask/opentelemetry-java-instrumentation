@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.kafkastreams;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singleton;
 
@@ -51,7 +52,7 @@ abstract class KafkaStreamsBaseTest {
   static final InstrumentationExtension testing = AgentInstrumentationExtension.create();
 
   protected static final AttributeKey<String> MESSAGING_CLIENT_ID =
-      AttributeKey.stringKey("messaging.client_id");
+      stringKey("messaging.client_id");
   protected static final String STREAM_PENDING = "test.pending";
   protected static final String STREAM_PROCESSED = "test.processed";
 

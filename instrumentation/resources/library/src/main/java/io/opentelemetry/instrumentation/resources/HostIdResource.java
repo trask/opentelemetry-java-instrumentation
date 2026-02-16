@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static java.util.logging.Level.FINE;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -36,7 +37,7 @@ public final class HostIdResource {
   private static final Logger logger = Logger.getLogger(HostIdResource.class.getName());
 
   // copied from HostIncubatingAttributes
-  static final AttributeKey<String> HOST_ID = AttributeKey.stringKey("host.id");
+  static final AttributeKey<String> HOST_ID = stringKey("host.id");
 
   public static final String REGISTRY_QUERY =
       "reg query HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Cryptography /v MachineGuid";

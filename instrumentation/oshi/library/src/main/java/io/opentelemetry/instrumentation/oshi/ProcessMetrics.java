@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.oshi;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -17,7 +19,7 @@ import oshi.software.os.OperatingSystem;
 
 /** Java Runtime Metrics Utility. */
 public class ProcessMetrics {
-  private static final AttributeKey<String> TYPE_KEY = AttributeKey.stringKey("type");
+  private static final AttributeKey<String> TYPE_KEY = stringKey("type");
 
   private ProcessMetrics() {}
 

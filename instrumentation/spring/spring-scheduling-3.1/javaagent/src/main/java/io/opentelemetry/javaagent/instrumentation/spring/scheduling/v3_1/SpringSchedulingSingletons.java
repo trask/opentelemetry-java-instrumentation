@@ -5,8 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.spring.scheduling.v3_1;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttributesExtractor;
 import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeSpanNameExtractor;
@@ -35,7 +36,7 @@ public final class SpringSchedulingSingletons {
 
     if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
       builder.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "spring_scheduling"));
+          AttributesExtractor.constant(stringKey("job.system"), "spring_scheduling"));
     }
 
     INSTRUMENTER = builder.buildInstrumenter();

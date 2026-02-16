@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.elasticsearch.transport;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static org.awaitility.Awaitility.await;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -32,17 +34,15 @@ abstract class AbstractElasticsearchClientTest {
   protected static final long TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
   protected static final AttributeKey<String> ELASTICSEARCH_ACTION =
-      AttributeKey.stringKey("elasticsearch.action");
+      stringKey("elasticsearch.action");
   protected static final AttributeKey<String> ELASTICSEARCH_REQUEST =
-      AttributeKey.stringKey("elasticsearch.request");
+      stringKey("elasticsearch.request");
   protected static final AttributeKey<String> ELASTICSEARCH_REQUEST_INDICES =
-      AttributeKey.stringKey("elasticsearch.request.indices");
-  protected static final AttributeKey<String> ELASTICSEARCH_TYPE =
-      AttributeKey.stringKey("elasticsearch.type");
-  protected static final AttributeKey<String> ELASTICSEARCH_ID =
-      AttributeKey.stringKey("elasticsearch.id");
+      stringKey("elasticsearch.request.indices");
+  protected static final AttributeKey<String> ELASTICSEARCH_TYPE = stringKey("elasticsearch.type");
+  protected static final AttributeKey<String> ELASTICSEARCH_ID = stringKey("elasticsearch.id");
   protected static final AttributeKey<Long> ELASTICSEARCH_VERSION =
-      AttributeKey.longKey("elasticsearch.version");
+      longKey("elasticsearch.version");
 
   protected static final String EXPERIMENTAL_FLAG =
       "otel.instrumentation.elasticsearch.experimental-span-attributes";

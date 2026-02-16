@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.kafkaclients.common.v0_11.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -16,7 +18,7 @@ enum KafkaReceiveAttributesExtractor implements AttributesExtractor<KafkaReceive
 
   // copied from MessagingIncubatingAttributes
   private static final AttributeKey<String> MESSAGING_KAFKA_CONSUMER_GROUP =
-      AttributeKey.stringKey("messaging.kafka.consumer.group");
+      stringKey("messaging.kafka.consumer.group");
 
   @Override
   public void onStart(

@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.messaging;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -89,7 +90,7 @@ class MessagingAttributesExtractorTest {
         entry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_CONVERSATION_ID, "42"));
     expectedEntries.add(entry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_BODY_SIZE, 100L));
     expectedEntries.add(entry(MessagingIncubatingAttributes.MESSAGING_MESSAGE_ENVELOPE_SIZE, 120L));
-    expectedEntries.add(entry(AttributeKey.stringKey("messaging.client_id"), "43"));
+    expectedEntries.add(entry(stringKey("messaging.client_id"), "43"));
     expectedEntries.add(
         entry(MessagingIncubatingAttributes.MESSAGING_OPERATION, operation.operationName()));
 

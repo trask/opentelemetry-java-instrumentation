@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.rpc;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -16,8 +17,8 @@ import javax.annotation.Nullable;
 public final class RpcSizeAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE> {
 
-  static final AttributeKey<Long> RPC_REQUEST_SIZE = AttributeKey.longKey("rpc.request.size");
-  static final AttributeKey<Long> RPC_RESPONSE_SIZE = AttributeKey.longKey("rpc.response.size");
+  static final AttributeKey<Long> RPC_REQUEST_SIZE = longKey("rpc.request.size");
+  static final AttributeKey<Long> RPC_RESPONSE_SIZE = longKey("rpc.response.size");
 
   private final RpcAttributesGetter<REQUEST, RESPONSE> getter;
 

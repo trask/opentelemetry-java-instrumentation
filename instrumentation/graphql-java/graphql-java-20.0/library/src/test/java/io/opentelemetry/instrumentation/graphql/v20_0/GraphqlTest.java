@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.graphql.v20_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 
@@ -27,11 +28,9 @@ class GraphqlTest extends AbstractGraphqlTest {
   @RegisterExtension
   private static final InstrumentationExtension testing = LibraryInstrumentationExtension.create();
 
-  private static final AttributeKey<String> GRAPHQL_FIELD_NAME =
-      AttributeKey.stringKey("graphql.field.name");
+  private static final AttributeKey<String> GRAPHQL_FIELD_NAME = stringKey("graphql.field.name");
 
-  private static final AttributeKey<String> GRAPHQL_FIELD_PATH =
-      AttributeKey.stringKey("graphql.field.path");
+  private static final AttributeKey<String> GRAPHQL_FIELD_PATH = stringKey("graphql.field.path");
 
   @Override
   protected InstrumentationExtension getTesting() {

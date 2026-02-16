@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.rxjava.v3.common;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
 import static io.opentelemetry.instrumentation.testing.junit.code.SemconvCodeStabilityUtil.codeFunctionSuffixAssertions;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,8 +35,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 public abstract class AbstractRxJava3WithSpanTest {
-  private static final AttributeKey<Boolean> RXJAVA_CANCELED =
-      AttributeKey.booleanKey("rxjava.canceled");
+  private static final AttributeKey<Boolean> RXJAVA_CANCELED = booleanKey("rxjava.canceled");
 
   protected abstract AbstractTracedWithSpan newTraced();
 

@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.google.errorprone.annotations.MustBeClosed;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -29,7 +31,7 @@ import java.util.stream.Stream;
 public final class ContainerResource {
 
   // copied from ContainerIncubatingAttributes
-  private static final AttributeKey<String> CONTAINER_ID = AttributeKey.stringKey("container.id");
+  private static final AttributeKey<String> CONTAINER_ID = stringKey("container.id");
 
   static final Filesystem FILESYSTEM_INSTANCE = new Filesystem();
   private static final Resource INSTANCE = buildSingleton();

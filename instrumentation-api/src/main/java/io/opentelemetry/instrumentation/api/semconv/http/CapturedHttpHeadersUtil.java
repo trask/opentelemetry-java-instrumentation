@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.api.semconv.http;
 
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +42,7 @@ final class CapturedHttpHeadersUtil {
   private static AttributeKey<List<String>> createKey(String type, String headerName) {
     // headerName is always lowercase, see CapturedHttpHeadersUtil#lowercase
     String key = "http." + type + ".header." + headerName;
-    return AttributeKey.stringArrayKey(key);
+    return stringArrayKey(key);
   }
 
   private CapturedHttpHeadersUtil() {}

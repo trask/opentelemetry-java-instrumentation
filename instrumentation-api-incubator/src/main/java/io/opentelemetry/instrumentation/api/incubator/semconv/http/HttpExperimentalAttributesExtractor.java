@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.http;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -22,13 +24,11 @@ public final class HttpExperimentalAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE> {
 
   // copied from HttpIncubatingAttributes
-  static final AttributeKey<Long> HTTP_REQUEST_BODY_SIZE =
-      AttributeKey.longKey("http.request.body.size");
-  static final AttributeKey<Long> HTTP_RESPONSE_BODY_SIZE =
-      AttributeKey.longKey("http.response.body.size");
+  static final AttributeKey<Long> HTTP_REQUEST_BODY_SIZE = longKey("http.request.body.size");
+  static final AttributeKey<Long> HTTP_RESPONSE_BODY_SIZE = longKey("http.response.body.size");
 
   // copied from UrlIncubatingAttributes
-  private static final AttributeKey<String> URL_TEMPLATE = AttributeKey.stringKey("url.template");
+  private static final AttributeKey<String> URL_TEMPLATE = stringKey("url.template");
 
   public static <REQUEST, RESPONSE> AttributesExtractor<REQUEST, RESPONSE> create(
       HttpClientAttributesGetter<REQUEST, RESPONSE> getter) {

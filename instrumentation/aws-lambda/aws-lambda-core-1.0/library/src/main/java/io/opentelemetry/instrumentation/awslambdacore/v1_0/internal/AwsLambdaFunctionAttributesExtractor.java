@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.awslambdacore.v1_0.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -23,13 +25,10 @@ public final class AwsLambdaFunctionAttributesExtractor
     implements AttributesExtractor<AwsLambdaRequest, Object> {
 
   // copied from FaasIncubatingAttributes
-  private static final AttributeKey<String> FAAS_INVOCATION_ID =
-      AttributeKey.stringKey("faas.invocation_id");
+  private static final AttributeKey<String> FAAS_INVOCATION_ID = stringKey("faas.invocation_id");
   // copied from CloudIncubatingAttributes
-  private static final AttributeKey<String> CLOUD_ACCOUNT_ID =
-      AttributeKey.stringKey("cloud.account.id");
-  private static final AttributeKey<String> CLOUD_RESOURCE_ID =
-      AttributeKey.stringKey("cloud.resource_id");
+  private static final AttributeKey<String> CLOUD_ACCOUNT_ID = stringKey("cloud.account.id");
+  private static final AttributeKey<String> CLOUD_RESOURCE_ID = stringKey("cloud.resource_id");
 
   @Nullable private static final MethodHandle GET_FUNCTION_ARN;
 

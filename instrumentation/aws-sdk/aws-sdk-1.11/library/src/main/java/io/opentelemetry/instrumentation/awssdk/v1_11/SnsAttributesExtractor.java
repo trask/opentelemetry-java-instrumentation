@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.awssdk.v1_11;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.Request;
 import com.amazonaws.Response;
@@ -19,7 +21,7 @@ public class SnsAttributesExtractor implements AttributesExtractor<Request<?>, R
 
   // copied from MessagingIncubatingAttributes
   private static final AttributeKey<String> MESSAGING_DESTINATION_NAME =
-      AttributeKey.stringKey("messaging.destination.name");
+      stringKey("messaging.destination.name");
 
   @Override
   public void onStart(AttributesBuilder attributes, Context parentContext, Request<?> request) {

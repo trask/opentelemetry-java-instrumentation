@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.servlet.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -76,6 +78,6 @@ public class ServletRequestParametersExtractor<REQUEST, RESPONSE>
     // captured as span attributes
     parameterName = parameterName.toLowerCase(Locale.ROOT);
     String key = "servlet.request.parameter." + parameterName;
-    return AttributeKey.stringArrayKey(key);
+    return stringArrayKey(key);
   }
 }

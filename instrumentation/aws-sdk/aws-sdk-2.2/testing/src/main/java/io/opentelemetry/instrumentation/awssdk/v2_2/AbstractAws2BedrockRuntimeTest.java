@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.awssdk.v2_2;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.incubating.GenAiIncubatingAttributes.GEN_AI_OPERATION_NAME;
@@ -88,7 +89,7 @@ public abstract class AbstractAws2BedrockRuntimeTest {
 
   private static final String API_URL = "https://bedrock-runtime.us-east-1.amazonaws.com";
 
-  protected static final AttributeKey<String> EVENT_NAME = AttributeKey.stringKey("event.name");
+  protected static final AttributeKey<String> EVENT_NAME = stringKey("event.name");
 
   @RegisterExtension static final RecordingExtension recording = new RecordingExtension(API_URL);
 

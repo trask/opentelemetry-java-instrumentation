@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.jmx.internal.engine;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static org.junit.jupiter.params.ParameterizedInvocationConstants.ARGUMENTS_PLACEHOLDER;
 
@@ -180,7 +181,7 @@ class MetricAggregationTest {
     String metricName = generateMetricName(metricType);
     startTestMetric(metricName, bean, attributes, metricType);
 
-    AttributeKey<String> metricAttribute = AttributeKey.stringKey("test.metric.param");
+    AttributeKey<String> metricAttribute = stringKey("test.metric.param");
     if (metricType == MetricInfo.Type.GAUGE) {
       waitAndAssertMetric(
           metricName,

@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import example.GreeterGrpc;
@@ -36,8 +37,8 @@ class GrpcTest extends AbstractGrpcTest {
   @RegisterExtension
   static final InstrumentationExtension testing = LibraryInstrumentationExtension.create();
 
-  private static final AttributeKey<String> CUSTOM_KEY = AttributeKey.stringKey("customKey");
-  private static final AttributeKey<String> CUSTOM_KEY2 = AttributeKey.stringKey("customKey2");
+  private static final AttributeKey<String> CUSTOM_KEY = stringKey("customKey");
+  private static final AttributeKey<String> CUSTOM_KEY2 = stringKey("customKey2");
 
   private static final Metadata.Key<String> CUSTOM_METADATA_KEY =
       Metadata.Key.of("customMetadataKey", Metadata.ASCII_STRING_MARSHALLER);

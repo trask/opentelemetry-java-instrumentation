@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.pulsar.v2_8.telemetry;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -19,7 +21,7 @@ enum ExperimentalProducerAttributesExtractor implements AttributesExtractor<Puls
   INSTANCE;
 
   private static final AttributeKey<String> MESSAGE_TYPE =
-      AttributeKey.stringKey("messaging.pulsar.message.type");
+      stringKey("messaging.pulsar.message.type");
 
   @Override
   public void onStart(AttributesBuilder attributes, Context parentContext, PulsarRequest request) {}

@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.awssdk.v2_2.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -16,7 +18,7 @@ class AwsSdkExperimentalAttributesExtractor
     implements AttributesExtractor<ExecutionAttributes, Response> {
 
   private static final String COMPONENT_NAME = "java-aws-sdk";
-  private static final AttributeKey<String> AWS_AGENT = AttributeKey.stringKey("aws.agent");
+  private static final AttributeKey<String> AWS_AGENT = stringKey("aws.agent");
 
   @Override
   public void onStart(

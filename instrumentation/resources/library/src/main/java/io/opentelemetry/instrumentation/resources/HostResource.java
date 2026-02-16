@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -17,8 +19,8 @@ import java.net.UnknownHostException;
 public final class HostResource {
 
   // copied from HostIncubatingAttributes
-  private static final AttributeKey<String> HOST_ARCH = AttributeKey.stringKey("host.arch");
-  private static final AttributeKey<String> HOST_NAME = AttributeKey.stringKey("host.name");
+  private static final AttributeKey<String> HOST_ARCH = stringKey("host.arch");
+  private static final AttributeKey<String> HOST_NAME = stringKey("host.name");
 
   private static final Resource INSTANCE = buildResource();
 

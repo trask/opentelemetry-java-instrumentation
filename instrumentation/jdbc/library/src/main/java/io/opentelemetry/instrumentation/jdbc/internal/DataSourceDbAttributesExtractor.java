@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.jdbc.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;
 import static io.opentelemetry.semconv.DbAttributes.DB_SYSTEM_NAME;
@@ -22,11 +23,11 @@ enum DataSourceDbAttributesExtractor implements AttributesExtractor<DataSource, 
   INSTANCE;
 
   // copied from DbIncubatingAttributes
-  private static final AttributeKey<String> DB_NAME = AttributeKey.stringKey("db.name");
-  private static final AttributeKey<String> DB_SYSTEM = AttributeKey.stringKey("db.system");
-  private static final AttributeKey<String> DB_USER = AttributeKey.stringKey("db.user");
+  private static final AttributeKey<String> DB_NAME = stringKey("db.name");
+  private static final AttributeKey<String> DB_SYSTEM = stringKey("db.system");
+  private static final AttributeKey<String> DB_USER = stringKey("db.user");
   private static final AttributeKey<String> DB_CONNECTION_STRING =
-      AttributeKey.stringKey("db.connection_string");
+      stringKey("db.connection_string");
 
   @Override
   public void onStart(AttributesBuilder attributes, Context parentContext, DataSource dataSource) {}

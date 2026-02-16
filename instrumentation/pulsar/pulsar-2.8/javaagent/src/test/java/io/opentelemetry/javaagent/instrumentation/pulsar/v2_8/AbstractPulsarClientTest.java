@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.pulsar.v2_8;
 
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
 import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
@@ -19,7 +20,6 @@ import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_OPERATION;
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_SYSTEM;
 
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
@@ -386,7 +386,7 @@ abstract class AbstractPulsarClientTest {
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     int partitionIndex = TopicName.getPartitionIndex(destination);
@@ -422,7 +422,7 @@ abstract class AbstractPulsarClientTest {
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     if (isBatch) {
@@ -449,7 +449,7 @@ abstract class AbstractPulsarClientTest {
     if (testHeaders) {
       assertions.add(
           equalTo(
-              AttributeKey.stringArrayKey("messaging.header.Test_Message_Header"),
+              stringArrayKey("messaging.header.Test_Message_Header"),
               Collections.singletonList("test")));
     }
     int partitionIndex = TopicName.getPartitionIndex(destination);

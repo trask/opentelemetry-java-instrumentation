@@ -5,8 +5,9 @@
 
 package io.opentelemetry.instrumentation.spring.autoconfigure.internal.instrumentation.scheduling;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
@@ -54,7 +55,7 @@ final class SpringSchedulingInstrumentationAspect {
     if (DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, "spring_scheduling")
         .getBoolean("experimental_span_attributes/development", false)) {
       builder.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "spring_scheduling"));
+          AttributesExtractor.constant(stringKey("job.system"), "spring_scheduling"));
     }
     instrumenter = builder.buildInstrumenter();
   }

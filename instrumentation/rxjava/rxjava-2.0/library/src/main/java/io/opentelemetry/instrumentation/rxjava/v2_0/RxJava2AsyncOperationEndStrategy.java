@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.rxjava.v2_0;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
 import static io.opentelemetry.instrumentation.api.annotation.support.async.AsyncOperationEndSupport.tryToGetResponse;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -25,8 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.reactivestreams.Publisher;
 
 public final class RxJava2AsyncOperationEndStrategy implements AsyncOperationEndStrategy {
-  private static final AttributeKey<Boolean> CANCELED_ATTRIBUTE_KEY =
-      AttributeKey.booleanKey("rxjava.canceled");
+  private static final AttributeKey<Boolean> CANCELED_ATTRIBUTE_KEY = booleanKey("rxjava.canceled");
 
   public static RxJava2AsyncOperationEndStrategy create() {
     return builder().build();

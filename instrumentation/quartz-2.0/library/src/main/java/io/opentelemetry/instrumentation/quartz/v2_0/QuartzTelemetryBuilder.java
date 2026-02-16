@@ -5,9 +5,10 @@
 
 package io.opentelemetry.instrumentation.quartz.v2_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
@@ -84,7 +85,7 @@ public final class QuartzTelemetryBuilder {
 
     if (captureExperimentalSpanAttributes) {
       instrumenter.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "quartz"));
+          AttributesExtractor.constant(stringKey("job.system"), "quartz"));
     }
     instrumenter.setErrorCauseExtractor(new QuartzErrorCauseExtractor());
     instrumenter.addAttributesExtractor(

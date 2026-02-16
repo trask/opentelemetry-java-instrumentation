@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.cassandra.v4_4;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.datastax.oss.driver.api.core.cql.ExecutionInfo;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.opentelemetry.api.OpenTelemetry;
@@ -20,8 +22,7 @@ public class CassandraTelemetryBuilder {
 
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.cassandra-4.4";
   // copied from DbIncubatingAttributes
-  private static final AttributeKey<String> DB_CASSANDRA_TABLE =
-      AttributeKey.stringKey("db.cassandra.table");
+  private static final AttributeKey<String> DB_CASSANDRA_TABLE = stringKey("db.cassandra.table");
 
   private final OpenTelemetry openTelemetry;
 

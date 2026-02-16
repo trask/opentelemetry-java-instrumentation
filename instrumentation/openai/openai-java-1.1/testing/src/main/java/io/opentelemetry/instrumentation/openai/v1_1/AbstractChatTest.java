@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.openai.v1_1;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.incubating.GenAiIncubatingAttributes.GEN_AI_OPERATION_NAME;
@@ -78,7 +79,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class AbstractChatTest extends AbstractOpenAiTest {
 
-  protected static final AttributeKey<String> EVENT_NAME = AttributeKey.stringKey("event.name");
+  protected static final AttributeKey<String> EVENT_NAME = stringKey("event.name");
 
   protected static final String TEST_CHAT_MODEL = "gpt-4o-mini";
   protected static final String TEST_CHAT_RESPONSE_MODEL = "gpt-4o-mini-2024-07-18";

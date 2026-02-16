@@ -5,6 +5,10 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -24,12 +28,12 @@ public final class ProcessResource {
 
   // copied from ProcessIncubatingAttributes
   private static final AttributeKey<List<String>> PROCESS_COMMAND_ARGS =
-      AttributeKey.stringArrayKey("process.command_args");
+      stringArrayKey("process.command_args");
   private static final AttributeKey<String> PROCESS_COMMAND_LINE =
-      AttributeKey.stringKey("process.command_line");
+      stringKey("process.command_line");
   private static final AttributeKey<String> PROCESS_EXECUTABLE_PATH =
-      AttributeKey.stringKey("process.executable.path");
-  private static final AttributeKey<Long> PROCESS_PID = AttributeKey.longKey("process.pid");
+      stringKey("process.executable.path");
+  private static final AttributeKey<Long> PROCESS_PID = longKey("process.pid");
 
   // Note: This pattern doesn't support file paths with spaces in them.
   // Important: This is statically used in buildResource, so must be declared/initialized first.

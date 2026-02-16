@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.db;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static java.util.Objects.requireNonNull;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
@@ -15,7 +16,7 @@ import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 public final class SqlClientAttributesExtractorBuilder<REQUEST, RESPONSE> {
 
   // copied from DbIncubatingAttributes
-  private static final AttributeKey<String> DB_SQL_TABLE = AttributeKey.stringKey("db.sql.table");
+  private static final AttributeKey<String> DB_SQL_TABLE = stringKey("db.sql.table");
 
   final SqlClientAttributesGetter<REQUEST, RESPONSE> getter;
   AttributeKey<String> oldSemconvTableAttribute = DB_SQL_TABLE;

@@ -5,6 +5,9 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.messaging;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -30,31 +33,28 @@ public final class MessagingAttributesExtractor<REQUEST, RESPONSE>
 
   // copied from MessagingIncubatingAttributes
   private static final AttributeKey<Long> MESSAGING_BATCH_MESSAGE_COUNT =
-      AttributeKey.longKey("messaging.batch.message_count");
-  private static final AttributeKey<String> MESSAGING_CLIENT_ID =
-      AttributeKey.stringKey("messaging.client_id");
+      longKey("messaging.batch.message_count");
+  private static final AttributeKey<String> MESSAGING_CLIENT_ID = stringKey("messaging.client_id");
   private static final AttributeKey<Boolean> MESSAGING_DESTINATION_ANONYMOUS =
-      AttributeKey.booleanKey("messaging.destination.anonymous");
+      booleanKey("messaging.destination.anonymous");
   private static final AttributeKey<String> MESSAGING_DESTINATION_NAME =
-      AttributeKey.stringKey("messaging.destination.name");
+      stringKey("messaging.destination.name");
   private static final AttributeKey<String> MESSAGING_DESTINATION_PARTITION_ID =
-      AttributeKey.stringKey("messaging.destination.partition.id");
+      stringKey("messaging.destination.partition.id");
   private static final AttributeKey<String> MESSAGING_DESTINATION_TEMPLATE =
-      AttributeKey.stringKey("messaging.destination.template");
+      stringKey("messaging.destination.template");
   private static final AttributeKey<Boolean> MESSAGING_DESTINATION_TEMPORARY =
-      AttributeKey.booleanKey("messaging.destination.temporary");
+      booleanKey("messaging.destination.temporary");
   private static final AttributeKey<Long> MESSAGING_MESSAGE_BODY_SIZE =
-      AttributeKey.longKey("messaging.message.body.size");
+      longKey("messaging.message.body.size");
   private static final AttributeKey<String> MESSAGING_MESSAGE_CONVERSATION_ID =
-      AttributeKey.stringKey("messaging.message.conversation_id");
+      stringKey("messaging.message.conversation_id");
   private static final AttributeKey<Long> MESSAGING_MESSAGE_ENVELOPE_SIZE =
-      AttributeKey.longKey("messaging.message.envelope.size");
+      longKey("messaging.message.envelope.size");
   private static final AttributeKey<String> MESSAGING_MESSAGE_ID =
-      AttributeKey.stringKey("messaging.message.id");
-  private static final AttributeKey<String> MESSAGING_OPERATION =
-      AttributeKey.stringKey("messaging.operation");
-  private static final AttributeKey<String> MESSAGING_SYSTEM =
-      AttributeKey.stringKey("messaging.system");
+      stringKey("messaging.message.id");
+  private static final AttributeKey<String> MESSAGING_OPERATION = stringKey("messaging.operation");
+  private static final AttributeKey<String> MESSAGING_SYSTEM = stringKey("messaging.system");
 
   static final String TEMP_DESTINATION_NAME = "(temporary)";
 

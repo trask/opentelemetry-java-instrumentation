@@ -5,6 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.elasticsearch.transport.v6_0;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.context.Context;
@@ -16,11 +19,11 @@ public class Elasticsearch6TransportExperimentalAttributesExtractor
     extends ElasticsearchTransportExperimentalAttributesExtractor {
 
   private static final AttributeKey<String> ELASTICSEARCH_REQUEST_WRITE_TYPE =
-      AttributeKey.stringKey("elasticsearch.request.write.type");
+      stringKey("elasticsearch.request.write.type");
   private static final AttributeKey<String> ELASTICSEARCH_REQUEST_WRITE_ROUTING =
-      AttributeKey.stringKey("elasticsearch.request.write.routing");
+      stringKey("elasticsearch.request.write.routing");
   private static final AttributeKey<Long> ELASTICSEARCH_REQUEST_WRITE_VERSION =
-      AttributeKey.longKey("elasticsearch.request.write.version");
+      longKey("elasticsearch.request.write.version");
 
   @Override
   public void onStart(

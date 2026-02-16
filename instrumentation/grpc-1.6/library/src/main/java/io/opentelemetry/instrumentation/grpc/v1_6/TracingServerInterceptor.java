@@ -5,6 +5,10 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.grpc.Contexts;
 import io.grpc.ForwardingServerCall;
 import io.grpc.ForwardingServerCallListener;
@@ -24,15 +28,14 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 final class TracingServerInterceptor implements ServerInterceptor {
 
-  private static final AttributeKey<Boolean> GRPC_CANCELED =
-      AttributeKey.booleanKey("grpc.canceled");
+  private static final AttributeKey<Boolean> GRPC_CANCELED = booleanKey("grpc.canceled");
   private static final AttributeKey<Long> GRPC_RECEIVED_MESSAGE_COUNT =
-      AttributeKey.longKey("grpc.received.message_count");
+      longKey("grpc.received.message_count");
   private static final AttributeKey<Long> GRPC_SENT_MESSAGE_COUNT =
-      AttributeKey.longKey("grpc.sent.message_count");
+      longKey("grpc.sent.message_count");
   // copied from MessageIncubatingAttributes
-  private static final AttributeKey<Long> MESSAGE_ID = AttributeKey.longKey("message.id");
-  private static final AttributeKey<String> MESSAGE_TYPE = AttributeKey.stringKey("message.type");
+  private static final AttributeKey<Long> MESSAGE_ID = longKey("message.id");
+  private static final AttributeKey<String> MESSAGE_TYPE = stringKey("message.type");
   // copied from MessageIncubatingAttributes.MessageTypeValues
   private static final String SENT = "SENT";
   private static final String RECEIVED = "RECEIVED";

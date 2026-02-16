@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.rpc;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -17,9 +18,9 @@ abstract class RpcCommonAttributesExtractor<REQUEST, RESPONSE>
     implements AttributesExtractor<REQUEST, RESPONSE> {
 
   // copied from RpcIncubatingAttributes
-  static final AttributeKey<String> RPC_METHOD = AttributeKey.stringKey("rpc.method");
-  static final AttributeKey<String> RPC_SERVICE = AttributeKey.stringKey("rpc.service");
-  static final AttributeKey<String> RPC_SYSTEM = AttributeKey.stringKey("rpc.system");
+  static final AttributeKey<String> RPC_METHOD = stringKey("rpc.method");
+  static final AttributeKey<String> RPC_SERVICE = stringKey("rpc.service");
+  static final AttributeKey<String> RPC_SYSTEM = stringKey("rpc.system");
 
   private final RpcAttributesGetter<REQUEST, RESPONSE> getter;
 

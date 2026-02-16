@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.failsafe.v3_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.failsafe.v3_0.CircuitBreakerEventListenerBuilders.buildInstrumentedCloseListener;
 import static io.opentelemetry.instrumentation.failsafe.v3_0.CircuitBreakerEventListenerBuilders.buildInstrumentedFailureListener;
 import static io.opentelemetry.instrumentation.failsafe.v3_0.CircuitBreakerEventListenerBuilders.buildInstrumentedHalfOpenListener;
@@ -28,9 +29,9 @@ public final class FailsafeTelemetry {
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.failsafe-3.0";
 
   private static final AttributeKey<String> CIRCUIT_BREAKER_NAME =
-      AttributeKey.stringKey("failsafe.circuit_breaker.name");
+      stringKey("failsafe.circuit_breaker.name");
   private static final AttributeKey<String> RETRY_POLICY_NAME =
-      AttributeKey.stringKey("failsafe.retry_policy.name");
+      stringKey("failsafe.retry_policy.name");
 
   /** Returns a new {@link FailsafeTelemetry} configured with the given {@link OpenTelemetry}. */
   public static FailsafeTelemetry create(OpenTelemetry openTelemetry) {

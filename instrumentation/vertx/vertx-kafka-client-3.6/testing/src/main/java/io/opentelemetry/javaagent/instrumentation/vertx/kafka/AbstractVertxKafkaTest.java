@@ -5,6 +5,8 @@
 
 package io.opentelemetry.javaagent.instrumentation.vertx.kafka;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.incubating.MessagingIncubatingAttributes.MESSAGING_BATCH_MESSAGE_COUNT;
@@ -56,8 +58,7 @@ public abstract class AbstractVertxKafkaTest {
 
   private static final Logger logger = LoggerFactory.getLogger(AbstractVertxKafkaTest.class);
 
-  private static final AttributeKey<String> MESSAGING_CLIENT_ID =
-      AttributeKey.stringKey("messaging.client_id");
+  private static final AttributeKey<String> MESSAGING_CLIENT_ID = stringKey("messaging.client_id");
 
   KafkaContainer kafka;
   Vertx vertx;
@@ -226,9 +227,7 @@ public abstract class AbstractVertxKafkaTest {
                 satisfies(MESSAGING_KAFKA_MESSAGE_OFFSET, AbstractLongAssert::isNotNegative)));
     if (Boolean.getBoolean("otel.instrumentation.kafka.experimental-span-attributes")) {
       assertions.add(
-          satisfies(
-              AttributeKey.longKey("kafka.record.queue_time_ms"),
-              AbstractLongAssert::isNotNegative));
+          satisfies(longKey("kafka.record.queue_time_ms"), AbstractLongAssert::isNotNegative));
     }
     // consumer group is not available in version 0.11
     if (hasConsumerGroup()) {

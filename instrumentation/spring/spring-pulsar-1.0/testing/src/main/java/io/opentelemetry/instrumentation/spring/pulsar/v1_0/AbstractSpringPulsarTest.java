@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.spring.pulsar.v1_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
@@ -111,8 +112,7 @@ public abstract class AbstractSpringPulsarTest {
 
   protected abstract void assertSpringPulsar();
 
-  static final AttributeKey<String> MESSAGE_TYPE =
-      AttributeKey.stringKey("messaging.pulsar.message.type");
+  static final AttributeKey<String> MESSAGE_TYPE = stringKey("messaging.pulsar.message.type");
 
   protected List<AttributeAssertion> publishAttributes() {
     return asList(

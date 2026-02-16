@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.runtimemetrics.java17;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.runtimemetrics.java17.internal.Constants.BYTES;
 import static io.opentelemetry.instrumentation.runtimemetrics.java17.internal.Constants.UNIT_BUFFERS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +40,7 @@ class BufferMetricTest {
     ByteBuffer buffer = ByteBuffer.allocateDirect(10000);
     buffer.put("test".getBytes(StandardCharsets.UTF_8));
 
-    AttributeKey<String> attrBufferPool = AttributeKey.stringKey("jvm.buffer.pool.name");
+    AttributeKey<String> attrBufferPool = stringKey("jvm.buffer.pool.name");
     Attributes directBuffer = Attributes.of(attrBufferPool, "direct");
     jfrExtension.waitAndAssertMetrics(
         metric ->

@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.armeria.v1_3;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.linecorp.armeria.client.ClientRequestContext;
 import com.linecorp.armeria.common.logging.RequestLog;
@@ -25,7 +27,7 @@ import java.util.function.UnaryOperator;
 public final class ArmeriaClientTelemetryBuilder {
 
   // copied from PeerIncubatingAttributes
-  private static final AttributeKey<String> PEER_SERVICE = AttributeKey.stringKey("peer.service");
+  private static final AttributeKey<String> PEER_SERVICE = stringKey("peer.service");
 
   private final DefaultHttpClientInstrumenterBuilder<ClientRequestContext, RequestLog> builder;
 

@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.elasticsearch.rest.common.v5_0.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.internal.AttributesExtractorUtil.internalSet;
 import static io.opentelemetry.instrumentation.api.internal.HttpConstants._OTHER;
 
@@ -67,7 +68,7 @@ public class ElasticsearchClientAttributeExtractor
         (key, value) -> {
           AttributeKey<String> attributeKey =
               pathPartKeysCache.computeIfAbsent(
-                  key, k -> AttributeKey.stringKey(PATH_PARTS_ATTRIBUTE_PREFIX + k));
+                  key, k -> stringKey(PATH_PARTS_ATTRIBUTE_PREFIX + k));
           internalSet(attributes, attributeKey, value);
         });
   }

@@ -5,6 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.spring.gateway.common;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
@@ -19,19 +22,19 @@ public final class GatewayRouteHelper {
 
   /** Route ID attribute key. */
   public static final AttributeKey<String> ROUTE_ID_ATTRIBUTE =
-      AttributeKey.stringKey("spring-cloud-gateway.route.id");
+      stringKey("spring-cloud-gateway.route.id");
 
   /** Route URI attribute key. */
   public static final AttributeKey<String> ROUTE_URI_ATTRIBUTE =
-      AttributeKey.stringKey("spring-cloud-gateway.route.uri");
+      stringKey("spring-cloud-gateway.route.uri");
 
   /** Route order attribute key. */
   public static final AttributeKey<Long> ROUTE_ORDER_ATTRIBUTE =
-      AttributeKey.longKey("spring-cloud-gateway.route.order");
+      longKey("spring-cloud-gateway.route.order");
 
   /** Route filter size attribute key. */
   public static final AttributeKey<Long> ROUTE_FILTER_SIZE_ATTRIBUTE =
-      AttributeKey.longKey("spring-cloud-gateway.route.filter.size");
+      longKey("spring-cloud-gateway.route.filter.size");
 
   private static final boolean CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES;
 

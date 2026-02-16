@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.messaging;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
 import static java.util.logging.Level.FINE;
 
 import com.google.auto.value.AutoValue;
@@ -34,7 +35,7 @@ public final class MessagingConsumerMetrics implements OperationListener {
 
   // copied from MessagingIncubatingAttributes
   private static final AttributeKey<Long> MESSAGING_BATCH_MESSAGE_COUNT =
-      AttributeKey.longKey("messaging.batch.message_count");
+      longKey("messaging.batch.message_count");
   private static final ContextKey<MessagingConsumerMetrics.State> MESSAGING_CONSUMER_METRICS_STATE =
       ContextKey.named("messaging-consumer-metrics-state");
   private static final Logger logger = Logger.getLogger(MessagingConsumerMetrics.class.getName());

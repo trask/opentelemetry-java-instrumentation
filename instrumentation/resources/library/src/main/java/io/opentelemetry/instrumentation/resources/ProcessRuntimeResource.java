@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.resources;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.sdk.resources.Resource;
@@ -15,11 +17,11 @@ public final class ProcessRuntimeResource {
 
   // copied from ProcessIncubatingAttributes
   private static final AttributeKey<String> PROCESS_RUNTIME_DESCRIPTION =
-      AttributeKey.stringKey("process.runtime.description");
+      stringKey("process.runtime.description");
   private static final AttributeKey<String> PROCESS_RUNTIME_NAME =
-      AttributeKey.stringKey("process.runtime.name");
+      stringKey("process.runtime.name");
   private static final AttributeKey<String> PROCESS_RUNTIME_VERSION =
-      AttributeKey.stringKey("process.runtime.version");
+      stringKey("process.runtime.version");
 
   private static final Resource INSTANCE = buildResource();
 

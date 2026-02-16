@@ -5,8 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.powerjob.v4_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeAttributesExtractor;
@@ -51,7 +52,7 @@ public final class PowerJobSingletons {
 
     if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
       builder.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "powerjob"));
+          AttributesExtractor.constant(stringKey("job.system"), "powerjob"));
       builder.addAttributesExtractor(new PowerJobExperimentalAttributeExtractor());
     }
 

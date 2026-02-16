@@ -5,6 +5,9 @@
 
 package io.opentelemetry.instrumentation.log4j.appender.v2_17.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.incubator.logs.ExtendedLogRecordBuilder;
 import io.opentelemetry.api.logs.LogRecordBuilder;
@@ -33,16 +36,15 @@ import org.apache.logging.log4j.message.Message;
 public final class LogEventMapper<T> {
 
   // copied from CodeIncubatingAttributes
-  private static final AttributeKey<String> CODE_FILEPATH = AttributeKey.stringKey("code.filepath");
-  private static final AttributeKey<String> CODE_FUNCTION = AttributeKey.stringKey("code.function");
-  private static final AttributeKey<String> CODE_NAMESPACE =
-      AttributeKey.stringKey("code.namespace");
-  private static final AttributeKey<Long> CODE_LINENO = AttributeKey.longKey("code.lineno");
+  private static final AttributeKey<String> CODE_FILEPATH = stringKey("code.filepath");
+  private static final AttributeKey<String> CODE_FUNCTION = stringKey("code.function");
+  private static final AttributeKey<String> CODE_NAMESPACE = stringKey("code.namespace");
+  private static final AttributeKey<Long> CODE_LINENO = longKey("code.lineno");
   // copied from ThreadIncubatingAttributes
-  private static final AttributeKey<Long> THREAD_ID = AttributeKey.longKey("thread.id");
-  private static final AttributeKey<String> THREAD_NAME = AttributeKey.stringKey("thread.name");
+  private static final AttributeKey<Long> THREAD_ID = longKey("thread.id");
+  private static final AttributeKey<String> THREAD_NAME = stringKey("thread.name");
   // copied from EventIncubatingAttributes
-  private static final AttributeKey<String> EVENT_NAME = AttributeKey.stringKey("event.name");
+  private static final AttributeKey<String> EVENT_NAME = stringKey("event.name");
 
   private static final String SPECIAL_MAP_MESSAGE_ATTRIBUTE = "message";
 
@@ -51,7 +53,7 @@ public final class LogEventMapper<T> {
   private static final Cache<String, AttributeKey<String>> mapMessageAttributeKeyCache =
       Cache.bounded(100);
 
-  private static final AttributeKey<String> LOG_MARKER = AttributeKey.stringKey("log4j.marker");
+  private static final AttributeKey<String> LOG_MARKER = stringKey("log4j.marker");
 
   private final ContextDataAccessor<T> contextDataAccessor;
 
@@ -244,7 +246,7 @@ public final class LogEventMapper<T> {
 
   public static AttributeKey<String> getMapMessageAttributeKey(String key) {
     return mapMessageAttributeKeyCache.computeIfAbsent(
-        key, k -> AttributeKey.stringKey("log4j.map_message." + k));
+        key, k -> stringKey("log4j.map_message." + k));
   }
 
   private static void setThrowable(LogRecordBuilder builder, Throwable throwable) {

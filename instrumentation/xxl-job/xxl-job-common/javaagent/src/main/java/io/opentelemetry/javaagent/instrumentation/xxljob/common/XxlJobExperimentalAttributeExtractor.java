@@ -5,6 +5,9 @@
 
 package io.opentelemetry.javaagent.instrumentation.xxljob.common;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import com.xxl.job.core.glue.GlueTypeEnum;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -16,10 +19,9 @@ class XxlJobExperimentalAttributeExtractor
     implements AttributesExtractor<XxlJobProcessRequest, Void> {
 
   private static final AttributeKey<String> XXL_JOB_GLUE_TYPE =
-      AttributeKey.stringKey("scheduling.xxl-job.glue.type");
+      stringKey("scheduling.xxl-job.glue.type");
 
-  private static final AttributeKey<Long> XXL_JOB_JOB_ID =
-      AttributeKey.longKey("scheduling.xxl-job.job.id");
+  private static final AttributeKey<Long> XXL_JOB_JOB_ID = longKey("scheduling.xxl-job.job.id");
 
   @Override
   public void onStart(

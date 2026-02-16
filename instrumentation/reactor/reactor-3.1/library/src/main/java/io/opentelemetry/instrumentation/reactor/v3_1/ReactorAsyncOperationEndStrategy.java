@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.reactor.v3_1;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
 import static io.opentelemetry.instrumentation.api.annotation.support.async.AsyncOperationEndSupport.tryToGetResponse;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -20,8 +21,7 @@ import reactor.core.publisher.Mono;
 
 public final class ReactorAsyncOperationEndStrategy implements AsyncOperationEndStrategy {
   // Visible for testing
-  static final AttributeKey<Boolean> CANCELED_ATTRIBUTE_KEY =
-      AttributeKey.booleanKey("reactor.canceled");
+  static final AttributeKey<Boolean> CANCELED_ATTRIBUTE_KEY = booleanKey("reactor.canceled");
 
   public static ReactorAsyncOperationEndStrategy create() {
     return builder().build();

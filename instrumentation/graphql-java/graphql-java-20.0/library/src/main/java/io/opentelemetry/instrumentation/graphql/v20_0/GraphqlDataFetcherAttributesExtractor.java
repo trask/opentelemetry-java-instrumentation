@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.graphql.v20_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import graphql.schema.DataFetchingEnvironment;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributesBuilder;
@@ -16,10 +18,8 @@ final class GraphqlDataFetcherAttributesExtractor
     implements AttributesExtractor<DataFetchingEnvironment, Object> {
 
   // NOTE: These are not part of the Semantic Convention and are subject to change
-  private static final AttributeKey<String> GRAPHQL_FIELD_NAME =
-      AttributeKey.stringKey("graphql.field.name");
-  private static final AttributeKey<String> GRAPHQL_FIELD_PATH =
-      AttributeKey.stringKey("graphql.field.path");
+  private static final AttributeKey<String> GRAPHQL_FIELD_NAME = stringKey("graphql.field.name");
+  private static final AttributeKey<String> GRAPHQL_FIELD_PATH = stringKey("graphql.field.path");
 
   @Override
   public void onStart(

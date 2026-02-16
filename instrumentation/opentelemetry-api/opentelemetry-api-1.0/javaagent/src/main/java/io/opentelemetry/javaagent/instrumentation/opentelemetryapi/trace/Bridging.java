@@ -130,21 +130,21 @@ public class Bridging {
   public static io.opentelemetry.api.common.AttributeKey toAgent(AttributeKey applicationKey) {
     switch (applicationKey.getType()) {
       case STRING:
-        return io.opentelemetry.api.common.AttributeKey.stringKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.stringKey(applicationKey.getKey());
       case BOOLEAN:
-        return io.opentelemetry.api.common.AttributeKey.booleanKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.booleanKey(applicationKey.getKey());
       case LONG:
-        return io.opentelemetry.api.common.AttributeKey.longKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.longKey(applicationKey.getKey());
       case DOUBLE:
-        return io.opentelemetry.api.common.AttributeKey.doubleKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.doubleKey(applicationKey.getKey());
       case STRING_ARRAY:
-        return io.opentelemetry.api.common.AttributeKey.stringArrayKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.stringArrayKey(applicationKey.getKey());
       case BOOLEAN_ARRAY:
-        return io.opentelemetry.api.common.AttributeKey.booleanArrayKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.booleanArrayKey(applicationKey.getKey());
       case LONG_ARRAY:
-        return io.opentelemetry.api.common.AttributeKey.longArrayKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.longArrayKey(applicationKey.getKey());
       case DOUBLE_ARRAY:
-        return io.opentelemetry.api.common.AttributeKey.doubleArrayKey(applicationKey.getKey());
+        return io.opentelemetry.api.common.doubleArrayKey(applicationKey.getKey());
       default:
         if (applicationKey.getType().name().equals("VALUE")) {
           return io.opentelemetry.api.common.AttributeKey.valueKey(applicationKey.getKey());

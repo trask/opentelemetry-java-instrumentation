@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.service.peer.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static java.util.Collections.emptyList;
 import static java.util.Comparator.comparing;
 import static java.util.Comparator.naturalOrder;
@@ -34,12 +35,11 @@ public class ServicePeerResolver {
   private static final Logger logger = Logger.getLogger(ServicePeerResolver.class.getName());
 
   // copied from PeerIncubatingAttributes
-  private static final AttributeKey<String> PEER_SERVICE = AttributeKey.stringKey("peer.service");
+  private static final AttributeKey<String> PEER_SERVICE = stringKey("peer.service");
   // copied from ServiceIncubatingAttributes
-  private static final AttributeKey<String> SERVICE_PEER_NAME =
-      AttributeKey.stringKey("service.peer.name");
+  private static final AttributeKey<String> SERVICE_PEER_NAME = stringKey("service.peer.name");
   private static final AttributeKey<String> SERVICE_PEER_NAMESPACE =
-      AttributeKey.stringKey("service.peer.namespace");
+      stringKey("service.peer.namespace");
 
   private static final Comparator<ServiceMatcher> matcherComparator =
       nullsFirst(

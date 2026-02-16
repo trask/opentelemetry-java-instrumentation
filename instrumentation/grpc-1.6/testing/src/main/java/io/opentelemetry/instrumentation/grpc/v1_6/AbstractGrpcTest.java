@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
 import static io.opentelemetry.instrumentation.grpc.v1_6.ExperimentalTestHelper.GRPC_RECEIVED_MESSAGE_COUNT;
 import static io.opentelemetry.instrumentation.grpc.v1_6.ExperimentalTestHelper.GRPC_SENT_MESSAGE_COUNT;
 import static io.opentelemetry.instrumentation.grpc.v1_6.ExperimentalTestHelper.experimentalSatisfies;
@@ -1404,9 +1405,9 @@ public abstract class AbstractGrpcTest {
   void setCapturedRequestMetadata() throws Exception {
     String metadataAttributePrefix = "rpc.grpc.request.metadata.";
     AttributeKey<List<String>> clientAttributeKey =
-        AttributeKey.stringArrayKey(metadataAttributePrefix + CLIENT_REQUEST_METADATA_KEY);
+        stringArrayKey(metadataAttributePrefix + CLIENT_REQUEST_METADATA_KEY);
     AttributeKey<List<String>> serverAttributeKey =
-        AttributeKey.stringArrayKey(metadataAttributePrefix + SERVER_REQUEST_METADATA_KEY);
+        stringArrayKey(metadataAttributePrefix + SERVER_REQUEST_METADATA_KEY);
     String serverMetadataValue = "server-value";
     String clientMetadataValue = "client-value";
 

@@ -5,6 +5,15 @@
 
 package io.opentelemetry.instrumentation.api.annotation.support;
 
+import static io.opentelemetry.api.common.AttributeKey.booleanArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.booleanKey;
+import static io.opentelemetry.api.common.AttributeKey.doubleArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.doubleKey;
+import static io.opentelemetry.api.common.AttributeKey.longArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringArrayKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import java.lang.reflect.Type;
 import java.util.AbstractList;
@@ -25,27 +34,27 @@ class AttributeBindingFactory {
 
     // Simple scalar parameter types
     if (type == String.class) {
-      AttributeKey<String> key = AttributeKey.stringKey(name);
+      AttributeKey<String> key = stringKey(name);
       return (setter, arg) -> setter.put(key, (String) arg);
     }
     if (type == long.class || type == Long.class) {
-      AttributeKey<Long> key = AttributeKey.longKey(name);
+      AttributeKey<Long> key = longKey(name);
       return (setter, arg) -> setter.put(key, (Long) arg);
     }
     if (type == double.class || type == Double.class) {
-      AttributeKey<Double> key = AttributeKey.doubleKey(name);
+      AttributeKey<Double> key = doubleKey(name);
       return (setter, arg) -> setter.put(key, (Double) arg);
     }
     if (type == boolean.class || type == Boolean.class) {
-      AttributeKey<Boolean> key = AttributeKey.booleanKey(name);
+      AttributeKey<Boolean> key = booleanKey(name);
       return (setter, arg) -> setter.put(key, (Boolean) arg);
     }
     if (type == int.class || type == Integer.class) {
-      AttributeKey<Long> key = AttributeKey.longKey(name);
+      AttributeKey<Long> key = longKey(name);
       return (setter, arg) -> setter.put(key, ((Integer) arg).longValue());
     }
     if (type == float.class || type == Float.class) {
-      AttributeKey<Double> key = AttributeKey.doubleKey(name);
+      AttributeKey<Double> key = doubleKey(name);
       return (setter, arg) -> setter.put(key, ((Float) arg).doubleValue());
     }
 
@@ -74,19 +83,19 @@ class AttributeBindingFactory {
   private static AttributeBinding arrayBinding(String name, Type type) {
     // Simple array attribute types without conversion
     if (type == String[].class) {
-      AttributeKey<List<String>> key = AttributeKey.stringArrayKey(name);
+      AttributeKey<List<String>> key = stringArrayKey(name);
       return (setter, arg) -> setter.put(key, Arrays.asList((String[]) arg));
     }
     if (type == Long[].class) {
-      AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+      AttributeKey<List<Long>> key = longArrayKey(name);
       return (setter, arg) -> setter.put(key, Arrays.asList((Long[]) arg));
     }
     if (type == Double[].class) {
-      AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+      AttributeKey<List<Double>> key = doubleArrayKey(name);
       return (setter, arg) -> setter.put(key, Arrays.asList((Double[]) arg));
     }
     if (type == Boolean[].class) {
-      AttributeKey<List<Boolean>> key = AttributeKey.booleanArrayKey(name);
+      AttributeKey<List<Boolean>> key = booleanArrayKey(name);
       return (setter, arg) -> setter.put(key, Arrays.asList((Boolean[]) arg));
     }
 
@@ -118,27 +127,27 @@ class AttributeBindingFactory {
   @SuppressWarnings("unchecked") // safe because type is checked before casting
   private static AttributeBinding listBinding(String name, Type componentType) {
     if (componentType == String.class) {
-      AttributeKey<List<String>> key = AttributeKey.stringArrayKey(name);
+      AttributeKey<List<String>> key = stringArrayKey(name);
       return (setter, arg) -> setter.put(key, (List<String>) arg);
     }
     if (componentType == Long.class) {
-      AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+      AttributeKey<List<Long>> key = longArrayKey(name);
       return (setter, arg) -> setter.put(key, (List<Long>) arg);
     }
     if (componentType == Double.class) {
-      AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+      AttributeKey<List<Double>> key = doubleArrayKey(name);
       return (setter, arg) -> setter.put(key, (List<Double>) arg);
     }
     if (componentType == Boolean.class) {
-      AttributeKey<List<Boolean>> key = AttributeKey.booleanArrayKey(name);
+      AttributeKey<List<Boolean>> key = booleanArrayKey(name);
       return (setter, arg) -> setter.put(key, (List<Boolean>) arg);
     }
     if (componentType == Integer.class) {
-      AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+      AttributeKey<List<Long>> key = longArrayKey(name);
       return mappedListBinding(key, Integer::longValue);
     }
     if (componentType == Float.class) {
-      AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+      AttributeKey<List<Double>> key = doubleArrayKey(name);
       return mappedListBinding(key, Float::doubleValue);
     }
 
@@ -146,7 +155,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding intArrayBinding(String name) {
-    AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+    AttributeKey<List<Long>> key = longArrayKey(name);
     return (setter, arg) -> {
       int[] array = (int[]) arg;
       List<Long> wrapper =
@@ -166,7 +175,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding boxedIntegerArrayBinding(String name) {
-    AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+    AttributeKey<List<Long>> key = longArrayKey(name);
     return (setter, arg) -> {
       Integer[] array = (Integer[]) arg;
       List<Long> wrapper =
@@ -188,7 +197,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding longArrayBinding(String name) {
-    AttributeKey<List<Long>> key = AttributeKey.longArrayKey(name);
+    AttributeKey<List<Long>> key = longArrayKey(name);
     return (setter, arg) -> {
       long[] array = (long[]) arg;
       List<Long> wrapper =
@@ -208,7 +217,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding floatArrayBinding(String name) {
-    AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+    AttributeKey<List<Double>> key = doubleArrayKey(name);
     return (setter, arg) -> {
       float[] array = (float[]) arg;
       List<Double> wrapper =
@@ -228,7 +237,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding boxedFloatArrayBinding(String name) {
-    AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+    AttributeKey<List<Double>> key = doubleArrayKey(name);
     return (setter, arg) -> {
       Float[] array = (Float[]) arg;
       List<Double> wrapper =
@@ -250,7 +259,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding doubleArrayBinding(String name) {
-    AttributeKey<List<Double>> key = AttributeKey.doubleArrayKey(name);
+    AttributeKey<List<Double>> key = doubleArrayKey(name);
     return (setter, arg) -> {
       double[] array = (double[]) arg;
       List<Double> wrapper =
@@ -270,7 +279,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding booleanArrayBinding(String name) {
-    AttributeKey<List<Boolean>> key = AttributeKey.booleanArrayKey(name);
+    AttributeKey<List<Boolean>> key = booleanArrayKey(name);
     return (setter, arg) -> {
       boolean[] array = (boolean[]) arg;
       List<Boolean> wrapper =
@@ -290,7 +299,7 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding defaultArrayBinding(String name) {
-    AttributeKey<List<String>> key = AttributeKey.stringArrayKey(name);
+    AttributeKey<List<String>> key = stringArrayKey(name);
     return (setter, arg) -> {
       Object[] array = (Object[]) arg;
       List<String> wrapper =
@@ -335,12 +344,12 @@ class AttributeBindingFactory {
   }
 
   private static AttributeBinding defaultListBinding(String name) {
-    AttributeKey<List<String>> key = AttributeKey.stringArrayKey(name);
+    AttributeKey<List<String>> key = stringArrayKey(name);
     return mappedListBinding(key, Object::toString);
   }
 
   private static AttributeBinding defaultBinding(String name) {
-    AttributeKey<String> key = AttributeKey.stringKey(name);
+    AttributeKey<String> key = stringKey(name);
     return (setter, arg) -> setter.put(key, arg.toString());
   }
 }

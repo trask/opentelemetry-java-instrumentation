@@ -5,6 +5,8 @@
 
 package io.opentelemetry.spring.smoketest;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 
@@ -28,8 +30,7 @@ abstract class AbstractKafkaSpringStarterSmokeTest extends AbstractSpringStarter
 
   @Autowired protected KafkaTemplate<String, String> kafkaTemplate;
 
-  private static final AttributeKey<String> MESSAGING_CLIENT_ID =
-      AttributeKey.stringKey("messaging.client_id");
+  private static final AttributeKey<String> MESSAGING_CLIENT_ID = stringKey("messaging.client_id");
 
   @SuppressWarnings("deprecation") // using deprecated semconv
   @Test
@@ -101,7 +102,7 @@ abstract class AbstractKafkaSpringStarterSmokeTest extends AbstractSpringStarter
                                 MessagingIncubatingAttributes.MESSAGING_KAFKA_CONSUMER_GROUP,
                                 "testListener"),
                             satisfies(
-                                AttributeKey.longKey("kafka.record.queue_time_ms"),
+                                longKey("kafka.record.queue_time_ms"),
                                 AbstractLongAssert::isNotNegative),
                             satisfies(
                                 MESSAGING_CLIENT_ID,

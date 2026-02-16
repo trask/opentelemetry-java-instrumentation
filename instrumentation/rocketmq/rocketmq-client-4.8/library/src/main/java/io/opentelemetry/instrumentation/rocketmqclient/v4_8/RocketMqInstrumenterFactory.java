@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.rocketmqclient.v4_8;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor.constant;
 
 import io.opentelemetry.api.OpenTelemetry;
@@ -28,10 +29,8 @@ class RocketMqInstrumenterFactory {
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.rocketmq-client-4.8";
 
   // copied from MessagingIncubatingAttributes
-  private static final AttributeKey<String> MESSAGING_OPERATION =
-      AttributeKey.stringKey("messaging.operation");
-  private static final AttributeKey<String> MESSAGING_SYSTEM =
-      AttributeKey.stringKey("messaging.system");
+  private static final AttributeKey<String> MESSAGING_OPERATION = stringKey("messaging.operation");
+  private static final AttributeKey<String> MESSAGING_SYSTEM = stringKey("messaging.system");
 
   static Instrumenter<SendMessageContext, Void> createProducerInstrumenter(
       OpenTelemetry openTelemetry,

@@ -164,28 +164,23 @@ public class ApplicationLogRecordBuilder150Incubator extends ApplicationLogRecor
       convertExtendedAttributeKey(ExtendedAttributeKey applicationKey) {
     switch (applicationKey.getType()) {
       case STRING:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.stringKey(
-            applicationKey.getKey());
+        return io.opentelemetry.api.incubator.common.ExtendedstringKey(applicationKey.getKey());
       case BOOLEAN:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.booleanKey(
-            applicationKey.getKey());
+        return io.opentelemetry.api.incubator.common.ExtendedbooleanKey(applicationKey.getKey());
       case LONG:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.longKey(
-            applicationKey.getKey());
+        return io.opentelemetry.api.incubator.common.ExtendedlongKey(applicationKey.getKey());
       case DOUBLE:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.doubleKey(
-            applicationKey.getKey());
+        return io.opentelemetry.api.incubator.common.ExtendeddoubleKey(applicationKey.getKey());
       case STRING_ARRAY:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.stringArrayKey(
+        return io.opentelemetry.api.incubator.common.ExtendedstringArrayKey(
             applicationKey.getKey());
       case BOOLEAN_ARRAY:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.booleanArrayKey(
+        return io.opentelemetry.api.incubator.common.ExtendedbooleanArrayKey(
             applicationKey.getKey());
       case LONG_ARRAY:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.longArrayKey(
-            applicationKey.getKey());
+        return io.opentelemetry.api.incubator.common.ExtendedlongArrayKey(applicationKey.getKey());
       case DOUBLE_ARRAY:
-        return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.doubleArrayKey(
+        return io.opentelemetry.api.incubator.common.ExtendeddoubleArrayKey(
             applicationKey.getKey());
       case EXTENDED_ATTRIBUTES:
         return io.opentelemetry.api.incubator.common.ExtendedAttributeKey.extendedAttributesKey(

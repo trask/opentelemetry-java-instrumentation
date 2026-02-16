@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.jbosslogmanager.appender.v1_1;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.assertThat;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
@@ -13,7 +14,6 @@ import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_STACKTRACE;
 import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_TYPE;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.logs.Severity;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtension;
@@ -217,8 +217,8 @@ class JbossLogmanagerTest {
                 .hasSeverityText("INFO")
                 .hasEventName("MyEventName")
                 .hasAttributesSatisfyingExactly(
-                    equalTo(AttributeKey.stringKey("key1"), "val1"),
-                    equalTo(AttributeKey.stringKey("key2"), "val2"),
+                    equalTo(stringKey("key1"), "val1"),
+                    equalTo(stringKey("key2"), "val2"),
                     equalTo(
                         ThreadIncubatingAttributes.THREAD_NAME, Thread.currentThread().getName()),
                     equalTo(ThreadIncubatingAttributes.THREAD_ID, Thread.currentThread().getId())));

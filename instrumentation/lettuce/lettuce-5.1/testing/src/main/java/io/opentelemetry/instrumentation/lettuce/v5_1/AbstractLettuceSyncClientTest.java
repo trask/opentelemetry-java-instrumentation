@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.lettuce.v5_1;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.testing.junit.db.DbClientMetricsTestUtil.assertDurationMetric;
 import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStabilityUtil.maybeStable;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
@@ -512,7 +513,7 @@ public abstract class AbstractLettuceSyncClientTest extends AbstractLettuceClien
                           .hasAttributesSatisfyingExactly(
                               addExtraAttributes(
                                   equalTo(
-                                      AttributeKey.stringKey("error"),
+                                      stringKey("error"),
                                       Boolean.getBoolean("testLatestDeps")
                                           ? null
                                           : "Connection disconnected"),

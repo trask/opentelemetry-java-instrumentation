@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.spring.security.config.v6_0;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
@@ -23,9 +25,9 @@ import org.springframework.security.core.GrantedAuthority;
 public final class EnduserAttributesCapturer {
 
   // copied from EnduserIncubatingAttributes
-  private static final AttributeKey<String> ENDUSER_ID = AttributeKey.stringKey("enduser.id");
-  private static final AttributeKey<String> ENDUSER_ROLE = AttributeKey.stringKey("enduser.role");
-  private static final AttributeKey<String> ENDUSER_SCOPE = AttributeKey.stringKey("enduser.scope");
+  private static final AttributeKey<String> ENDUSER_ID = stringKey("enduser.id");
+  private static final AttributeKey<String> ENDUSER_ROLE = stringKey("enduser.role");
+  private static final AttributeKey<String> ENDUSER_SCOPE = stringKey("enduser.scope");
 
   private static final String DEFAULT_ROLE_PREFIX = "ROLE_";
   private static final String DEFAULT_SCOPE_PREFIX = "SCOPE_";

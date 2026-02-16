@@ -4,6 +4,7 @@
  */
 
 package com.example.javaagent;
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
@@ -79,7 +80,7 @@ public class DemoInstrumenterCustomizerProvider implements InstrumenterCustomize
   private static class DemoHttpClientAttributesExtractor
       implements AttributesExtractor<Object, Object> {
     private static final AttributeKey<String> CLIENT_ATTR =
-        AttributeKey.stringKey("demo.client.type");
+        stringKey("demo.client.type");
 
     @Override
     public void onStart(AttributesBuilder attributes, Context context, Object request) {
@@ -97,8 +98,8 @@ public class DemoInstrumenterCustomizerProvider implements InstrumenterCustomize
 
   /** Custom attributes extractor that adds demo-specific attributes. */
   private static class DemoAttributesExtractor implements AttributesExtractor<Object, Object> {
-    private static final AttributeKey<String> CUSTOM_ATTR = AttributeKey.stringKey("demo.custom");
-    private static final AttributeKey<String> ERROR_ATTR = AttributeKey.stringKey("demo.error");
+    private static final AttributeKey<String> CUSTOM_ATTR = stringKey("demo.custom");
+    private static final AttributeKey<String> ERROR_ATTR = stringKey("demo.error");
 
     @Override
     public void onStart(AttributesBuilder attributes, Context context, Object request) {

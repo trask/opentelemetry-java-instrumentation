@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.runtimemetrics.java17.internal.buffer;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.Meter;
@@ -34,8 +36,7 @@ public final class DirectBufferStatisticsHandler implements RecordedEventHandler
   private static final String MEMORY_USED = "memoryUsed";
 
   private static final String EVENT_NAME = "jdk.DirectBufferStatistics";
-  public static final AttributeKey<String> ATTR_BUFFER_POOL =
-      AttributeKey.stringKey("jvm.buffer.pool.name");
+  public static final AttributeKey<String> ATTR_BUFFER_POOL = stringKey("jvm.buffer.pool.name");
   private static final Attributes ATTR = Attributes.of(ATTR_BUFFER_POOL, "direct");
 
   private final List<AutoCloseable> observables = new ArrayList<>();

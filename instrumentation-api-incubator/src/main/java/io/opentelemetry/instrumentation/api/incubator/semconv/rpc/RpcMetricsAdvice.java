@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.api.incubator.semconv.rpc;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
 import static java.util.Arrays.asList;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -19,8 +20,7 @@ import java.util.List;
 final class RpcMetricsAdvice {
 
   // copied from RpcIncubatingAttributes
-  private static final AttributeKey<Long> RPC_GRPC_STATUS_CODE =
-      AttributeKey.longKey("rpc.grpc.status_code");
+  private static final AttributeKey<Long> RPC_GRPC_STATUS_CODE = longKey("rpc.grpc.status_code");
   private static final List<AttributeKey<?>> RPC_METRICS_ATTRIBUTE_KEYS =
       asList(
           RpcCommonAttributesExtractor.RPC_SYSTEM,

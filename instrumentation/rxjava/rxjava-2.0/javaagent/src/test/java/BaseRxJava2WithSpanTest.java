@@ -33,8 +33,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 public abstract class BaseRxJava2WithSpanTest {
-  private static final AttributeKey<Boolean> RXJAVA_CANCELED =
-      AttributeKey.booleanKey("rxjava.canceled");
+  private static final AttributeKey<Boolean> RXJAVA_CANCELED = booleanKey("rxjava.canceled");
 
   protected abstract AbstractTracedWithSpan newTraced();
 

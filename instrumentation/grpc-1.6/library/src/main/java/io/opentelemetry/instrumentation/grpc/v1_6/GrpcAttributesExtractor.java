@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.grpc.v1_6;
 
+import static io.opentelemetry.api.common.AttributeKey.longKey;
 import static io.opentelemetry.instrumentation.grpc.v1_6.CapturedGrpcMetadataUtil.lowercase;
 import static io.opentelemetry.instrumentation.grpc.v1_6.CapturedGrpcMetadataUtil.requestAttributeKey;
 
@@ -19,8 +20,7 @@ import javax.annotation.Nullable;
 final class GrpcAttributesExtractor implements AttributesExtractor<GrpcRequest, Status> {
 
   // copied from RpcIncubatingAttributes
-  private static final AttributeKey<Long> RPC_GRPC_STATUS_CODE =
-      AttributeKey.longKey("rpc.grpc.status_code");
+  private static final AttributeKey<Long> RPC_GRPC_STATUS_CODE = longKey("rpc.grpc.status_code");
 
   private final GrpcRpcAttributesGetter getter;
   private final List<String> capturedRequestMetadata;

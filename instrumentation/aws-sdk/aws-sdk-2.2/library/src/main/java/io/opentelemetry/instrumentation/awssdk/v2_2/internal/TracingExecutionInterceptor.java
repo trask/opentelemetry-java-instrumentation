@@ -5,6 +5,7 @@
 
 package io.opentelemetry.instrumentation.awssdk.v2_2.internal;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.AwsSdkRequestType.DYNAMODB;
 
 import io.opentelemetry.api.common.AttributeKey;
@@ -50,8 +51,7 @@ import software.amazon.awssdk.http.SdkHttpResponse;
 public final class TracingExecutionInterceptor implements ExecutionInterceptor {
 
   // copied from AwsIncubatingAttributes
-  private static final AttributeKey<String> AWS_REQUEST_ID =
-      AttributeKey.stringKey("aws.request_id");
+  private static final AttributeKey<String> AWS_REQUEST_ID = stringKey("aws.request_id");
 
   // the class name is part of the attribute name, so that it will be shaded when used in javaagent
   // instrumentation, and won't conflict with usage outside javaagent instrumentation
@@ -81,8 +81,7 @@ public final class TracingExecutionInterceptor implements ExecutionInterceptor {
   private final Instrumenter<ExecutionAttributes, Response> bedrockRuntimeInstrumenter;
   private final Logger eventLogger;
 
-  static final AttributeKey<String> HTTP_ERROR_MSG =
-      AttributeKey.stringKey("aws.http.error_message");
+  static final AttributeKey<String> HTTP_ERROR_MSG = stringKey("aws.http.error_message");
   static final String HTTP_FAILURE_EVENT = "HTTP request failure";
 
   Instrumenter<SqsReceiveRequest, Response> getConsumerReceiveInstrumenter() {

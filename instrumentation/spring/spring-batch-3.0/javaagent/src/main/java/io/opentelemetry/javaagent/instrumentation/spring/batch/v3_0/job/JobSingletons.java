@@ -5,10 +5,10 @@
 
 package io.opentelemetry.javaagent.instrumentation.spring.batch.v3_0.job;
 
+import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.javaagent.instrumentation.spring.batch.v3_0.SpringBatchInstrumentationConfig.instrumentationName;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
@@ -29,7 +29,7 @@ public class JobSingletons {
             GlobalOpenTelemetry.get(), instrumentationName(), JobSingletons::extractSpanName);
     if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
       instrumenter.addAttributesExtractor(
-          AttributesExtractor.constant(AttributeKey.stringKey("job.system"), "spring_batch"));
+          AttributesExtractor.constant(stringKey("job.system"), "spring_batch"));
     }
     INSTRUMENTER = instrumenter.buildInstrumenter();
   }

@@ -28,7 +28,18 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
    */
   public static <REQUEST> SpanNameExtractor<REQUEST> create(
       SqlClientAttributesGetter<REQUEST, ?> getter) {
-    return new SqlClientSpanNameExtractor<>(getter);
+    return create(getter, SqlDialect.DEFAULT);
+  }
+
+  /**
+   * Returns a {@link SpanNameExtractor} that constructs the span name according to DB semantic
+   * conventions: {@code <db.operation> <db.name>.<identifier>}.
+   *
+   * @see DbClientAttributesGetter#getDbNamespace(Object) used to extract {@code <db.namespace>}.
+   */
+  public static <REQUEST> SpanNameExtractor<REQUEST> create(
+      SqlClientAttributesGetter<REQUEST, ?> getter, SqlDialect sqlDialect) {
+    return new SqlClientSpanNameExtractor<>(getter, sqlDialect.ansiQuotes());
   }
 
   private static final String DEFAULT_SPAN_NAME = "DB Query";
@@ -155,14 +166,19 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
       extends DbClientSpanNameExtractor<REQUEST> {
 
     private final SqlClientAttributesGetter<REQUEST, ?> getter;
+    private final boolean ansiQuotes;
 
-    private SqlClientSpanNameExtractor(SqlClientAttributesGetter<REQUEST, ?> getter) {
+    private SqlClientSpanNameExtractor(
+        SqlClientAttributesGetter<REQUEST, ?> getter, boolean ansiQuotes) {
       this.getter = getter;
+      this.ansiQuotes = ansiQuotes;
     }
 
     @Override
     public String extract(REQUEST request) {
       String namespace = getter.getDbNamespace(request);
+      SqlDialect dialect =
+          SqlQuerySanitizerUtil.getDialect(getter.getDbSystemName(request), ansiQuotes);
       Collection<String> rawQueryTexts = getter.getRawQueryTexts(request);
 
       if (rawQueryTexts.isEmpty()) {
@@ -176,7 +192,8 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
         if (rawQueryTexts.size() > 1) { // for backcompat(?)
           return computeSpanName(namespace, null, null, null);
         }
-        SqlQuery sanitizedQuery = SqlQuerySanitizerUtil.sanitize(rawQueryTexts.iterator().next());
+        SqlQuery sanitizedQuery =
+            SqlQuerySanitizerUtil.sanitize(rawQueryTexts.iterator().next(), dialect);
 
         return computeSpanName(
             namespace,
@@ -189,8 +206,8 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
         String rawQueryText = rawQueryTexts.iterator().next();
         SqlQuery sanitizedQuery =
             getter instanceof ExtractQuerySummaryMarker
-                ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText)
-                : SqlQuerySanitizerUtil.sanitize(rawQueryText);
+                ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText, dialect)
+                : SqlQuerySanitizerUtil.sanitize(rawQueryText, dialect);
         boolean batch = isBatch(request);
         String querySummary = sanitizedQuery.getQuerySummary();
         if (querySummary != null) {
@@ -210,8 +227,8 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
 
       MultiQuery multiQuery =
           getter instanceof ExtractQuerySummaryMarker
-              ? MultiQuery.analyzeWithSummary(rawQueryTexts, false)
-              : MultiQuery.analyze(rawQueryTexts, false);
+              ? MultiQuery.analyzeWithSummary(rawQueryTexts, dialect, false)
+              : MultiQuery.analyze(rawQueryTexts, dialect, false);
       String querySummary = multiQuery.getQuerySummary();
       if (querySummary != null) {
         return querySummary;

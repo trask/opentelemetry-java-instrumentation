@@ -53,7 +53,7 @@ public final class SqlQuerySanitizer {
 
   private static SqlQuery sanitizeImpl(String query, SqlDialect dialect) {
     supportability.incrementCounter(SQL_SANITIZER_CACHE_MISS);
-    return AutoSqlSanitizer.sanitize(query, dialect);
+    return AutoSqlSanitizer.sanitize(query, dialect.ansiQuotes());
   }
 
   /** Sanitize and extract query summary. */
@@ -78,7 +78,7 @@ public final class SqlQuerySanitizer {
 
   private static SqlQuery sanitizeWithSummaryImpl(String query, SqlDialect dialect) {
     supportability.incrementCounter(SQL_SANITIZER_CACHE_MISS);
-    return AutoSqlSanitizerWithSummary.sanitize(query, dialect);
+    return AutoSqlSanitizerWithSummary.sanitize(query, dialect.ansiQuotes());
   }
 
   // visible for tests

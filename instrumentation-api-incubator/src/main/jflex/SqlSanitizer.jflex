@@ -43,9 +43,9 @@ POSTGRE_PARAM_MARKER = "$"[0-9]*
 WHITESPACE           = [ \t\r\n]+
 
 %{
-  static SqlQuery sanitize(String statement, SqlDialect dialect) {
+  static SqlQuery sanitize(String statement, boolean ansiQuotes) {
     AutoSqlSanitizer sanitizer = new AutoSqlSanitizer(new java.io.StringReader(statement));
-    sanitizer.dialect = dialect;
+    sanitizer.ansiQuotes = ansiQuotes;
     try {
       while (!sanitizer.yyatEOF()) {
         int token = sanitizer.yylex();
@@ -119,7 +119,7 @@ WHITESPACE           = [ \t\r\n]+
   private boolean insideComment = false;
   private Operation operation = NoOp.INSTANCE;
   private boolean extractionDone = false;
-  private SqlDialect dialect;
+  private boolean ansiQuotes; // whether double quotes are used for quoting identifiers or string literals
 
   private void setOperation(Operation operation) {
     if (this.operation == NoOp.INSTANCE) {
@@ -560,13 +560,13 @@ WHITESPACE           = [ \t\r\n]+
       }
 
   {DOUBLE_QUOTED_STR} {
-          if (dialect == SqlDialect.COUCHBASE) {
-            builder.append('?');
-          } else {
+          if (ansiQuotes) {
             if (!insideComment && !extractionDone) {
               extractionDone = operation.handleIdentifier();
             }
             appendCurrentFragment();
+          } else {
+            builder.append('?');
           }
           if (isOverLimit()) return YYEOF;
       }

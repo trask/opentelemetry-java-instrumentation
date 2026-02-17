@@ -31,17 +31,21 @@ class MultiQuery {
     this.querySummary = querySummary;
   }
 
-  static MultiQuery analyze(Collection<String> rawQueryTexts, boolean querySanitizationEnabled) {
-    return analyzeInternal(rawQueryTexts, querySanitizationEnabled, false);
+  static MultiQuery analyze(
+      Collection<String> rawQueryTexts, SqlDialect dialect, boolean querySanitizationEnabled) {
+    return analyzeInternal(rawQueryTexts, dialect, querySanitizationEnabled, false);
   }
 
   static MultiQuery analyzeWithSummary(
-      Collection<String> rawQueryTexts, boolean querySanitizationEnabled) {
-    return analyzeInternal(rawQueryTexts, querySanitizationEnabled, true);
+      Collection<String> rawQueryTexts, SqlDialect dialect, boolean querySanitizationEnabled) {
+    return analyzeInternal(rawQueryTexts, dialect, querySanitizationEnabled, true);
   }
 
   private static MultiQuery analyzeInternal(
-      Collection<String> rawQueryTexts, boolean querySanitizationEnabled, boolean withSummary) {
+      Collection<String> rawQueryTexts,
+      SqlDialect dialect,
+      boolean querySanitizationEnabled,
+      boolean withSummary) {
     UniqueValue uniqueCollectionName = new UniqueValue();
     UniqueValue uniqueStoredProcedureName = new UniqueValue();
     UniqueValue uniqueOperationName = new UniqueValue();
@@ -50,8 +54,8 @@ class MultiQuery {
     for (String rawQueryText : rawQueryTexts) {
       SqlQuery sanitizedQuery =
           withSummary
-              ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText)
-              : SqlQuerySanitizerUtil.sanitize(rawQueryText);
+              ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText, dialect)
+              : SqlQuerySanitizerUtil.sanitize(rawQueryText, dialect);
       String collectionName = sanitizedQuery.getCollectionName();
       uniqueCollectionName.set(collectionName);
       String storedProcedureName = sanitizedQuery.getStoredProcedureName();

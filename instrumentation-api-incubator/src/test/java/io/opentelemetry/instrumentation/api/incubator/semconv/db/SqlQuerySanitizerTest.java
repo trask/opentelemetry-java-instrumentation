@@ -21,12 +21,6 @@ class SqlQuerySanitizerTest {
 
   private static final SqlQuerySanitizer SANITIZER = SqlQuerySanitizer.create(true);
 
-  private static SqlQuery sanitize(String sql) {
-    return emitStableDatabaseSemconv()
-        ? SANITIZER.sanitizeWithSummary(sql)
-        : SANITIZER.sanitize(sql);
-  }
-
   private static SqlQuery sanitize(String sql, SqlDialect dialect) {
     return emitStableDatabaseSemconv()
         ? SANITIZER.sanitizeWithSummary(sql, dialect)
@@ -36,7 +30,19 @@ class SqlQuerySanitizerTest {
   @ParameterizedTest
   @MethodSource("sqlArgs")
   void sanitizeSql(String original, String expected, String expectedQuerySummary) {
-    SqlQuery result = sanitize(original);
+    SqlQuery result = sanitize(original, SqlDialect.DEFAULT);
+    assertThat(result.getQueryText()).isEqualTo(expected);
+    if (emitStableDatabaseSemconv()) {
+      assertThat(result.getQuerySummary()).isEqualTo(expectedQuerySummary);
+    } else {
+      assertThat(result.getQuerySummary()).isNull();
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("sanitizeAnsiArgs")
+  void sanitizeSqlAnsiQuotes(String original, String expected, String expectedQuerySummary) {
+    SqlQuery result = sanitize(original, SqlDialect.ANSI_QUOTES);
     assertThat(result.getQueryText()).isEqualTo(expected);
     if (emitStableDatabaseSemconv()) {
       assertThat(result.getQuerySummary()).isEqualTo(expectedQuerySummary);
@@ -60,7 +66,25 @@ class SqlQuerySanitizerTest {
   @ParameterizedTest
   @MethodSource("simplifyArgs")
   void simplifySql(String original, Function<String, SqlQuery> expectedFunction) {
-    SqlQuery result = sanitize(original);
+    SqlQuery result = sanitize(original, SqlDialect.ANSI_QUOTES);
+    SqlQuery expected = expectedFunction.apply(original);
+    assertThat(result.getQueryText()).isEqualTo(expected.getQueryText());
+    if (emitStableDatabaseSemconv()) {
+      assertThat(result.getOperationName()).isNull();
+      assertThat(result.getCollectionName()).isNull();
+      assertThat(result.getQuerySummary()).isEqualTo(expected.getQuerySummary());
+    } else {
+      assertThat(result.getOperationName()).isEqualTo(expected.getOperationName());
+      assertThat(result.getCollectionName()).isEqualTo(expected.getCollectionName());
+      assertThat(result.getQuerySummary()).isNull();
+    }
+    assertThat(result.getStoredProcedureName()).isEqualTo(expected.getStoredProcedureName());
+  }
+
+  @ParameterizedTest
+  @MethodSource("simplifyDefaultArgs")
+  void simplifySqlDefault(String original, Function<String, SqlQuery> expectedFunction) {
+    SqlQuery result = sanitize(original, SqlDialect.DEFAULT);
     SqlQuery expected = expectedFunction.apply(original);
     assertThat(result.getQueryText()).isEqualTo(expected.getQueryText());
     if (emitStableDatabaseSemconv()) {
@@ -78,7 +102,7 @@ class SqlQuerySanitizerTest {
   @ParameterizedTest
   @MethodSource("sensitiveArgs")
   void sanitizeSensitive(String original, String expected, String expectedQuerySummary) {
-    SqlQuery result = sanitize(original);
+    SqlQuery result = sanitize(original, SqlDialect.ANSI_QUOTES);
     assertThat(result.getQueryText()).isEqualTo(expected);
     if (emitStableDatabaseSemconv()) {
       assertThat(result.getQuerySummary()).isEqualTo(expectedQuerySummary);
@@ -113,7 +137,7 @@ class SqlQuerySanitizerTest {
 
     String sanitizedQuery = query.replace("=123", "=?").substring(0, AutoSqlSanitizer.LIMIT);
 
-    SqlQuery result = sanitize(query);
+    SqlQuery result = sanitize(query, SqlDialect.ANSI_QUOTES);
 
     assertThat(result.getQueryText()).isEqualTo(sanitizedQuery);
     if (emitStableDatabaseSemconv()) {
@@ -130,7 +154,7 @@ class SqlQuerySanitizerTest {
   @ParameterizedTest
   @MethodSource("ddlArgs")
   void checkDdlOperationStatementsAreOk(String actual, Function<String, SqlQuery> expectFunc) {
-    SqlQuery result = sanitize(actual);
+    SqlQuery result = sanitize(actual, SqlDialect.ANSI_QUOTES);
     SqlQuery expected = expectFunc.apply(actual);
     assertThat(result.getQueryText()).isEqualTo(expected.getQueryText());
     if (emitStableDatabaseSemconv()) {
@@ -181,7 +205,7 @@ class SqlQuerySanitizerTest {
     for (int i = 0; i < 10000; i++) {
       s.append("SELECT * FROM TABLE WHERE FIELD = 1234 AND ");
     }
-    SqlQuery result = sanitize(s.toString());
+    SqlQuery result = sanitize(s.toString(), SqlDialect.ANSI_QUOTES);
     assertThat(result.getQueryText().length()).isLessThanOrEqualTo(AutoSqlSanitizer.LIMIT);
     assertThat(result.getQueryText()).doesNotContain("1234");
     if (emitStableDatabaseSemconv()) {
@@ -256,6 +280,12 @@ class SqlQuerySanitizerTest {
   }
 
   private static Stream<Arguments> sqlArgs() {
+    return Stream.of(
+        // default: double quotes are treated as string literals
+        Arguments.of("SELECT * FROM \"TABLE\"", "SELECT * FROM ?", "SELECT"));
+  }
+
+  private static Stream<Arguments> sanitizeAnsiArgs() {
     return Stream.of(
         Arguments.of(
             "SELECT * FROM TABLE WHERE FIELD=1234",
@@ -442,6 +472,24 @@ class SqlQuerySanitizerTest {
         emitStableDatabaseSemconv()
             ? SqlQuery.createWithSummary(sql, storedProcedureName, querySummary)
             : SqlQuery.create(sql, operation, storedProcedureName);
+  }
+
+  private static Stream<Arguments> simplifyDefaultArgs() {
+    return Stream.of(
+        Arguments.of(
+            "select 'a' IN(x, 'b') from table where col in (1) and z IN( '3', '4' )",
+            expect(
+                "select ? IN(x, ?) from table where col in (?) and z IN(?)",
+                "SELECT",
+                "table",
+                "SELECT table")),
+        Arguments.of(
+            "select \"a\" IN(x, \"b\") from table where col in (1) and z IN( \"3\", \"4\" )",
+            expect(
+                "select ? IN(x, ?) from table where col in (?) and z IN(?)",
+                "SELECT",
+                "table",
+                "SELECT table")));
   }
 
   private static Stream<Arguments> simplifyArgs() {

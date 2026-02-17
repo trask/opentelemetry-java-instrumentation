@@ -7,8 +7,11 @@ package io.opentelemetry.instrumentation.api.incubator.semconv.db;
 
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.internal.InstrumenterContext;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class for sanitizing sql that keeps sanitization results in {@link InstrumenterContext} so
@@ -16,18 +19,30 @@ import java.util.Map;
  */
 class SqlQuerySanitizerUtil {
   private static final SqlQuerySanitizer sanitizer = SqlQuerySanitizer.create(true);
+  private static final Set<String> dbsWithAnsiQuotes =
+      new HashSet<>(
+          Arrays.asList("postgresql", "oracle", "h2", "hsqldb", "db2", "derby", "hanadb"));
 
-  static SqlQuery sanitize(String queryText) {
-    Map<String, SqlQuery> map =
+  static SqlQuery sanitize(String queryText, SqlDialect dialect) {
+    Map<SqlQuerySanitizer.CacheKey, SqlQuery> map =
         InstrumenterContext.computeIfAbsent("sanitized-sql-map", unused -> new HashMap<>());
-    return map.computeIfAbsent(queryText, sanitizer::sanitize);
+    SqlQuerySanitizer.CacheKey key = SqlQuerySanitizer.CacheKey.create(queryText, dialect);
+    return map.computeIfAbsent(key, k -> sanitizer.sanitize(k.getQueryText(), k.getDialect()));
   }
 
-  static SqlQuery sanitizeWithSummary(String queryText) {
-    Map<String, SqlQuery> map =
+  static SqlQuery sanitizeWithSummary(String queryText, SqlDialect dialect) {
+    Map<SqlQuerySanitizer.CacheKey, SqlQuery> map =
         InstrumenterContext.computeIfAbsent(
             "sanitized-sql-map-with-summary", unused -> new HashMap<>());
-    return map.computeIfAbsent(queryText, sanitizer::sanitizeWithSummary);
+    SqlQuerySanitizer.CacheKey key = SqlQuerySanitizer.CacheKey.create(queryText, dialect);
+    return map.computeIfAbsent(
+        key, k -> sanitizer.sanitizeWithSummary(k.getQueryText(), k.getDialect()));
+  }
+
+  static SqlDialect getDialect(String dbSystem, boolean ansiQuotes) {
+    return ansiQuotes || dbsWithAnsiQuotes.contains(dbSystem)
+        ? SqlDialect.ANSI_QUOTES
+        : SqlDialect.DEFAULT;
   }
 
   private SqlQuerySanitizerUtil() {}

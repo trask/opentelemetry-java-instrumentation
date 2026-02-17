@@ -64,17 +64,20 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
   private final AttributeKey<String> oldSemconvTableAttribute;
   private final boolean querySanitizationEnabled;
   private final boolean captureQueryParameters;
+  private final boolean querySanitizationAnsiQuotes;
 
   SqlClientAttributesExtractor(
       SqlClientAttributesGetter<REQUEST, RESPONSE> getter,
       AttributeKey<String> oldSemconvTableAttribute,
       boolean querySanitizationEnabled,
+      boolean querySanitizationAnsiQuotes,
       boolean captureQueryParameters) {
     this.getter = getter;
     this.oldSemconvTableAttribute = oldSemconvTableAttribute;
     // capturing query parameters disables query sanitization
     this.querySanitizationEnabled = !captureQueryParameters && querySanitizationEnabled;
     this.captureQueryParameters = captureQueryParameters;
+    this.querySanitizationAnsiQuotes = querySanitizationAnsiQuotes;
     internalNetworkExtractor = new InternalNetworkAttributesExtractor<>(getter, true, false);
     serverAttributesExtractor = ServerAttributesExtractor.create(getter);
   }
@@ -83,6 +86,9 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
   @Override
   public void onStart(AttributesBuilder attributes, Context parentContext, REQUEST request) {
     Collection<String> rawQueryTexts = getter.getRawQueryTexts(request);
+    SqlDialect dialect =
+        SqlQuerySanitizerUtil.getDialect(
+            getter.getDbSystemName(request), querySanitizationAnsiQuotes);
 
     Long batchSize = getter.getDbOperationBatchSize(request);
     boolean isBatch = batchSize != null && batchSize > 1;
@@ -90,7 +96,7 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
     if (SemconvStability.emitOldDatabaseSemconv()) {
       if (rawQueryTexts.size() == 1) { // for backcompat(?)
         String rawQueryText = rawQueryTexts.iterator().next();
-        SqlQuery sanitizedQuery = SqlQuerySanitizerUtil.sanitize(rawQueryText);
+        SqlQuery sanitizedQuery = SqlQuerySanitizerUtil.sanitize(rawQueryText, dialect);
         String operationName = sanitizedQuery.getOperationName();
         internalSet(
             attributes,
@@ -111,8 +117,8 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
         String rawQueryText = rawQueryTexts.iterator().next();
         SqlQuery sanitizedQuery =
             getter instanceof ExtractQuerySummaryMarker
-                ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText)
-                : SqlQuerySanitizerUtil.sanitize(rawQueryText);
+                ? SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText, dialect)
+                : SqlQuerySanitizerUtil.sanitize(rawQueryText, dialect);
         internalSet(
             attributes,
             DB_QUERY_TEXT,
@@ -132,8 +138,9 @@ public final class SqlClientAttributesExtractor<REQUEST, RESPONSE>
       } else if (rawQueryTexts.size() > 1) {
         MultiQuery multiQuery =
             getter instanceof ExtractQuerySummaryMarker
-                ? MultiQuery.analyzeWithSummary(getter.getRawQueryTexts(request), shouldSanitize)
-                : MultiQuery.analyze(getter.getRawQueryTexts(request), shouldSanitize);
+                ? MultiQuery.analyzeWithSummary(
+                    getter.getRawQueryTexts(request), dialect, shouldSanitize)
+                : MultiQuery.analyze(getter.getRawQueryTexts(request), dialect, shouldSanitize);
         internalSet(attributes, DB_QUERY_TEXT, join("; ", multiQuery.getQueryTexts()));
         internalSet(attributes, DB_QUERY_SUMMARY, multiQuery.getQuerySummary());
         internalSet(attributes, DB_OPERATION_NAME, multiQuery.getOperationName());

@@ -48,9 +48,9 @@ POSTGRE_PARAM_MARKER = "$"[0-9]*
 WHITESPACE           = [ \t\r\n]+
 
 %{
-  static SqlQuery sanitize(String statement, SqlDialect dialect) {
+  static SqlQuery sanitize(String statement, boolean ansiQuotes) {
     AutoSqlSanitizerWithSummary sanitizer = new AutoSqlSanitizerWithSummary(new java.io.StringReader(statement));
-    sanitizer.dialect = dialect;
+    sanitizer.ansiQuotes = ansiQuotes;
     try {
       while (!sanitizer.yyatEOF()) {
         int token = sanitizer.yylex();
@@ -107,7 +107,7 @@ WHITESPACE           = [ \t\r\n]+
   // using special "none" Operation instead of null to avoid null checking it everywhere
   private final Operation none = new Operation() {};
   private Operation operation = none;
-  private SqlDialect dialect;
+  private boolean ansiQuotes; // whether double quotes are used for quoting identifiers or string literals
 
   // Global set of CTE names defined in the current statement (for filtering CTE references)
   private final Set<String> cteNames = new HashSet<>();
@@ -1093,13 +1093,13 @@ WHITESPACE           = [ \t\r\n]+
       }
 
   {DOUBLE_QUOTED_STR} {
-          if (dialect == SqlDialect.COUCHBASE) {
-            builder.append('?');
-          } else {
+          if (ansiQuotes) {
             if (!insideComment) {
               operation.handleIdentifier();
             }
             appendCurrentFragment();
+          } else {
+            builder.append('?');
           }
           if (isOverLimit()) return YYEOF;
       }

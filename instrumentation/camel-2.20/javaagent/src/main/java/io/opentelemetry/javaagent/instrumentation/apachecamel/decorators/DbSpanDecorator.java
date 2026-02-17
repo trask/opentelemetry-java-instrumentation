@@ -24,6 +24,7 @@
 package io.opentelemetry.javaagent.instrumentation.apachecamel.decorators;
 
 import io.opentelemetry.api.common.AttributesBuilder;
+import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlDialect;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlQuery;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlQuerySanitizer;
 import io.opentelemetry.instrumentation.api.internal.SemconvStability;
@@ -142,11 +143,14 @@ class DbSpanDecorator extends BaseSpanDecorator {
   void setQueryAttributes(AttributesBuilder attributes, Exchange exchange) {
     String rawQueryText = getRawQueryText(exchange);
     if (rawQueryText != null) {
+      SqlDialect dialect = "cql".equals(component) ? SqlDialect.CASSANDRA : SqlDialect.DEFAULT;
       SqlQuery sqlQuery =
-          SemconvStability.emitOldDatabaseSemconv() ? sanitizer.sanitize(rawQueryText) : null;
+          SemconvStability.emitOldDatabaseSemconv()
+              ? sanitizer.sanitize(rawQueryText, dialect)
+              : null;
       SqlQuery sqlQueryWithSummary =
           SemconvStability.emitStableDatabaseSemconv()
-              ? sanitizer.sanitizeWithSummary(rawQueryText)
+              ? sanitizer.sanitizeWithSummary(rawQueryText, dialect)
               : null;
 
       if (sqlQueryWithSummary != null) {

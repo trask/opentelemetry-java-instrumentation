@@ -5,11 +5,12 @@
 
 package io.opentelemetry.instrumentation.awssdk.v2_2.internal;
 
+import static java.util.Collections.unmodifiableList;
+
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.AttributeType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -68,7 +69,7 @@ class FieldMapping {
     }
     this.type = type;
     this.attributeKey = attributeKey;
-    this.fields = Collections.unmodifiableList(Arrays.asList(fieldPath.split("\\.")));
+    this.fields = unmodifiableList(Arrays.asList(fieldPath.split("\\.")));
     this.experimental = experimental;
   }
 

@@ -21,8 +21,8 @@ import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.AwsSdkReques
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.AwsSdkRequestType.STEP_FUNCTIONS;
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping.request;
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping.response;
+import static java.util.Collections.unmodifiableMap;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -168,7 +168,7 @@ enum AwsSdkRequest {
   AwsSdkRequest(AwsSdkRequestType type, String requestClass, FieldMapping... fields) {
     this.type = type;
     this.requestClass = requestClass;
-    this.fields = Collections.unmodifiableMap(FieldMapping.groupByType(fields));
+    this.fields = unmodifiableMap(FieldMapping.groupByType(fields));
   }
 
   @Nullable

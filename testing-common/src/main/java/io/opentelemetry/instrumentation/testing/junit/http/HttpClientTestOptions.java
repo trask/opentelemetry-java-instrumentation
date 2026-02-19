@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.testing.junit.http;
 
+import static java.util.Collections.unmodifiableSet;
+
 import com.google.auto.value.AutoValue;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.opentelemetry.api.common.AttributeKey;
@@ -16,7 +18,6 @@ import io.opentelemetry.semconv.UrlAttributes;
 import io.opentelemetry.testing.internal.armeria.common.HttpStatus;
 import java.net.URI;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -27,7 +28,7 @@ import javax.annotation.Nullable;
 public abstract class HttpClientTestOptions {
 
   public static final Set<AttributeKey<?>> DEFAULT_HTTP_ATTRIBUTES =
-      Collections.unmodifiableSet(
+      unmodifiableSet(
           new HashSet<>(
               Arrays.asList(
                   NetworkAttributes.NETWORK_PROTOCOL_VERSION,

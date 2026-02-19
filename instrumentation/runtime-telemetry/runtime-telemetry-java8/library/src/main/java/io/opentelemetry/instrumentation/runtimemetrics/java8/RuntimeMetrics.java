@@ -5,11 +5,11 @@
 
 package io.opentelemetry.instrumentation.runtimemetrics.java8;
 
+import static java.util.Collections.unmodifiableList;
 import static java.util.logging.Level.WARNING;
 
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.runtimemetrics.java8.internal.JmxRuntimeMetricsUtil;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ public final class RuntimeMetrics implements AutoCloseable {
   private final List<AutoCloseable> observables;
 
   RuntimeMetrics(List<AutoCloseable> observables) {
-    this.observables = Collections.unmodifiableList(observables);
+    this.observables = unmodifiableList(observables);
   }
 
   /**

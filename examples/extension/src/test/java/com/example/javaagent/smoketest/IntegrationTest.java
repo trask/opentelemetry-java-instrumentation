@@ -5,6 +5,7 @@
 
 package com.example.javaagent.smoketest;
 
+import static java.util.Collections.emptyMap;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.stream.Collectors.toList;
@@ -17,7 +18,6 @@ import io.opentelemetry.proto.collector.trace.v1.ExportTraceServiceRequest;
 import io.opentelemetry.proto.trace.v1.Span;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -58,7 +58,7 @@ abstract class IntegrationTest {
 
   /** Subclasses can override this method to customise target application's environment */
   protected Map<String, String> getExtraEnv() {
-    return Collections.emptyMap();
+    return emptyMap();
   }
 
   private static GenericContainer backend;

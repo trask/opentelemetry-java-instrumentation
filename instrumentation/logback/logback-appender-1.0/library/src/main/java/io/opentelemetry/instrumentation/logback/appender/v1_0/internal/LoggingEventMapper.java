@@ -9,6 +9,7 @@ import static io.opentelemetry.semconv.CodeAttributes.CODE_FILE_PATH;
 import static io.opentelemetry.semconv.CodeAttributes.CODE_FUNCTION_NAME;
 import static io.opentelemetry.semconv.CodeAttributes.CODE_LINE_NUMBER;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.toList;
 
@@ -33,7 +34,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -450,7 +450,7 @@ public final class LoggingEventMapper {
       LogRecordBuilder builder, ILoggingEvent loggingEvent, boolean skipLogstashMarkers) {
     Marker marker = loggingEvent.getMarker();
     if (marker != null && (!skipLogstashMarkers || !isLogstashMarker(marker))) {
-      builder.setAttribute(LOG_MARKER, Collections.singletonList(marker.getName()));
+      builder.setAttribute(LOG_MARKER, singletonList(marker.getName()));
     }
   }
 

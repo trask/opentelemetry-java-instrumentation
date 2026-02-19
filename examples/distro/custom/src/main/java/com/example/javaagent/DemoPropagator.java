@@ -5,12 +5,13 @@
 
 package com.example.javaagent;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singleton;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.ContextKey;
 import io.opentelemetry.context.propagation.TextMapGetter;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class DemoPropagator implements TextMapPropagator {
 
   @Override
   public List<String> fields() {
-    return Collections.singletonList(FIELD);
+    return singletonList(FIELD);
   }
 
   @Override

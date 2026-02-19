@@ -5,10 +5,10 @@
 
 package io.opentelemetry.config;
 
+import static java.util.Collections.unmodifiableList;
 import io.opentelemetry.agents.Agent;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Defines a test config. */
@@ -29,7 +29,7 @@ public class TestConfig {
   public TestConfig(Builder builder) {
     this.name = builder.name;
     this.description = builder.description;
-    this.agents = Collections.unmodifiableList(builder.agents);
+    this.agents = unmodifiableList(builder.agents);
     this.maxRequestRate = builder.maxRequestRate;
     this.concurrentConnections = builder.concurrentConnections;
     this.totalIterations = builder.totalIterations;
@@ -45,7 +45,7 @@ public class TestConfig {
   }
 
   public List<Agent> getAgents() {
-    return Collections.unmodifiableList(agents);
+    return unmodifiableList(agents);
   }
 
   public int getMaxRequestRate() {

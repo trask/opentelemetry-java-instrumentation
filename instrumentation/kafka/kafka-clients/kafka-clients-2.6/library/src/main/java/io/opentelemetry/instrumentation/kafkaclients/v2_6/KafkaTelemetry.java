@@ -5,6 +5,8 @@
 
 package io.opentelemetry.instrumentation.kafkaclients.v2_6;
 
+import static java.util.Collections.unmodifiableMap;
+
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
@@ -25,7 +27,6 @@ import io.opentelemetry.instrumentation.kafkaclients.v2_6.internal.OpenTelemetry
 import io.opentelemetry.instrumentation.kafkaclients.v2_6.internal.OpenTelemetryProducerInterceptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -174,7 +175,7 @@ public final class KafkaTelemetry {
     config.put(
         OpenTelemetryMetricsReporter.CONFIG_KEY_OPENTELEMETRY_INSTRUMENTATION_NAME,
         KafkaTelemetryBuilder.INSTRUMENTATION_NAME);
-    return Collections.unmodifiableMap(config);
+    return unmodifiableMap(config);
   }
 
   /**
@@ -202,7 +203,7 @@ public final class KafkaTelemetry {
     config.put(
         OpenTelemetryProducerInterceptor.CONFIG_KEY_KAFKA_PRODUCER_TELEMETRY_SUPPLIER,
         new KafkaProducerTelemetrySupplier(producerTelemetry));
-    return Collections.unmodifiableMap(config);
+    return unmodifiableMap(config);
   }
 
   /**
@@ -230,6 +231,6 @@ public final class KafkaTelemetry {
     config.put(
         OpenTelemetryConsumerInterceptor.CONFIG_KEY_KAFKA_CONSUMER_TELEMETRY_SUPPLIER,
         new KafkaConsumerTelemetrySupplier(consumerTelemetry));
-    return Collections.unmodifiableMap(config);
+    return unmodifiableMap(config);
   }
 }

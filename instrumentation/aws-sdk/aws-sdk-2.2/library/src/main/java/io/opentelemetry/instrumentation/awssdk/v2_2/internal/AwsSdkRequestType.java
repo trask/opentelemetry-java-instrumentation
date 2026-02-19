@@ -12,9 +12,9 @@ import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping.requestExperimental;
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping.response;
 import static io.opentelemetry.instrumentation.awssdk.v2_2.internal.FieldMapping.responseExperimental;
+import static java.util.Collections.unmodifiableMap;
 
 import io.opentelemetry.api.common.AttributeKey;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +49,7 @@ enum AwsSdkRequestType {
   private final Map<FieldMapping.Type, List<FieldMapping>> fields;
 
   AwsSdkRequestType(FieldMapping... fieldMappings) {
-    this.fields = Collections.unmodifiableMap(FieldMapping.groupByType(fieldMappings));
+    this.fields = unmodifiableMap(FieldMapping.groupByType(fieldMappings));
   }
 
   List<FieldMapping> fields(FieldMapping.Type type) {

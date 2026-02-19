@@ -6,6 +6,8 @@
 package io.opentelemetry.instrumentation.testing.junit.http;
 
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
+import static java.util.Collections.singleton;
+import static java.util.Collections.unmodifiableSet;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import io.opentelemetry.api.common.AttributeKey;
@@ -13,7 +15,6 @@ import io.opentelemetry.instrumentation.api.internal.HttpConstants;
 import io.opentelemetry.semconv.HttpAttributes;
 import io.opentelemetry.semconv.ServerAttributes;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -24,10 +25,10 @@ import javax.annotation.Nullable;
 public final class HttpServerTestOptions {
 
   public static final Set<AttributeKey<?>> DEFAULT_HTTP_ATTRIBUTES =
-      Collections.unmodifiableSet(
+      unmodifiableSet(
           new HashSet<>(Arrays.asList(HttpAttributes.HTTP_ROUTE, ServerAttributes.SERVER_PORT)));
   public static final Set<AttributeKey<?>> DEFAULT_HTTP_ATTRIBUTES_WITHOUT_ROUTE =
-      Collections.singleton(ServerAttributes.SERVER_PORT);
+      singleton(ServerAttributes.SERVER_PORT);
   public static final SpanNameMapper DEFAULT_EXPECTED_SERVER_SPAN_NAME_MAPPER =
       (uri, method, route) -> {
         if (HttpConstants._OTHER.equals(method)) {

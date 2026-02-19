@@ -5,9 +5,10 @@
 
 package io.opentelemetry.javaagent.instrumentation.elasticsearch.apiclient;
 
+import static java.util.Collections.unmodifiableMap;
+
 import io.opentelemetry.instrumentation.elasticsearch.rest.common.v5_0.internal.ElasticsearchEndpointDefinition;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -857,7 +858,7 @@ public final class ElasticsearchEndpointMap {
         false,
         "/_security/service/{namespace}/{service}/credential/token/{name}/_clear_cache");
     initEndpoint(routes, "search_mvt", false, "/{index}/_mvt/{field}/{zoom}/{x}/{y}");
-    routesMap = Collections.unmodifiableMap(routes);
+    routesMap = unmodifiableMap(routes);
   }
 
   private ElasticsearchEndpointMap() {}

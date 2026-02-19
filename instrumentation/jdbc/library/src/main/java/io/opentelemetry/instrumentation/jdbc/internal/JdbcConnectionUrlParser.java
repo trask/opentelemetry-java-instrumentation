@@ -6,6 +6,8 @@
 package io.opentelemetry.instrumentation.jdbc.internal;
 
 import static io.opentelemetry.instrumentation.jdbc.internal.dbinfo.DbInfo.DEFAULT;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
 import static java.util.logging.Level.FINE;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
@@ -15,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1010,7 +1011,7 @@ public enum JdbcConnectionUrlParser {
   private final List<String> typeKeys;
 
   JdbcConnectionUrlParser(String... typeKeys) {
-    this.typeKeys = Collections.unmodifiableList(Arrays.asList(typeKeys));
+    this.typeKeys = unmodifiableList(Arrays.asList(typeKeys));
   }
 
   abstract DbInfo.Builder doParse(String jdbcUrl, DbInfo.Builder builder);
@@ -1086,7 +1087,7 @@ public enum JdbcConnectionUrlParser {
   // Source: https://stackoverflow.com/a/13592567
   private static Map<String, String> splitQuery(String query, String separator) {
     if (query == null || query.isEmpty()) {
-      return Collections.emptyMap();
+      return emptyMap();
     }
     Map<String, String> queryPairs = new LinkedHashMap<>();
     String[] pairs = query.split(separator);

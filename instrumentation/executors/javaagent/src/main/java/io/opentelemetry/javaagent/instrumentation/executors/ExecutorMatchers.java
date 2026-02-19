@@ -8,6 +8,8 @@ package io.opentelemetry.javaagent.instrumentation.executors;
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.extendsClass;
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.implementsInterface;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.logging.Level.FINE;
 import static net.bytebuddy.matcher.ElementMatchers.any;
 import static net.bytebuddy.matcher.ElementMatchers.named;
@@ -15,7 +17,6 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,9 +102,9 @@ final class ExecutorMatchers {
     combined.addAll(
         DeclarativeConfigUtil.getInstrumentationConfig(GlobalOpenTelemetry.get(), "executors")
             .getScalarList("include", String.class, emptyList()));
-    INSTRUMENTED_EXECUTOR_NAMES = Collections.unmodifiableSet(combined);
+    INSTRUMENTED_EXECUTOR_NAMES = unmodifiableSet(combined);
 
-    INSTRUMENTED_EXECUTOR_PREFIXES = Collections.singletonList("slick.util.AsyncExecutor$");
+    INSTRUMENTED_EXECUTOR_PREFIXES = singletonList("slick.util.AsyncExecutor$");
   }
 
   static ElementMatcher.Junction<TypeDescription> executorNameMatcher() {

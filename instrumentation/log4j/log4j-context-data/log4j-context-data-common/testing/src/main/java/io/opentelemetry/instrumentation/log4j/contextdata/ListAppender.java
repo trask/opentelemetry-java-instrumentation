@@ -5,8 +5,9 @@
 
 package io.opentelemetry.instrumentation.log4j.contextdata;
 
+import static java.util.Collections.synchronizedList;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class ListAppender extends AbstractAppender {
 
   private static final ListAppender INSTANCE = new ListAppender();
 
-  private final List<LoggedEvent> events = Collections.synchronizedList(new ArrayList<>());
+  private final List<LoggedEvent> events = synchronizedList(new ArrayList<>());
 
   public ListAppender() {
     super("ListAppender", null, null, /* ignoreExceptions= */ true);

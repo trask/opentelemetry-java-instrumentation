@@ -7,6 +7,7 @@ package io.opentelemetry.javaagent.instrumentation.executors;
 
 import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.implementsInterface;
 import static io.opentelemetry.javaagent.instrumentation.executors.VirtualFieldHelper.FUTURE_PROPAGATED_CONTEXT;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.logging.Level.FINE;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.returns;
@@ -16,7 +17,6 @@ import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
@@ -69,7 +69,7 @@ public class FutureInstrumentation implements TypeInstrumentation {
       "scala.concurrent.forkjoin.ForkJoinTask$AdaptedRunnableAction",
       "scala.concurrent.impl.ExecutionContextImpl$AdaptedForkJoinTask",
     };
-    ALLOWED_FUTURES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(allowed)));
+    ALLOWED_FUTURES = unmodifiableSet(new HashSet<>(Arrays.asList(allowed)));
   }
 
   @Override

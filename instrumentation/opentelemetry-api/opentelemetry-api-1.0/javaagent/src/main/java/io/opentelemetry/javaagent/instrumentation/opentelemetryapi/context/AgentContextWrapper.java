@@ -5,12 +5,13 @@
 
 package io.opentelemetry.javaagent.instrumentation.opentelemetryapi.context;
 
+import static java.util.Collections.unmodifiableList;
+
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.context.Context;
 import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.baggage.BaggageBridging;
 import io.opentelemetry.javaagent.instrumentation.opentelemetryapi.trace.Bridging;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 final class AgentContextWrapper implements application.io.opentelemetry.context.Context {
@@ -40,7 +41,7 @@ final class AgentContextWrapper implements application.io.opentelemetry.context.
       // reflection error; in practice should never happen, we can ignore it
     }
     bridges.addAll(InstrumentationApiContextBridging.instrumentationApiBridges());
-    CONTEXT_KEY_BRIDGES = Collections.unmodifiableList(bridges);
+    CONTEXT_KEY_BRIDGES = unmodifiableList(bridges);
   }
 
   final Context agentContext;

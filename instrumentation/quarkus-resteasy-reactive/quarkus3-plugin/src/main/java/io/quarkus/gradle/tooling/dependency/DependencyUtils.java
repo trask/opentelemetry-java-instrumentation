@@ -22,6 +22,9 @@
 
 package io.quarkus.gradle.tooling.dependency;
 
+import static java.util.Collections.singletonMap;
+import static java.util.Collections.singleton;
+import static java.util.Collections.emptyList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +33,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -174,21 +176,21 @@ public class DependencyUtils {
         conditionalDependencies.add(create(project.getDependencies(), conditionalDep));
       }
     } else {
-      conditionalDependencies = Collections.emptyList();
+      conditionalDependencies = emptyList();
     }
 
     final ArtifactKey[] constraints = BootstrapUtils
         .parseDependencyCondition(extensionProperties.getProperty(BootstrapConstants.DEPENDENCY_CONDITION));
     if (isIncludedBuild) {
       return new IncludedBuildExtensionDependency(extensionProject, exentionId, deploymentModule, conditionalDependencies,
-          constraints == null ? Collections.emptyList() : Arrays.asList(constraints));
+          constraints == null ? emptyList() : Arrays.asList(constraints));
     }
     if (extensionProject != null) {
       return new LocalExtensionDependency(extensionProject, exentionId, deploymentModule, conditionalDependencies,
-          constraints == null ? Collections.emptyList() : Arrays.asList(constraints));
+          constraints == null ? emptyList() : Arrays.asList(constraints));
     }
     return new ExtensionDependency(exentionId, deploymentModule, conditionalDependencies,
-        constraints == null ? Collections.emptyList() : Arrays.asList(constraints));
+        constraints == null ? emptyList() : Arrays.asList(constraints));
   }
 
   public static Dependency create(DependencyHandler dependencies, String conditionalDependency) {
@@ -200,7 +202,7 @@ public class DependencyUtils {
   public static void addLocalDeploymentDependency(String deploymentConfigurationName, LocalExtensionDependency extension,
       DependencyHandler dependencies) {
     dependencies.add(deploymentConfigurationName,
-        dependencies.project(Collections.singletonMap("path", extension.findDeploymentModulePath())));
+        dependencies.project(singletonMap("path", extension.findDeploymentModulePath())));
   }
 
   public static void requireDeploymentDependency(String deploymentConfigurationName, ExtensionDependency extension,

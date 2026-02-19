@@ -7,6 +7,7 @@ package io.opentelemetry.instrumentation.api.internal;
 
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -36,7 +37,6 @@ import io.opentelemetry.sdk.common.InstrumentationScopeInfo;
 import io.opentelemetry.sdk.testing.junit5.OpenTelemetryExtension;
 import io.opentelemetry.sdk.trace.data.StatusData;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,7 +57,7 @@ class InstrumentationCustomizerTest {
   static final OpenTelemetryExtension otelTesting = OpenTelemetryExtension.create();
 
   private static final Map<String, String> REQUEST =
-      Collections.unmodifiableMap(
+      unmodifiableMap(
           Stream.of(
                   entry("req1", "req1_value"),
                   entry("req2", "req2_value"),
@@ -66,7 +66,7 @@ class InstrumentationCustomizerTest {
               .collect(toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
   private static final Map<String, String> RESPONSE =
-      Collections.unmodifiableMap(
+      unmodifiableMap(
           Stream.of(
                   entry("resp1", "resp1_value"),
                   entry("resp2", "resp2_value"),

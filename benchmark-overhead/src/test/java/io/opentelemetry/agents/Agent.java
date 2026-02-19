@@ -5,11 +5,14 @@
 
 package io.opentelemetry.agents;
 
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singleton;
+import static java.util.Collections.emptyList;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Agent {
@@ -27,7 +30,7 @@ public class Agent {
           "snapshot-indy",
           "latest available snapshot version from main with indy enabled",
           null,
-          Collections.singletonList("-Dotel.javaagent.experimental.indy=true"));
+          singletonList("-Dotel.javaagent.experimental.indy=true"));
 
   private final String name;
   private final String description;
@@ -39,7 +42,7 @@ public class Agent {
   }
 
   public Agent(String name, String description, String url) {
-    this(name, description, url, Collections.emptyList());
+    this(name, description, url, emptyList());
   }
 
   public Agent(String name, String description, String url, List<String> additionalJvmArgs) {
@@ -66,7 +69,7 @@ public class Agent {
   }
 
   public List<String> getAdditionalJvmArgs() {
-    return Collections.unmodifiableList(additionalJvmArgs);
+    return unmodifiableList(additionalJvmArgs);
   }
 
   private static URL makeUrl(String url) {

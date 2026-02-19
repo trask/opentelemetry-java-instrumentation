@@ -5,8 +5,9 @@
 
 package io.opentelemetry.javaagent.tooling;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public final class Constants {
 
   /** packages which will be loaded on the bootstrap class loader. */
   public static final List<String> BOOTSTRAP_PACKAGE_PREFIXES =
-      Collections.unmodifiableList(
+      unmodifiableList(
           Arrays.asList(
               "io.opentelemetry.javaagent.bootstrap", "io.opentelemetry.javaagent.shaded"));
 

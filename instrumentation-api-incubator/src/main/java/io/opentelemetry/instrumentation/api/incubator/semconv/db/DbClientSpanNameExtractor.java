@@ -200,25 +200,26 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
         if (rawQueryTexts.size() > 1) { // for backcompat(?)
           return computeSpanName(namespace, null, null, null);
         }
-        SqlQuery sanitizedQuery =
-            SqlQuerySanitizerUtil.sanitize(rawQueryTexts.iterator().next(), dialect);
+        SqlQuery analyzedQuery =
+            SqlQueryAnalyzerUtil.analyze(rawQueryTexts.iterator().next(), dialect);
+
         return computeSpanName(
             namespace,
-            sanitizedQuery.getOperationName(),
-            sanitizedQuery.getCollectionName(),
-            sanitizedQuery.getStoredProcedureName());
+            analyzedQuery.getOperationName(),
+            analyzedQuery.getCollectionName(),
+            analyzedQuery.getStoredProcedureName());
       }
 
       if (rawQueryTexts.size() == 1) {
         String rawQueryText = rawQueryTexts.iterator().next();
-        SqlQuery sanitizedQuery = SqlQuerySanitizerUtil.sanitizeWithSummary(rawQueryText, dialect);
+        SqlQuery analyzedQuery = SqlQueryAnalyzerUtil.analyzeWithSummary(rawQueryText, dialect);
         boolean batch = isBatch(request);
-        String querySummary = sanitizedQuery.getQuerySummary();
+        String querySummary = analyzedQuery.getQuerySummary();
         if (querySummary != null) {
           return batch ? "BATCH " + querySummary : querySummary;
         }
         return computeSpanNameStable(
-            getter, request, batch ? "BATCH" : null, null, sanitizedQuery.getStoredProcedureName());
+            getter, request, batch ? "BATCH" : null, null, analyzedQuery.getStoredProcedureName());
       }
 
       MultiQuery multiQuery = MultiQuery.analyzeWithSummary(rawQueryTexts, dialect, false);
@@ -266,8 +267,8 @@ public abstract class DbClientSpanNameExtractor<REQUEST> implements SpanNameExtr
       if (rawQueryTexts.size() == 1) {
         String rawQuery = rawQueryTexts.iterator().next();
         SqlDialect dialect = getter.getSqlDialect(request);
-        SqlQuery sanitizedQuery = SqlQuerySanitizerUtil.sanitize(rawQuery, dialect);
-        operationName = sanitizedQuery.getOperationName();
+        SqlQuery analyzedQuery = SqlQueryAnalyzerUtil.analyze(rawQuery, dialect);
+        operationName = analyzedQuery.getOperationName();
       }
       if (operationName == null) {
         operationName = getter.getDbOperationName(request);

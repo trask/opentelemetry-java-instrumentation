@@ -9,8 +9,7 @@ import static io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlDiale
 import static io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlDialect.DOUBLE_QUOTES_ARE_STRING_LITERALS;
 
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlClientAttributesGetter;
-import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlDialect;
-import io.opentelemetry.instrumentation.jdbc.internal.dbinfo.DbInfo;
+
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,8 +77,7 @@ public final class JdbcAttributesGetter implements SqlClientAttributesGetter<DbR
   @Nullable
   @Override
   public String getDbNamespace(DbRequest request) {
-    DbInfo dbInfo = request.getDbInfo();
-    return dbInfo.getName() == null ? dbInfo.getDb() : dbInfo.getName();
+    return request.getDbInfo().getName();
   }
 
   @Deprecated // to be removed in 3.0

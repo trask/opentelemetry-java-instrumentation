@@ -9,6 +9,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -75,7 +76,7 @@ class RatpackServerTest {
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(URL_QUERY, ""),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L))));
   }
 
@@ -121,7 +122,7 @@ class RatpackServerTest {
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(URL_QUERY, ""),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L)),
                 span ->
                     span.hasName("a-span")
@@ -189,7 +190,7 @@ class RatpackServerTest {
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(URL_QUERY, ""),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L)),
                 span ->
                     span.hasName("a-span")
@@ -211,7 +212,7 @@ class RatpackServerTest {
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(URL_QUERY, ""),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L)),
                 span ->
                     span.hasName("another-span")

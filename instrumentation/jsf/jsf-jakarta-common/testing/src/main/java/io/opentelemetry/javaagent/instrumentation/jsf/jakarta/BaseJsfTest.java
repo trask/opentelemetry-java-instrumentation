@@ -11,6 +11,7 @@ import static io.opentelemetry.semconv.ClientAttributes.CLIENT_ADDRESS;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -117,7 +118,7 @@ public abstract class BaseJsfTest extends AbstractHttpServerUsingTest<Server> {
                             equalTo(SERVER_PORT, port),
                             equalTo(NETWORK_PEER_ADDRESS, "127.0.0.1"),
                             satisfies(NETWORK_PEER_PORT, val -> val.isInstanceOf(Long.class)),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, getContextPath() + "/" + path),
                             equalTo(USER_AGENT_ORIGINAL, TEST_USER_AGENT),

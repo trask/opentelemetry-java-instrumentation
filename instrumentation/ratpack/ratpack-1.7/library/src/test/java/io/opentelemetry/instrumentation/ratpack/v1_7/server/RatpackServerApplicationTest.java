@@ -10,6 +10,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satis
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -63,7 +64,7 @@ class RatpackServerApplicationTest {
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(URL_QUERY, ""),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L))));
   }
 
@@ -80,7 +81,7 @@ class RatpackServerApplicationTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/bar"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(URL_PATH, "/bar"),
                             equalTo(URL_SCHEME, "http"),
@@ -95,7 +96,7 @@ class RatpackServerApplicationTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/other"),
                             equalTo(URL_FULL, "http://localhost:" + app.getAppPort() + "/other"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"))));

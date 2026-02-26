@@ -11,6 +11,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -82,7 +83,7 @@ class AwsSpanAssertions {
                         val.satisfiesAnyOf(
                             v -> assertThat(v).isEqualTo(queueUrl), v -> assertThat(v).isNull())),
                 satisfies(AWS_REQUEST_ID, val -> val.isInstanceOf(String.class)),
-                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                equalTo(HTTP_REQUEST_METHOD, POST),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                 satisfies(URL_FULL, val -> val.isInstanceOf(String.class)),
                 satisfies(SERVER_ADDRESS, stringAssert -> stringAssert.isInstanceOf(String.class)),
@@ -151,7 +152,7 @@ class AwsSpanAssertions {
             equalTo(RPC_METHOD, spanName.substring(4)),
             equalTo(RPC_SERVICE, "AmazonSNS"),
             equalTo(MESSAGING_DESTINATION_NAME, destinationName),
-            equalTo(HTTP_REQUEST_METHOD, "POST"),
+            equalTo(HTTP_REQUEST_METHOD, POST),
             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
             satisfies(URL_FULL, val -> val.isInstanceOf(String.class)),
             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),

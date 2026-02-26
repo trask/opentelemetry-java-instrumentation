@@ -9,6 +9,7 @@ import static io.opentelemetry.instrumentation.testing.GlobalTraceUtil.runWithSp
 import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStabilityUtil.maybeStable;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
@@ -92,7 +93,7 @@ class ElasticsearchRest7Test {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health"))));
@@ -151,7 +152,7 @@ class ElasticsearchRest7Test {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health")),

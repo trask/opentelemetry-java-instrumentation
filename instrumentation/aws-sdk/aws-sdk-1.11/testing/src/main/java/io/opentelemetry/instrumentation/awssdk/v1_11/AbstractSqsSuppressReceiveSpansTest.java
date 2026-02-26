@@ -10,6 +10,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -111,7 +112,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "CreateQueue"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -132,7 +133,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "SendMessage"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -156,7 +157,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "ReceiveMessage"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -208,7 +209,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "CreateQueue"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -229,7 +230,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "SendMessage"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -253,7 +254,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "ReceiveMessage"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),
@@ -288,7 +289,7 @@ public abstract class AbstractSqsSuppressReceiveSpansTest {
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "AmazonSQS"),
                                 equalTo(RPC_METHOD, "ReceiveMessage"),
-                                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                equalTo(HTTP_REQUEST_METHOD, POST),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                 equalTo(URL_FULL, "http://localhost:" + sqsPort),
                                 equalTo(SERVER_ADDRESS, "localhost"),

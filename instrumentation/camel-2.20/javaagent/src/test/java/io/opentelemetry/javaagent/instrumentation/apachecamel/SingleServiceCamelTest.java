@@ -9,6 +9,7 @@ import static io.opentelemetry.api.common.AttributeKey.stringKey;
 import static io.opentelemetry.javaagent.instrumentation.apachecamel.ExperimentalTest.experimental;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
 
 import com.google.common.collect.ImmutableMap;
@@ -69,7 +70,7 @@ class SingleServiceCamelTest extends AbstractHttpServerUsingTest<ConfigurableApp
                     span.hasName("POST /camelService")
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(URL_FULL, requestUrl.toString()),
                             equalTo(
                                 stringKey("camel.uri"),

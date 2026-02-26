@@ -11,6 +11,7 @@ import static io.opentelemetry.instrumentation.testing.junit.service.SemconvServ
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -106,7 +107,7 @@ class ElasticsearchRest5Test {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health")),
@@ -117,7 +118,7 @@ class ElasticsearchRest5Test {
                         .hasAttributesSatisfyingExactly(
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health"),
@@ -181,7 +182,7 @@ class ElasticsearchRest5Test {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health")),
@@ -192,7 +193,7 @@ class ElasticsearchRest5Test {
                         .hasAttributesSatisfyingExactly(
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(URL_FULL, httpHost.toURI() + "/_cluster/health"),

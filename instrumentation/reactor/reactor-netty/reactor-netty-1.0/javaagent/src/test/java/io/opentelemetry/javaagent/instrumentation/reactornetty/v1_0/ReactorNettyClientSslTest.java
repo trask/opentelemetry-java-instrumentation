@@ -19,6 +19,7 @@ import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_STACKTRACE;
 import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -104,7 +105,7 @@ class ReactorNettyClientSslTest {
                         // message
                         .hasEventsSatisfying(ReactorNettyClientSslTest::isSslHandshakeException)
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_FULL, uri),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -201,7 +202,7 @@ class ReactorNettyClientSslTest {
                         .hasKind(CLIENT)
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_FULL, uri),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),

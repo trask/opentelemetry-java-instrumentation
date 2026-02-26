@@ -13,6 +13,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -105,7 +106,7 @@ class S3TracingTest {
                             equalTo(RPC_METHOD, "ReceiveMessage"),
                             equalTo(RPC_SYSTEM, "aws-api"),
                             equalTo(RPC_SERVICE, "AmazonSQS"),
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             satisfies(URL_FULL, val -> val.startsWith("http://")),
                             satisfies(SERVER_ADDRESS, v -> v.isInstanceOf(String.class)),
@@ -197,7 +198,7 @@ class S3TracingTest {
                             equalTo(RPC_METHOD, "ReceiveMessage"),
                             equalTo(RPC_SYSTEM, "aws-api"),
                             equalTo(RPC_SERVICE, "AmazonSQS"),
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             satisfies(URL_FULL, val -> val.startsWith("http://")),
                             satisfies(SERVER_ADDRESS, v -> v.isInstanceOf(String.class)),

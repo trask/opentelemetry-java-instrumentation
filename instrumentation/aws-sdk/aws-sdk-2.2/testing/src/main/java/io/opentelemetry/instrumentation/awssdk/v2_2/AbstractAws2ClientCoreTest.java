@@ -14,6 +14,7 @@ import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_SYSTEM_NAME;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
@@ -264,7 +265,7 @@ public abstract class AbstractAws2ClientCoreTest {
             equalTo(SERVER_ADDRESS, "127.0.0.1"),
             equalTo(SERVER_PORT, server.httpPort()),
             equalTo(URL_FULL, server.httpUri() + "/"),
-            equalTo(HTTP_REQUEST_METHOD, "POST"),
+            equalTo(HTTP_REQUEST_METHOD, POST),
             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
             equalTo(RPC_SYSTEM, "aws-api"),
             equalTo(RPC_SERVICE, "DynamoDb"),
@@ -285,7 +286,7 @@ public abstract class AbstractAws2ClientCoreTest {
                 equalTo(SERVER_ADDRESS, "127.0.0.1"),
                 equalTo(SERVER_PORT, server.httpPort()),
                 equalTo(URL_FULL, server.httpUri() + "/"),
-                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                equalTo(HTTP_REQUEST_METHOD, POST),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                 equalTo(RPC_SYSTEM, "aws-api"),
                 equalTo(RPC_SERVICE, "DynamoDb"),

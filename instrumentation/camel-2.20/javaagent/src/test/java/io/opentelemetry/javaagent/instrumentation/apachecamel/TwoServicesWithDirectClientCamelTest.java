@@ -13,6 +13,7 @@ import static io.opentelemetry.semconv.ClientAttributes.CLIENT_ADDRESS;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -118,7 +119,7 @@ class TwoServicesWithDirectClientCamelTest
                         .hasKind(SpanKind.CLIENT)
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(URL_FULL, "http://localhost:" + portOne + "/serviceOne"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(
@@ -129,7 +130,7 @@ class TwoServicesWithDirectClientCamelTest
                         .hasKind(SpanKind.SERVER)
                         .hasParent(trace.getSpan(1))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(URL_FULL, "http://localhost:" + portOne + "/serviceOne"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(
@@ -140,7 +141,7 @@ class TwoServicesWithDirectClientCamelTest
                         .hasKind(SpanKind.CLIENT)
                         .hasParent(trace.getSpan(2))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(URL_FULL, "http://127.0.0.1:" + portTwo + "/serviceTwo"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(
@@ -151,7 +152,7 @@ class TwoServicesWithDirectClientCamelTest
                         .hasKind(SpanKind.SERVER)
                         .hasParent(trace.getSpan(3))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/serviceTwo"),
@@ -168,7 +169,7 @@ class TwoServicesWithDirectClientCamelTest
                         .hasKind(SpanKind.INTERNAL)
                         .hasParent(trace.getSpan(4))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(URL_FULL, "http://127.0.0.1:" + portTwo + "/serviceTwo"),
                             equalTo(
                                 stringKey("camel.uri"),

@@ -14,6 +14,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satis
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -261,7 +262,7 @@ class Aws0ClientTest {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_FULL, "http://localhost:" + UNUSABLE_PORT),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(SERVER_PORT, 61),
                             equalTo(RPC_SYSTEM, "aws-api"),
@@ -299,7 +300,7 @@ class Aws0ClientTest {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_FULL, "https://s3.amazonaws.com"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_ADDRESS, "s3.amazonaws.com"),
                             equalTo(RPC_SYSTEM, "aws-api"),
                             equalTo(RPC_SERVICE, "Amazon S3"),
@@ -337,7 +338,7 @@ class Aws0ClientTest {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_FULL, server.httpUri().toString()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(SERVER_PORT, server.httpPort()),
                             equalTo(SERVER_ADDRESS, "127.0.0.1"),
                             equalTo(RPC_SYSTEM, "aws-api"),

@@ -12,6 +12,8 @@ import static io.opentelemetry.instrumentation.testing.junit.service.SemconvServ
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.PUT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -107,7 +109,7 @@ class ElasticsearchClientTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
                             equalTo(maybeStable(DB_OPERATION), "info"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_FULL, httpHost.toURI() + "/"),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort())),
@@ -118,7 +120,7 @@ class ElasticsearchClientTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(URL_FULL, httpHost.toURI() + "/"),
@@ -146,7 +148,7 @@ class ElasticsearchClientTest {
                             equalTo(maybeStable(DB_OPERATION), "index"),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "PUT"),
+                            equalTo(HTTP_REQUEST_METHOD, PUT),
                             equalTo(
                                 URL_FULL,
                                 httpHost.toURI() + "/test-index/_doc/test-id?timeout=10s"),
@@ -160,7 +162,7 @@ class ElasticsearchClientTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "PUT"),
+                            equalTo(HTTP_REQUEST_METHOD, PUT),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(
@@ -213,7 +215,7 @@ class ElasticsearchClientTest {
                             equalTo(maybeStable(DB_OPERATION), "info"),
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_FULL, httpHost.toURI() + "/")),
                 span ->
                     span.hasName("GET")
@@ -222,7 +224,7 @@ class ElasticsearchClientTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(SERVER_ADDRESS, httpHost.getHostName()),
                             equalTo(SERVER_PORT, httpHost.getPort()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(maybeStablePeerService(), "test-peer-service"),
                             equalTo(URL_FULL, httpHost.toURI() + "/"),

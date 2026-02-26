@@ -16,6 +16,7 @@ import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -170,7 +171,7 @@ class JspInstrumentationBasicTests extends AbstractHttpServerUsingTest<Tomcat> {
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, route),
                             equalTo(URL_QUERY, queryString),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
                             equalTo(HTTP_ROUTE, route),
@@ -465,7 +466,7 @@ class JspInstrumentationBasicTests extends AbstractHttpServerUsingTest<Tomcat> {
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/" + getContextPath() + staticFile),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
                             equalTo(HTTP_ROUTE, route),

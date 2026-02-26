@@ -20,6 +20,7 @@ import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_STACKTRACE;
 import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -202,7 +203,7 @@ class UndertowServerTest extends AbstractHttpServerTest<Undertow> {
                             equalTo(CLIENT_ADDRESS, TEST_CLIENT_IP),
                             equalTo(URL_SCHEME, uri.getScheme()),
                             equalTo(URL_PATH, uri.getPath()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(USER_AGENT_ORIGINAL, TEST_USER_AGENT),
                             equalTo(NETWORK_PROTOCOL_VERSION, useHttp2() ? "2" : "1.1"),
@@ -249,7 +250,7 @@ class UndertowServerTest extends AbstractHttpServerTest<Undertow> {
                             equalTo(CLIENT_ADDRESS, TEST_CLIENT_IP),
                             equalTo(URL_SCHEME, uri.getScheme()),
                             equalTo(URL_PATH, uri.getPath()),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(USER_AGENT_ORIGINAL, TEST_USER_AGENT),
                             equalTo(NETWORK_PROTOCOL_VERSION, useHttp2() ? "2" : "1.1"),

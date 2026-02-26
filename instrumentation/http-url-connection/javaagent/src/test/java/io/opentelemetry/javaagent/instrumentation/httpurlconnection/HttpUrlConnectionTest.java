@@ -14,6 +14,8 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -131,7 +133,7 @@ class HttpUrlConnectionTest extends AbstractHttpClientTest<HttpURLConnection> {
                 equalTo(SERVER_ADDRESS, "localhost"),
                 equalTo(SERVER_PORT, url.getPort()),
                 equalTo(URL_FULL, url.toString()),
-                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                equalTo(HTTP_REQUEST_METHOD, GET),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, STATUS),
                 equalTo(maybeStablePeerService(), "test-peer-service")));
 
@@ -177,7 +179,7 @@ class HttpUrlConnectionTest extends AbstractHttpClientTest<HttpURLConnection> {
                 equalTo(SERVER_ADDRESS, "localhost"),
                 equalTo(SERVER_PORT, url.getPort()),
                 equalTo(URL_FULL, url.toString()),
-                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                equalTo(HTTP_REQUEST_METHOD, GET),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, STATUS),
                 equalTo(maybeStablePeerService(), "test-peer-service")));
 
@@ -229,7 +231,7 @@ class HttpUrlConnectionTest extends AbstractHttpClientTest<HttpURLConnection> {
                 equalTo(SERVER_ADDRESS, "localhost"),
                 equalTo(SERVER_PORT, url.getPort()),
                 equalTo(URL_FULL, url.toString()),
-                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                equalTo(HTTP_REQUEST_METHOD, POST),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, STATUS),
                 equalTo(maybeStablePeerService(), "test-peer-service")));
 
@@ -283,7 +285,7 @@ class HttpUrlConnectionTest extends AbstractHttpClientTest<HttpURLConnection> {
                 equalTo(SERVER_ADDRESS, "localhost"),
                 equalTo(SERVER_PORT, url.getPort()),
                 equalTo(URL_FULL, url.toString()),
-                equalTo(HTTP_REQUEST_METHOD, "POST"),
+                equalTo(HTTP_REQUEST_METHOD, POST),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, STATUS),
                 equalTo(maybeStablePeerService(), "test-peer-service")));
 
@@ -326,7 +328,7 @@ class HttpUrlConnectionTest extends AbstractHttpClientTest<HttpURLConnection> {
                 equalTo(SERVER_ADDRESS, "localhost"),
                 equalTo(SERVER_PORT, PortUtils.UNUSABLE_PORT),
                 equalTo(URL_FULL, uri),
-                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                equalTo(HTTP_REQUEST_METHOD, GET),
                 equalTo(ERROR_TYPE, "java.net.ConnectException"),
                 equalTo(maybeStablePeerService(), "test-peer-service")));
 

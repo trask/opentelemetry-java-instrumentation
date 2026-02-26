@@ -17,6 +17,8 @@ import static io.opentelemetry.semconv.ExceptionAttributes.EXCEPTION_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -103,7 +105,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, parameter.urlPath),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -228,7 +230,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, parameter.urlPath),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -329,7 +331,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, parameter.urlPath),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -395,7 +397,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/notfoundgreet"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 404),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -466,7 +468,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/echo"),
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 202),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -503,7 +505,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, parameter.urlPath),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 500),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -577,7 +579,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/double-greet-redirect"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 307),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -603,7 +605,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/double-greet"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -652,7 +654,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, parameter.urlPath),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -727,7 +729,7 @@ public abstract class AbstractSpringWebfluxTest {
                             satisfies(SERVER_PORT, val -> val.isInstanceOf(Long.class)),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/slow"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
                             equalTo(HTTP_ROUTE, "/slow"),

@@ -17,6 +17,7 @@ import static io.opentelemetry.semconv.ClientAttributes.CLIENT_ADDRESS;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -111,7 +112,7 @@ class VertxReactivePropagationTest {
                             equalTo(SERVER_PORT, port),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, "/listProducts"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
@@ -215,7 +216,7 @@ class VertxReactivePropagationTest {
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
                             equalTo(URL_PATH, baseUrl),
                             equalTo(URL_QUERY, TEST_REQUEST_ID_PARAMETER + "=" + requestId),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(URL_SCHEME, "http"),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),

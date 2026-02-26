@@ -9,6 +9,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.opentelemetry.api.trace.Span;
@@ -109,7 +110,7 @@ class ContextBridgeTest {
                         .hasKind(SpanKind.SERVER)
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_ROUTE, "/test/server/*"),
                             equalTo(ERROR_TYPE, "_OTHER"))));
   }
@@ -130,7 +131,7 @@ class ContextBridgeTest {
                         .hasKind(SpanKind.SERVER)
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_ROUTE, "/test/controller/:id"),
                             equalTo(ERROR_TYPE, "_OTHER"))));
   }

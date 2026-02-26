@@ -9,6 +9,7 @@ import static io.opentelemetry.api.trace.SpanKind.CLIENT;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -200,7 +201,7 @@ public abstract class AbstractSpringWebfluxClientInstrumentationTest
                         .hasKind(CLIENT)
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfying(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(URL_FULL, uri.toString()),
                             equalTo(SERVER_ADDRESS, "localhost"),
                             equalTo(SERVER_PORT, uri.getPort()),

@@ -12,6 +12,7 @@ import static io.opentelemetry.semconv.ClientAttributes.CLIENT_ADDRESS;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -75,7 +76,7 @@ class ArmeriaHttp2Test {
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_FULL, server2.httpUri() + "/"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(NETWORK_PROTOCOL_VERSION, "2"),
                             equalTo(SERVER_ADDRESS, "127.0.0.1"),
@@ -91,7 +92,7 @@ class ArmeriaHttp2Test {
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/"),
                             equalTo(HTTP_ROUTE, "/"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(NETWORK_PROTOCOL_VERSION, "2"),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),
@@ -106,7 +107,7 @@ class ArmeriaHttp2Test {
                         .hasParent(trace.getSpan(1))
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_FULL, server1.httpUri() + "/"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(NETWORK_PROTOCOL_VERSION, "2"),
                             equalTo(SERVER_ADDRESS, "127.0.0.1"),
@@ -122,7 +123,7 @@ class ArmeriaHttp2Test {
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/"),
                             equalTo(HTTP_ROUTE, "/"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             equalTo(NETWORK_PROTOCOL_VERSION, "2"),
                             equalTo(CLIENT_ADDRESS, "127.0.0.1"),

@@ -10,6 +10,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
@@ -927,7 +928,7 @@ public abstract class AbstractAws2ClientTest extends AbstractAws2ClientCoreTest 
                                                             + server.httpPort()
                                                             + "/somebucket/somekey"))),
                                 equalTo(SERVER_PORT, server.httpPort()),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(RPC_SYSTEM, "aws-api"),
                                 equalTo(RPC_SERVICE, "S3"),
                                 equalTo(RPC_METHOD, "GetObject"),

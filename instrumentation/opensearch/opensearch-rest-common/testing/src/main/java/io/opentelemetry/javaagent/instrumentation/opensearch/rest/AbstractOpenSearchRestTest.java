@@ -13,6 +13,7 @@ import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_SYSTEM_NAME;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -100,7 +101,7 @@ public abstract class AbstractOpenSearchRestTest {
                                 equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                                 equalTo(SERVER_ADDRESS, httpHost.getHost()),
                                 equalTo(SERVER_PORT, httpHost.getPort()),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(maybeStablePeerService(), "test-peer-service"),
                                 equalTo(URL_FULL, httpHost + "/_cluster/health"),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200L))));
@@ -171,7 +172,7 @@ public abstract class AbstractOpenSearchRestTest {
                                 equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                                 equalTo(SERVER_ADDRESS, httpHost.getHost()),
                                 equalTo(SERVER_PORT, httpHost.getPort()),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(maybeStablePeerService(), "test-peer-service"),
                                 equalTo(URL_FULL, httpHost + "/_cluster/health"),
                                 equalTo(HTTP_RESPONSE_STATUS_CODE, 200L)),

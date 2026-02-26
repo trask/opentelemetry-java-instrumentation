@@ -11,6 +11,7 @@ import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -105,7 +106,7 @@ class InstrumentedHttpClientTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/foo"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(SERVER_PORT, app.getServer().getBindPort()),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -119,7 +120,7 @@ class InstrumentedHttpClientTest {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/bar"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -130,7 +131,7 @@ class InstrumentedHttpClientTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/bar"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(SERVER_PORT, otherApp.getServer().getBindPort()),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -194,7 +195,7 @@ class InstrumentedHttpClientTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/path-name"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(URL_QUERY, ""),
                             equalTo(URL_PATH, "/path-name"),
@@ -208,7 +209,7 @@ class InstrumentedHttpClientTest {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/foo"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -219,7 +220,7 @@ class InstrumentedHttpClientTest {
                         .hasKind(SpanKind.CLIENT)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/bar"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -279,7 +280,7 @@ class InstrumentedHttpClientTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/error-path-name"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             equalTo(SERVER_PORT, app.getServer().getBindPort()),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -294,7 +295,7 @@ class InstrumentedHttpClientTest {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/foo"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(ERROR_TYPE, HttpClientReadTimeoutException.class.getName()),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -347,7 +348,7 @@ class InstrumentedHttpClientTest {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/foo"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -358,7 +359,7 @@ class InstrumentedHttpClientTest {
                         .hasParent(trace.getSpan(0))
                         .hasAttributesSatisfyingExactly(
                             equalTo(HTTP_ROUTE, "/foo"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
                             satisfies(SERVER_PORT, v -> v.isInstanceOf(Long.class)),
                             equalTo(SERVER_ADDRESS, "localhost"),

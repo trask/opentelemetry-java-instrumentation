@@ -14,6 +14,7 @@ import static io.opentelemetry.semconv.ClientAttributes.CLIENT_ADDRESS;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -103,7 +104,7 @@ class RestCamelTest extends AbstractHttpServerUsingTest<ConfigurableApplicationC
                             equalTo(
                                 stringKey("camel.uri"),
                                 experimental("rest://get:api/%7Bmodule%7D/unit/%7BunitId%7D")),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L)),
                 span ->
                     span.hasName("GET /api/{module}/unit/{unitId}")
@@ -113,7 +114,7 @@ class RestCamelTest extends AbstractHttpServerUsingTest<ConfigurableApplicationC
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/api/firstModule/unit/unitOne"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_ROUTE, "/api/{module}/unit/{unitId}"),
                             equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                             equalTo(SERVER_ADDRESS, "localhost"),
@@ -127,7 +128,7 @@ class RestCamelTest extends AbstractHttpServerUsingTest<ConfigurableApplicationC
                         .hasKind(SpanKind.INTERNAL)
                         .hasParent(trace.getSpan(2))
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(
                                 URL_FULL,
                                 "http://localhost:" + port + "/api/firstModule/unit/unitOne"),

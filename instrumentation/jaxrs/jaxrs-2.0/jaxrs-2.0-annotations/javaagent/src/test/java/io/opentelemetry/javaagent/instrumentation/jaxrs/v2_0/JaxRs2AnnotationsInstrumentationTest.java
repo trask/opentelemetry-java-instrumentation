@@ -11,6 +11,7 @@ import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.ErrorAttributes.ErrorTypeValues.OTHER;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtension;
@@ -118,7 +119,7 @@ class JaxRs2AnnotationsInstrumentationTest {
                         .hasKind(SpanKind.SERVER)
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_ROUTE, path),
                             equalTo(ERROR_TYPE, OTHER)),
                 span ->
@@ -146,7 +147,7 @@ class JaxRs2AnnotationsInstrumentationTest {
                         .hasKind(SpanKind.SERVER)
                         .hasNoParent()
                         .hasAttributesSatisfyingExactly(
-                            equalTo(HTTP_REQUEST_METHOD, "GET"), equalTo(ERROR_TYPE, OTHER))));
+                            equalTo(HTTP_REQUEST_METHOD, GET), equalTo(ERROR_TYPE, OTHER))));
   }
 
   @Path("/interface")

@@ -8,6 +8,7 @@ package io.opentelemetry.instrumentation.awslambdaevents.v3_11;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
 import static io.opentelemetry.semconv.UserAgentAttributes.USER_AGENT_ORIGINAL;
 import static io.opentelemetry.semconv.incubating.CloudIncubatingAttributes.CLOUD_ACCOUNT_ID;
@@ -108,7 +109,7 @@ class AwsLambdaApiGatewayWrapperTest {
                             equalTo(CLOUD_ACCOUNT_ID, "123456789"),
                             equalTo(FAAS_INVOCATION_ID, "1-22-333"),
                             equalTo(FAAS_TRIGGER, "http"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(USER_AGENT_ORIGINAL, "Test Client"),
                             equalTo(URL_FULL, "http://localhost:123/hello/world?a=b&c=d"),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200L))));

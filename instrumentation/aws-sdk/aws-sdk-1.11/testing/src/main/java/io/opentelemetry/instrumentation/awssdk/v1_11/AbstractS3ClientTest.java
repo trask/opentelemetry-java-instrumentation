@@ -11,6 +11,7 @@ import static io.opentelemetry.instrumentation.test.utils.PortUtils.UNUSABLE_POR
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
@@ -124,7 +125,7 @@ public abstract class AbstractS3ClientTest extends AbstractBaseAwsClientTest {
                             .hasNoParent()
                             .hasAttributesSatisfyingExactly(
                                 equalTo(URL_FULL, "http://127.0.0.1:" + UNUSABLE_PORT),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(SERVER_ADDRESS, "127.0.0.1"),
                                 equalTo(SERVER_PORT, 61),
                                 equalTo(RPC_SYSTEM, "aws-api"),
@@ -169,7 +170,7 @@ public abstract class AbstractS3ClientTest extends AbstractBaseAwsClientTest {
                                     "Unable to execute HTTP request: Request did not complete before the request timeout configuration."))
                             .hasAttributesSatisfyingExactly(
                                 equalTo(URL_FULL, server.httpUri().toString()),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(SERVER_PORT, server.httpPort()),
                                 equalTo(SERVER_ADDRESS, "127.0.0.1"),
                                 equalTo(RPC_SYSTEM, "aws-api"),

@@ -11,6 +11,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equal
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satisfies;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.UrlAttributes.URL_FULL;
@@ -79,7 +80,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                                   equalTo(RPC_SYSTEM, "aws-api"),
                                   equalTo(RPC_SERVICE, "Sqs"),
                                   equalTo(RPC_METHOD, "SendMessage"),
-                                  equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                  equalTo(HTTP_REQUEST_METHOD, POST),
                                   equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                   satisfies(
                                       URL_FULL, v -> v.startsWith("http://localhost:" + sqsPort)),
@@ -132,7 +133,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                                     equalTo(RPC_SYSTEM, "aws-api"),
                                     equalTo(RPC_SERVICE, "Sqs"),
                                     equalTo(RPC_METHOD, "ReceiveMessage"),
-                                    equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                    equalTo(HTTP_REQUEST_METHOD, POST),
                                     equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                     satisfies(
                                         URL_FULL, v -> v.startsWith("http://localhost:" + sqsPort)),
@@ -150,7 +151,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                                     equalTo(RPC_SYSTEM, "aws-api"),
                                     equalTo(RPC_SERVICE, "Sqs"),
                                     equalTo(RPC_METHOD, "ReceiveMessage"),
-                                    equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                    equalTo(HTTP_REQUEST_METHOD, POST),
                                     equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                     satisfies(
                                         URL_FULL, v -> v.startsWith("http://localhost:" + sqsPort)),
@@ -187,7 +188,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                                     equalTo(RPC_SYSTEM, "aws-api"),
                                     equalTo(RPC_SERVICE, "Sqs"),
                                     equalTo(RPC_METHOD, "ReceiveMessage"),
-                                    equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                    equalTo(HTTP_REQUEST_METHOD, POST),
                                     equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                     satisfies(
                                         URL_FULL, v -> v.startsWith("http://localhost:" + sqsPort)),
@@ -299,7 +300,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                               equalTo(RPC_SYSTEM, "aws-api"),
                               equalTo(RPC_SERVICE, "Sqs"),
                               equalTo(RPC_METHOD, "ReceiveMessage"),
-                              equalTo(HTTP_REQUEST_METHOD, "POST"),
+                              equalTo(HTTP_REQUEST_METHOD, POST),
                               equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                               satisfies(URL_FULL, v -> v.startsWith("http://localhost:" + sqsPort)),
                               equalTo(SERVER_ADDRESS, "localhost"),
@@ -339,7 +340,7 @@ public abstract class AbstractAws2SqsTracingTest extends AbstractAws2SqsBaseTest
                                       equalTo(RPC_SYSTEM, "aws-api"),
                                       equalTo(RPC_SERVICE, "Sqs"),
                                       equalTo(RPC_METHOD, "ReceiveMessage"),
-                                      equalTo(HTTP_REQUEST_METHOD, "POST"),
+                                      equalTo(HTTP_REQUEST_METHOD, POST),
                                       equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                                       satisfies(
                                           URL_FULL,

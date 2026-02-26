@@ -10,6 +10,7 @@ import static io.opentelemetry.instrumentation.testing.junit.service.SemconvServ
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -192,7 +193,7 @@ class OpenSearchAwsSdk2TransportTest extends AbstractOpenSearchTest {
                                 equalTo(NETWORK_PROTOCOL_VERSION, "1.1"),
                                 equalTo(SERVER_ADDRESS, httpHost.getHost()),
                                 equalTo(SERVER_PORT, httpHost.getPort()),
-                                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                                equalTo(HTTP_REQUEST_METHOD, GET),
                                 equalTo(URL_FULL, httpHost + "/_cluster/health"),
                                 equalTo(
                                     NETWORK_PEER_ADDRESS,

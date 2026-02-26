@@ -8,6 +8,7 @@ package io.opentelemetry.javaagent.instrumentation.jaxrs.v1_0;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.POST;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -115,7 +116,7 @@ class JerseyTest extends AbstractHttpServerUsingTest<Server> {
                         .hasKind(SpanKind.SERVER)
                         .hasNoParent()
                         .hasAttributesSatisfying(
-                            equalTo(HTTP_REQUEST_METHOD, "POST"),
+                            equalTo(HTTP_REQUEST_METHOD, POST),
                             equalTo(HTTP_ROUTE, getContextPath() + expectedRoute)),
                 span ->
                     span.hasName(controllerName)

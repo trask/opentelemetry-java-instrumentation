@@ -12,6 +12,7 @@ import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.satis
 import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
@@ -111,7 +112,7 @@ public abstract class AbstractGoogleHttpClientTest extends AbstractHttpClientTes
                 equalTo(SERVER_ADDRESS, "localhost"),
                 satisfies(SERVER_PORT, AbstractLongAssert::isPositive),
                 equalTo(URL_FULL, uri.toString()),
-                equalTo(HTTP_REQUEST_METHOD, "GET"),
+                equalTo(HTTP_REQUEST_METHOD, GET),
                 equalTo(HTTP_RESPONSE_STATUS_CODE, 500),
                 equalTo(ERROR_TYPE, "500"),
                 equalTo(maybeStablePeerService(), "test-peer-service")));

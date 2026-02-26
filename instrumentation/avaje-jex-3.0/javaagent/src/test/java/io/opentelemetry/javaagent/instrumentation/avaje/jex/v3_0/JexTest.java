@@ -13,6 +13,7 @@ import static io.opentelemetry.semconv.ErrorAttributes.ERROR_TYPE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_REQUEST_METHOD;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.HttpAttributes.HTTP_ROUTE;
+import static io.opentelemetry.semconv.HttpAttributes.HttpRequestMethodValues.GET;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_ADDRESS;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PEER_PORT;
 import static io.opentelemetry.semconv.NetworkAttributes.NETWORK_PROTOCOL_VERSION;
@@ -73,7 +74,7 @@ class JexTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/test/param/" + id),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 200),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
                             equalTo(HTTP_ROUTE, "/test/param/{id}"),
@@ -99,7 +100,7 @@ class JexTest {
                         .hasAttributesSatisfyingExactly(
                             equalTo(URL_SCHEME, "http"),
                             equalTo(URL_PATH, "/test/error"),
-                            equalTo(HTTP_REQUEST_METHOD, "GET"),
+                            equalTo(HTTP_REQUEST_METHOD, GET),
                             equalTo(HTTP_RESPONSE_STATUS_CODE, 500),
                             satisfies(USER_AGENT_ORIGINAL, val -> val.isInstanceOf(String.class)),
                             equalTo(HTTP_ROUTE, "/test/error"),

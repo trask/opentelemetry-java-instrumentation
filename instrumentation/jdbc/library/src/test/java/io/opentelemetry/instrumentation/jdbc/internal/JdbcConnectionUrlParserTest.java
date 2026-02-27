@@ -1425,12 +1425,13 @@ class JdbcConnectionUrlParserTest {
   private static void testVerifySystemSubtypeParsingOfUrl(ParseTestArgument argument) {
     DbInfo info = parse(argument.url, argument.properties);
     DbInfo expected = argument.dbInfo;
-    assertThat(info.getShortUrl()).isEqualTo(expected.getShortUrl());
-    assertThat(info.getSystem()).isEqualTo(expected.getSystem());
-    assertThat(info.getHost()).isEqualTo(expected.getHost());
-    assertThat(info.getPort()).isEqualTo(expected.getPort());
-    assertThat(info.getUser()).isEqualTo(expected.getUser());
-    assertThat(info.getName()).isEqualTo(expected.getName());
+    assertThat(info.getDbConnectionString()).isEqualTo(expected.getDbConnectionString());
+    assertThat(info.getDbSystemName()).isEqualTo(expected.getDbSystemName());
+    assertThat(info.getServerAddress()).isEqualTo(expected.getServerAddress());
+    assertThat(info.getServerPort()).isEqualTo(expected.getServerPort());
+    assertThat(info.getDbUser()).isEqualTo(expected.getDbUser());
+    assertThat(info.getDbName()).isEqualTo(expected.getDbName());
+    assertThat(info.getDbNamespace()).isEqualTo(expected.getDbNamespace());
     assertThat(info).isEqualTo(expected);
   }
 
@@ -1456,7 +1457,7 @@ class JdbcConnectionUrlParserTest {
 
     @Override
     public String toString() {
-      return dbInfo.getSystem() + ":" + dbInfo.getSubtype() + " parsing of " + url;
+      return dbInfo.getDbSystemName() + " parsing of " + url;
     }
   }
 

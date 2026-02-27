@@ -73,8 +73,44 @@ public final class GrpcSingletons {
   }
 
   public static Context.Storage setStorage(Context.Storage storage) {
-    STORAGE_REFERENCE.compareAndSet(null, new ContextStorageBridge(storage));
+    // If the original storage is our own ContextStorageOverride (from the library instrumentation
+    // jar being on the classpath), don't use it as the delegate - it is backed by OTel context
+    // just like us, so it cannot serve as a baseline for context propagation checks. Use a simple
+    // ThreadLocal-based storage instead to independently track which gRPC contexts have been
+    // explicitly attached on each thread.
+    if (storage.getClass().getName().equals("io.grpc.override.ContextStorageOverride")) {
+      STORAGE_REFERENCE.compareAndSet(
+          null, new ContextStorageBridge(new ThreadLocalContextStorage()));
+    } else {
+      STORAGE_REFERENCE.compareAndSet(null, new ContextStorageBridge(storage));
+    }
     return getStorage();
+  }
+
+  /**
+   * Simple ThreadLocal-based Context.Storage that tracks gRPC context attachment independently of
+   * the OTel context bridge. Used as the originalStorage baseline when the real original storage is
+   * itself an OTel bridge (ContextStorageOverride).
+   */
+  private static class ThreadLocalContextStorage extends Context.Storage {
+    private static final ThreadLocal<Context> current = new ThreadLocal<>();
+
+    @Override
+    public Context doAttach(Context toAttach) {
+      Context previous = current.get();
+      current.set(toAttach);
+      return previous != null ? previous : Context.ROOT;
+    }
+
+    @Override
+    public void detach(Context toDetach, Context toRestore) {
+      current.set(toRestore);
+    }
+
+    @Override
+    public Context current() {
+      return current.get();
+    }
   }
 
   private GrpcSingletons() {}

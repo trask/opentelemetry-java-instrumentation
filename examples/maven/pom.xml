@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.opentelemetry.example</groupId>
+  <artifactId>maven-extension</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <description>
+    Minimal example of building an OpenTelemetry javaagent extension with Maven,
+    using the standard Byte Buddy Maven plugin for muzzle code generation.
+  </description>
+
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- these lines are managed by .github/scripts/update-sdk-version.sh -->
+    <opentelemetry.sdk.version>1.59.0</opentelemetry.sdk.version>
+
+    <!-- these lines are managed by .github/scripts/update-version.sh -->
+    <opentelemetry.javaagent.version>2.26.0-SNAPSHOT</opentelemetry.javaagent.version>
+    <opentelemetry.javaagent.alpha.version>2.26.0-alpha-SNAPSHOT</opentelemetry.javaagent.alpha.version>
+
+    <byte-buddy.version>1.18.5</byte-buddy.version>
+    <auto-service.version>1.1.1</auto-service.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>sonatype-snapshots</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-bom</artifactId>
+        <version>${opentelemetry.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry.instrumentation</groupId>
+        <artifactId>opentelemetry-instrumentation-bom-alpha</artifactId>
+        <version>${opentelemetry.javaagent.alpha.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <!--
+      Interfaces and SPIs that we implement. compileOnly equivalent (provided scope)
+      because at runtime these classes are provided by the javaagent itself.
+    -->
+    <dependency>
+      <groupId>io.opentelemetry.javaagent</groupId>
+      <artifactId>opentelemetry-javaagent-extension-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Servlet API: the library we instrument (provided at runtime by the application) -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- @AutoService for SPI registration -->
+    <dependency>
+      <groupId>com.google.auto.service</groupId>
+      <artifactId>auto-service</artifactId>
+      <version>${auto-service.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!--
+      The muzzle code generation plugin + its transitive dependencies.
+      Needed at compile time by the byte-buddy-maven-plugin.
+    -->
+    <dependency>
+      <groupId>io.opentelemetry.javaagent</groupId>
+      <artifactId>opentelemetry-javaagent-tooling</artifactId>
+      <version>${opentelemetry.javaagent.alpha.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>com.google.auto.service</groupId>
+              <artifactId>auto-service</artifactId>
+              <version>${auto-service.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+
+      <!--
+        Byte Buddy Maven plugin runs MuzzleCodeGenerationPlugin after compilation.
+        This generates the muzzle reference methods on InstrumentationModule classes.
+        The plugin resolves the File[] constructor with the project's compile classpath,
+        then combines it with the plugin's own class loader (otel-javaagent-tooling + deps)
+        to create a single URLClassLoader for muzzle code generation.
+      -->
+      <plugin>
+        <groupId>net.bytebuddy</groupId>
+        <artifactId>byte-buddy-maven-plugin</artifactId>
+        <version>${byte-buddy.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>transform</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <classFileVersion>JAVA_V8</classFileVersion>
+          <transformations>
+            <transformation>
+              <plugin>io.opentelemetry.javaagent.tooling.muzzle.generation.MuzzleCodeGenerationPlugin</plugin>
+            </transformation>
+          </transformations>
+        </configuration>
+        <dependencies>
+          <!--
+            The classpath for the BB plugin must include all classes needed by
+            MuzzleCodeGenerationPlugin: the muzzle module itself (via javaagent-tooling),
+            the extension API, and Guava (used by ReferenceCollector but declared
+            compileOnly in muzzle, so it must be provided explicitly).
+          -->
+          <dependency>
+            <groupId>io.opentelemetry.javaagent</groupId>
+            <artifactId>opentelemetry-javaagent-tooling</artifactId>
+            <version>${opentelemetry.javaagent.alpha.version}</version>
+          </dependency>
+          <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.5.0-jre</version>
+          </dependency>
+          <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy-dep</artifactId>
+            <version>${byte-buddy.version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+</project>

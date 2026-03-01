@@ -32,7 +32,7 @@ public class OkHttpClientInstrumentation implements TypeInstrumentation {
   @SuppressWarnings("unused")
   public static class ConstructorAdvice {
 
-    @Advice.OnMethodExit
+    @Advice.OnMethodExit(suppress = Throwable.class)
     public static void addTracingInterceptor(@Advice.This OkHttpClient client) {
       for (Interceptor interceptor : client.interceptors()) {
         if (interceptor instanceof TracingInterceptor) {

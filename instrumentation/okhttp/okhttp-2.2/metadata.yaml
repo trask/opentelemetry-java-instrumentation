@@ -1,5 +1,6 @@
 description: This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.
 display_name: OkHttp
+library_link: https://square.github.io/okhttp/
 semantic_conventions:
   - HTTP_CLIENT_SPANS
   - HTTP_CLIENT_METRICS

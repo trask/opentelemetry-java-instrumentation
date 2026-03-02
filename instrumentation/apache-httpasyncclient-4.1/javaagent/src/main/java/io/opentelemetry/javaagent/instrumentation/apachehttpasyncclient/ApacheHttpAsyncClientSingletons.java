@@ -18,7 +18,7 @@ public final class ApacheHttpAsyncClientSingletons {
     INSTRUMENTER =
         JavaagentHttpClientInstrumenters.create(
             INSTRUMENTATION_NAME,
-            new ApacheHttpAsyncClientHttpAttributesGetter(),
+            ApacheHttpAsyncClientHttpAttributesGetter.INSTANCE,
             HttpHeaderSetter.INSTANCE);
   }
 

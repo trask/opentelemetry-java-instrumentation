@@ -11,8 +11,9 @@ import io.opentelemetry.instrumentation.api.semconv.http.HttpClientAttributesGet
 import java.util.List;
 import javax.annotation.Nullable;
 
-final class GoogleHttpClientHttpAttributesGetter
+enum GoogleHttpClientHttpAttributesGetter
     implements HttpClientAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   @Nullable

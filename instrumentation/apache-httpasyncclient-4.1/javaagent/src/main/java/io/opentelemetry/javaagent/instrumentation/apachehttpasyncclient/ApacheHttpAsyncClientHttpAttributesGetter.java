@@ -14,8 +14,9 @@ import javax.annotation.Nullable;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 
-final class ApacheHttpAsyncClientHttpAttributesGetter
+enum ApacheHttpAsyncClientHttpAttributesGetter
     implements HttpClientAttributesGetter<ApacheHttpClientRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(ApacheHttpClientRequest request) {

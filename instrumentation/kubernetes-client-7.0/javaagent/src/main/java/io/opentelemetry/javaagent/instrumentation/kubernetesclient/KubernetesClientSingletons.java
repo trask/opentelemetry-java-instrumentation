@@ -28,7 +28,7 @@ public class KubernetesClientSingletons {
         DefaultHttpClientInstrumenterBuilder.create(
                 "io.opentelemetry.kubernetes-client-7.0",
                 GlobalOpenTelemetry.get(),
-                new KubernetesHttpAttributesGetter())
+                KubernetesHttpAttributesGetter.INSTANCE)
             .configure(AgentCommonConfig.get())
             .setBuilderCustomizer(
                 instrumenterBuilder -> {

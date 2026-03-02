@@ -13,8 +13,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import okhttp3.Request;
 
-class KubernetesHttpAttributesGetter
-    implements HttpClientAttributesGetter<Request, ApiResponse<?>> {
+enum KubernetesHttpAttributesGetter implements HttpClientAttributesGetter<Request, ApiResponse<?>> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(Request request) {

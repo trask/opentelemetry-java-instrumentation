@@ -19,7 +19,7 @@ public final class ApacheHttpClientSingletons {
     INSTRUMENTER =
         JavaagentHttpClientInstrumenters.create(
             INSTRUMENTATION_NAME,
-            new ApacheHttpClientHttpAttributesGetter(),
+            ApacheHttpClientHttpAttributesGetter.INSTANCE,
             HttpHeaderSetter.INSTANCE);
   }
 

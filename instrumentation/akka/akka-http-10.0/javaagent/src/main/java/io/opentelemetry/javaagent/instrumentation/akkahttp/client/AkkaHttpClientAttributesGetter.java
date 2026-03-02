@@ -12,8 +12,9 @@ import io.opentelemetry.javaagent.instrumentation.akkahttp.AkkaHttpUtil;
 import java.util.List;
 import javax.annotation.Nullable;
 
-class AkkaHttpClientAttributesGetter
+enum AkkaHttpClientAttributesGetter
     implements HttpClientAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getUrlFull(HttpRequest httpRequest) {

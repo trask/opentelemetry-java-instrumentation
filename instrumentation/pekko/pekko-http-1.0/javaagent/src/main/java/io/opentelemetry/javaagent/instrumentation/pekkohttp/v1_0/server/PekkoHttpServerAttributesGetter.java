@@ -13,8 +13,9 @@ import org.apache.pekko.http.scaladsl.model.HttpRequest;
 import org.apache.pekko.http.scaladsl.model.HttpResponse;
 import scala.Option;
 
-class PekkoHttpServerAttributesGetter
+enum PekkoHttpServerAttributesGetter
     implements HttpServerAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(HttpRequest request) {

@@ -19,7 +19,7 @@ public class GoogleHttpClientSingletons {
     INSTRUMENTER =
         JavaagentHttpClientInstrumenters.create(
             INSTRUMENTATION_NAME,
-            new GoogleHttpClientHttpAttributesGetter(),
+            GoogleHttpClientHttpAttributesGetter.INSTANCE,
             HttpHeaderSetter.INSTANCE);
   }
 

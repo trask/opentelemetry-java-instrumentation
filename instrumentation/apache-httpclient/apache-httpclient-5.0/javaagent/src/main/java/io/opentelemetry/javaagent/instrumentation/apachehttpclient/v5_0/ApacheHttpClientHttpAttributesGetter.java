@@ -18,8 +18,9 @@ import org.apache.hc.core5.http.MessageHeaders;
 import org.apache.hc.core5.http.ProtocolVersion;
 import org.apache.hc.core5.net.URIAuthority;
 
-final class ApacheHttpClientHttpAttributesGetter
+enum ApacheHttpClientHttpAttributesGetter
     implements HttpClientAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(HttpRequest request) {

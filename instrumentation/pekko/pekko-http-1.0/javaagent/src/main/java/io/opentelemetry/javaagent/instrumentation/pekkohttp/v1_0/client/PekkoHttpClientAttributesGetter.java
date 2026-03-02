@@ -12,8 +12,9 @@ import javax.annotation.Nullable;
 import org.apache.pekko.http.scaladsl.model.HttpRequest;
 import org.apache.pekko.http.scaladsl.model.HttpResponse;
 
-class PekkoHttpClientAttributesGetter
+enum PekkoHttpClientAttributesGetter
     implements HttpClientAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getUrlFull(HttpRequest httpRequest) {

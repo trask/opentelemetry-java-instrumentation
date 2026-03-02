@@ -19,7 +19,7 @@ public final class PekkoHttpServerSingletons {
     INSTRUMENTER =
         JavaagentHttpServerInstrumenters.create(
             PekkoHttpUtil.instrumentationName(),
-            new PekkoHttpServerAttributesGetter(),
+            PekkoHttpServerAttributesGetter.INSTANCE,
             PekkoHttpServerHeaders.INSTANCE);
   }
 

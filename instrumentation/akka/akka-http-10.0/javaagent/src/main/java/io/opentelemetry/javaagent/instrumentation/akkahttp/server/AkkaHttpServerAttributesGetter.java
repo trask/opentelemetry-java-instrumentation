@@ -13,8 +13,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import scala.Option;
 
-class AkkaHttpServerAttributesGetter
+enum AkkaHttpServerAttributesGetter
     implements HttpServerAttributesGetter<HttpRequest, HttpResponse> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(HttpRequest request) {

@@ -20,7 +20,7 @@ public final class ActivejHttpServerSingletons {
     INSTRUMENTER =
         JavaagentHttpServerInstrumenters.create(
             INSTRUMENTATION_NAME,
-            new ActivejHttpServerAttributesGetter(),
+            ActivejHttpServerAttributesGetter.INSTANCE,
             ActivejHttpServerRequestGetter.INSTANCE);
   }
 

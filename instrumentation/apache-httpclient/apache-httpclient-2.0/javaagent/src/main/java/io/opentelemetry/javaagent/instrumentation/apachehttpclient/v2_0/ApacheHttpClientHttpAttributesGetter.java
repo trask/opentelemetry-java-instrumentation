@@ -17,8 +17,9 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.StatusLine;
 
-final class ApacheHttpClientHttpAttributesGetter
+enum ApacheHttpClientHttpAttributesGetter
     implements HttpClientAttributesGetter<HttpMethod, HttpMethod> {
+  INSTANCE;
 
   @Override
   public String getHttpRequestMethod(HttpMethod request) {

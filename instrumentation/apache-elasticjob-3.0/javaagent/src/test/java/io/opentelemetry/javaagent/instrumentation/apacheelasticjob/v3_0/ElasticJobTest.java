@@ -387,14 +387,14 @@ class ElasticJobTest {
         equalTo(
             stringKey("scheduling.apache-elasticjob.sharding.item.parameter"),
             experimental(parameter)));
-    assertions.add(
-        satisfies(
-            stringKey("scheduling.apache-elasticjob.task.id"),
-            taskId -> {
-              if (EXPERIMENTAL_ATTRIBUTES_ENABLED) {
-                taskId.contains(jobName);
-              }
-            }));
+    if (EXPERIMENTAL_ATTRIBUTES_ENABLED) {
+      assertions.add(
+          satisfies(
+              stringKey("scheduling.apache-elasticjob.task.id"),
+              taskId -> taskId.contains(jobName)));
+    } else {
+      assertions.add(equalTo(stringKey("scheduling.apache-elasticjob.task.id"), (String) null));
+    }
 
     return assertions;
   }

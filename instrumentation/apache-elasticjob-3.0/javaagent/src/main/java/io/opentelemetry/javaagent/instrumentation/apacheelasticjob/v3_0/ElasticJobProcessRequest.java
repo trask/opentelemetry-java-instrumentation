@@ -21,7 +21,7 @@ public final class ElasticJobProcessRequest {
       ShardingContext shardingContext,
       ElasticJobType jobType,
       Class<?> userJobClass,
-      String userMethodNam) {
+      String userMethodName) {
     this.jobName = shardingContext.getJobName();
     this.taskId = shardingContext.getTaskId();
     this.shardingItemIndex = shardingContext.getShardingItem();
@@ -29,7 +29,7 @@ public final class ElasticJobProcessRequest {
     this.shardingItemParameter = emptyToNull(shardingContext.getShardingParameter());
     this.jobType = jobType;
     this.userJobClass = userJobClass;
-    this.userMethodName = userMethodNam;
+    this.userMethodName = userMethodName;
   }
 
   private static String emptyToNull(String string) {

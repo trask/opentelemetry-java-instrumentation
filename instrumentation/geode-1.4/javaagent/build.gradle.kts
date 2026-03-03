@@ -7,6 +7,7 @@ muzzle {
     group.set("org.apache.geode")
     module.set("geode-core")
     versions.set("[1.4.0,)")
+    assertInverse.set(true)
   }
 }
 

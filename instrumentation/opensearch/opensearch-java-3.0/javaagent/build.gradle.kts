@@ -7,6 +7,7 @@ muzzle {
     group.set("org.opensearch.client")
     module.set("opensearch-java")
     versions.set("[3.0,)")
+    assertInverse.set(true)
   }
 }
 

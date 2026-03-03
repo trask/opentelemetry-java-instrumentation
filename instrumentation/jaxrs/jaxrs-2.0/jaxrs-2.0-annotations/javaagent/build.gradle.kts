@@ -12,6 +12,7 @@ muzzle {
     group.set("javax.ws.rs")
     module.set("javax.ws.rs-api")
     versions.set("[,]")
+    assertInverse.set(true)
   }
 }
 

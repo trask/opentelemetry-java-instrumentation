@@ -7,6 +7,7 @@ muzzle {
     group.set("ch.qos.logback")
     module.set("logback-classic")
     versions.set("[1.0.0,1.2.3]")
+    assertInverse.set(true)
   }
 }
 

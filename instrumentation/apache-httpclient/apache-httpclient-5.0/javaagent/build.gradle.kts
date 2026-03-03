@@ -7,6 +7,7 @@ muzzle {
     group.set("org.apache.httpcomponents.client5")
     module.set("httpclient5")
     versions.set("[5.0,)")
+    assertInverse.set(true)
   }
 }
 

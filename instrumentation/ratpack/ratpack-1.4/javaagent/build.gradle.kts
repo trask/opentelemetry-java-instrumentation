@@ -7,6 +7,7 @@ muzzle {
     group.set("io.ratpack")
     module.set("ratpack-core")
     versions.set("[1.4.0,)")
+    assertInverse.set(true)
   }
 }
 

@@ -7,6 +7,7 @@ muzzle {
     group.set("org.eclipse.jetty")
     module.set("jetty-client")
     versions.set("[12,)")
+    assertInverse.set(true)
   }
 }
 

@@ -14,6 +14,7 @@ muzzle {
     group.set("org.elasticsearch.client")
     module.set("elasticsearch-rest-client")
     versions.set("[5.0,6.4)")
+    assertInverse.set(true)
   }
 }
 

@@ -8,12 +8,14 @@ muzzle {
     group.set("com.twitter")
     module.set("finagle-http_2.12")
     versions.set("[23.11.0,]")
+    assertInverse.set(true)
   }
 
   pass {
     group.set("com.twitter")
     module.set("finagle-http_2.13")
     versions.set("[23.11.0,]")
+    assertInverse.set(true)
   }
 }
 

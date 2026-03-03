@@ -18,7 +18,6 @@ muzzle {
     group.set("org.springframework")
     module.set("spring-webflux")
     versions.set("[5.0.0.RELEASE,)")
-    assertInverse.set(true)
     extraDependency("io.projectreactor.ipc:reactor-netty:0.7.0.RELEASE")
   }
 
@@ -27,6 +26,7 @@ muzzle {
     group.set("io.projectreactor.netty")
     module.set("reactor-netty")
     versions.set("[0.8.0.RELEASE,)")
+    assertInverse.set(true)
     extraDependency("org.springframework:spring-webflux:5.1.0.RELEASE")
   }
 
@@ -35,6 +35,7 @@ muzzle {
     group.set("io.projectreactor.ipc")
     module.set("reactor-netty")
     versions.set("[0.7.0.RELEASE,)")
+    assertInverse.set(true)
     extraDependency("org.springframework:spring-webflux:5.0.0.RELEASE")
   }
 }

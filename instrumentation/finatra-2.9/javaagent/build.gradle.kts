@@ -9,6 +9,7 @@ muzzle {
     group.set("com.twitter")
     module.set("finatra-http_2.11")
     versions.set("[2.9.0,]")
+    assertInverse.set(true)
     excludeDependency("io.netty:netty-transport-native-epoll")
   }
 
@@ -16,6 +17,7 @@ muzzle {
     group.set("com.twitter")
     module.set("finatra-http_2.12")
     versions.set("[2.9.0,]")
+    assertInverse.set(true)
     excludeDependency("io.netty:netty-transport-native-epoll")
   }
 }

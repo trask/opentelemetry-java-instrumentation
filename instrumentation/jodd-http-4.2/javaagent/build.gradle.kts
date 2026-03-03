@@ -7,6 +7,7 @@ muzzle {
     group.set("org.jodd")
     module.set("jodd-http")
     versions.set("[4.2.0,)")
+    assertInverse.set(true)
   }
 }
 

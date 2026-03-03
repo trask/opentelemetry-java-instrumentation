@@ -9,6 +9,7 @@ muzzle {
     group.set("org.apache.cxf")
     module.set("cxf-rt-frontend-jaxrs")
     versions.set("[3.2,4)")
+    assertInverse.set(true)
     extraDependency("javax.servlet:javax.servlet-api:3.1.0")
   }
   pass {
@@ -16,6 +17,7 @@ muzzle {
     module.set("openejb-cxf-rs")
     // earlier versions of tomee use cxf older than 3.2
     versions.set("(8,)")
+    assertInverse.set(true)
     extraDependency("javax.ws.rs:javax.ws.rs-api:2.0")
     extraDependency("javax.servlet:javax.servlet-api:3.1.0")
   }

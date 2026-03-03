@@ -13,8 +13,8 @@ import org.apache.dubbo.rpc.Result;
 final class DubboNetworkServerAttributesGetter
     implements NetworkAttributesGetter<DubboRequest, Result> {
 
-  @Nullable
   @Override
+  @Nullable
   public InetSocketAddress getNetworkLocalInetSocketAddress(
       DubboRequest request, @Nullable Result result) {
     return request.localAddress();

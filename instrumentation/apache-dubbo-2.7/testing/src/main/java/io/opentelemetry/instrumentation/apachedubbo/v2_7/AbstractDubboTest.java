@@ -97,7 +97,7 @@ public abstract class AbstractDubboTest {
   void testApacheDubboBase() throws ReflectiveOperationException {
     int port = PortUtils.findOpenPort();
     protocolConfig.setPort(port);
-    // provider boostrap
+    // provider bootstrap
     DubboBootstrap bootstrap = DubboTestUtil.newDubboBootstrap();
     cleanup.deferCleanup(bootstrap::destroy);
     bootstrap
@@ -106,7 +106,7 @@ public abstract class AbstractDubboTest {
         .protocol(protocolConfig)
         .start();
 
-    // consumer boostrap
+    // consumer bootstrap
     DubboBootstrap consumerBootstrap = DubboTestUtil.newDubboBootstrap();
     cleanup.deferCleanup(consumerBootstrap::destroy);
     ReferenceConfig<HelloService> referenceConfig = configureClient(port);
@@ -160,14 +160,26 @@ public abstract class AbstractDubboTest {
                                 "io.opentelemetry.instrumentation.apachedubbo.v2_7.api.HelloService/hello")
                             .hasKind(SpanKind.SERVER)
                             .hasParent(trace.getSpan(1))
-                            .hasAttributesSatisfying(
+                            .hasAttributesSatisfyingExactly(
                                 equalTo(RPC_SYSTEM, APACHE_DUBBO),
                                 equalTo(
                                     RPC_SERVICE,
                                     "io.opentelemetry.instrumentation.apachedubbo.v2_7.api.HelloService"),
                                 equalTo(RPC_METHOD, "hello"),
                                 satisfies(NETWORK_PEER_ADDRESS, k -> k.isInstanceOf(String.class)),
-                                satisfies(NETWORK_PEER_PORT, k -> k.isInstanceOf(Long.class)))));
+                                satisfies(NETWORK_PEER_PORT, k -> k.isInstanceOf(Long.class)),
+                                // this attribute is not filled reliably, it is either null or
+                                // "ipv4"/"ipv6"
+                                satisfies(
+                                    NETWORK_TYPE,
+                                    k ->
+                                        assertLatestDeps(
+                                            k,
+                                            a ->
+                                                a.satisfiesAnyOf(
+                                                    val -> assertThat(val).isNull(),
+                                                    val -> assertThat(val).isEqualTo("ipv4"),
+                                                    val -> assertThat(val).isEqualTo("ipv6")))))));
 
     testing()
         .waitAndAssertMetrics(
@@ -284,7 +296,7 @@ public abstract class AbstractDubboTest {
                                 "io.opentelemetry.instrumentation.apachedubbo.v2_7.api.HelloService/hello")
                             .hasKind(SpanKind.SERVER)
                             .hasParent(trace.getSpan(1))
-                            .hasAttributesSatisfying(
+                            .hasAttributesSatisfyingExactly(
                                 equalTo(RPC_SYSTEM, APACHE_DUBBO),
                                 equalTo(
                                     RPC_SERVICE,

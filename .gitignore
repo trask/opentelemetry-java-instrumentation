@@ -47,6 +47,10 @@ out/
 **/bin/
 .metals
 
+# Python #
+##########
+__pycache__/
+
 # Others #
 ##########
 /logs/*

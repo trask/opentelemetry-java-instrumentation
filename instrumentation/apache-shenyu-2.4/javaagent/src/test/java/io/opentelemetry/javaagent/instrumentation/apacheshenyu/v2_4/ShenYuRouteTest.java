@@ -61,6 +61,9 @@ class ShenYuRouteTest {
   private static final AttributeKey<Boolean> META_ENABLED_ATTRIBUTE =
       AttributeKey.booleanKey("apache-shenyu.meta.enabled");
 
+  private static final boolean EXPERIMENTAL_ATTRIBUTES =
+      Boolean.getBoolean("otel.instrumentation.apache-shenyu.experimental-span-attributes");
+
   @Value("${local.server.port}")
   private int port;
 
@@ -114,16 +117,23 @@ class ShenYuRouteTest {
                         .hasKind(SpanKind.SERVER)
                         .hasAttributesSatisfying(
                             equalTo(HTTP_ROUTE, "/a/b/c"),
-                            equalTo(META_ID_ATTRIBUTE, "123"),
-                            equalTo(META_ENABLED_ATTRIBUTE, true),
-                            equalTo(METHOD_NAME_ATTRIBUTE, "hello"),
-                            equalTo(PARAMETER_TYPES_ATTRIBUTE, "string"),
-                            equalTo(PATH_ATTRIBUTE, "/a/b/c"),
-                            equalTo(RPC_EXT_ATTRIBUTE, "test-ext"),
-                            equalTo(RPC_TYPE_ATTRIBUTE, "http"),
-                            equalTo(SERVICE_NAME_ATTRIBUTE, "shenyu-service"),
-                            equalTo(APP_NAME_ATTRIBUTE, "test-shenyu"),
-                            equalTo(CONTEXT_PATH_ATTRIBUTE, "/"))));
+                            equalTo(META_ID_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "123" : null),
+                            equalTo(META_ENABLED_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? true : null),
+                            equalTo(
+                                METHOD_NAME_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "hello" : null),
+                            equalTo(
+                                PARAMETER_TYPES_ATTRIBUTE,
+                                EXPERIMENTAL_ATTRIBUTES ? "string" : null),
+                            equalTo(PATH_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "/a/b/c" : null),
+                            equalTo(RPC_EXT_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "test-ext" : null),
+                            equalTo(RPC_TYPE_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "http" : null),
+                            equalTo(
+                                SERVICE_NAME_ATTRIBUTE,
+                                EXPERIMENTAL_ATTRIBUTES ? "shenyu-service" : null),
+                            equalTo(
+                                APP_NAME_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "test-shenyu" : null),
+                            equalTo(
+                                CONTEXT_PATH_ATTRIBUTE, EXPERIMENTAL_ATTRIBUTES ? "/" : null))));
   }
 
   @Test

@@ -41,17 +41,30 @@ if (latestDepTest) {
   }
 }
 
-tasks.withType<Test>().configureEach {
-  jvmArgs("-Dotel.instrumentation.apache-shenyu.experimental-span-attributes=true")
+tasks {
+  withType<Test>().configureEach {
+    systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
 
-  systemProperty("metadataConfig", "otel.instrumentation.apache-shenyu.experimental-span-attributes=true")
-  systemProperty("collectMetadata", findProperty("collectMetadata")?.toString() ?: "false")
+    // required on jdk17
+    jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
+    jvmArgs("-XX:+IgnoreUnrecognizedVMOptions")
 
-  // required on jdk17
-  jvmArgs("--add-opens=java.base/java.lang=ALL-UNNAMED")
-  jvmArgs("-XX:+IgnoreUnrecognizedVMOptions")
+    systemProperty("testLatestDeps", latestDepTest)
+  }
 
-  systemProperty("testLatestDeps", latestDepTest)
+  val testExperimental by registering(Test::class) {
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    jvmArgs("-Dotel.instrumentation.apache-shenyu.experimental-span-attributes=true")
+    systemProperty(
+      "metadataConfig",
+      "otel.instrumentation.apache-shenyu.experimental-span-attributes=true"
+    )
+  }
+
+  check {
+    dependsOn(testExperimental)
+  }
 }
 
 // spring 6 (spring boot 3) uses slf4j 2.0

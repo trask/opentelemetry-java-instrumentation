@@ -47,7 +47,7 @@ class HttpSpanDecorator extends BaseSpanDecorator {
   private static final String POST_METHOD = "POST";
   private static final String GET_METHOD = "GET";
   private static final Set<String> knownMethods =
-      AgentCommonConfig.get().getKnownHttpRequestMethods();
+      AgentCommonConfig.get().getHttpClientKnownMethods();
 
   protected String getProtocol() {
     return "http";

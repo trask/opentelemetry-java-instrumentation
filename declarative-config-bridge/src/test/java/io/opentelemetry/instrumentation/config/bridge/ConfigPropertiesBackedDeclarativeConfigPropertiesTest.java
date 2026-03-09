@@ -100,6 +100,27 @@ class ConfigPropertiesBackedDeclarativeConfigPropertiesTest {
   }
 
   @Test
+  void testGeneralHttpKnownMethodsMapping() {
+    DeclarativeConfigProperties config =
+        createConfig("otel.instrumentation.http.known-methods", "GET,POST,CUSTOM");
+
+    assertThat(
+            config
+                .getStructured("general")
+                .getStructured("http")
+                .getStructured("client")
+                .getScalarList("known_methods", String.class))
+        .containsExactly("GET", "POST", "CUSTOM");
+    assertThat(
+            config
+                .getStructured("general")
+                .getStructured("http")
+                .getStructured("server")
+                .getScalarList("known_methods", String.class))
+        .containsExactly("GET", "POST", "CUSTOM");
+  }
+
+  @Test
   void testJavaCommonServicePeerMapping() {
     DeclarativeConfigProperties config =
         createConfig("otel.instrumentation.common.peer-service-mapping", "1.2.3.4=FooService");

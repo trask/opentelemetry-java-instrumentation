@@ -31,7 +31,8 @@ public final class CommonConfig {
   private final List<String> clientResponseHeaders;
   private final List<String> serverRequestHeaders;
   private final List<String> serverResponseHeaders;
-  private final Set<String> knownHttpRequestMethods;
+  private final Set<String> httpClientKnownMethods;
+  private final Set<String> httpServerKnownMethods;
   private final EnduserConfig enduserConfig;
   private final boolean querySanitizationEnabled;
   private final boolean sqlCommenterEnabled;
@@ -73,10 +74,18 @@ public final class CommonConfig {
             .get("http")
             .get("server")
             .getScalarList("response_captured_headers", String.class, new ArrayList<>());
-    knownHttpRequestMethods =
+    httpClientKnownMethods =
         new HashSet<>(
-            commonConfig
+            generalConfig
                 .get("http")
+                .get("client")
+                .getScalarList(
+                    "known_methods", String.class, new ArrayList<>(HttpConstants.KNOWN_METHODS)));
+    httpServerKnownMethods =
+        new HashSet<>(
+            generalConfig
+                .get("http")
+                .get("server")
                 .getScalarList(
                     "known_methods", String.class, new ArrayList<>(HttpConstants.KNOWN_METHODS)));
     querySanitizationEnabled =
@@ -140,8 +149,12 @@ public final class CommonConfig {
     return serverResponseHeaders;
   }
 
-  public Set<String> getKnownHttpRequestMethods() {
-    return knownHttpRequestMethods;
+  public Set<String> getHttpClientKnownMethods() {
+    return httpClientKnownMethods;
+  }
+
+  public Set<String> getHttpServerKnownMethods() {
+    return httpServerKnownMethods;
   }
 
   public EnduserConfig getEnduserConfig() {

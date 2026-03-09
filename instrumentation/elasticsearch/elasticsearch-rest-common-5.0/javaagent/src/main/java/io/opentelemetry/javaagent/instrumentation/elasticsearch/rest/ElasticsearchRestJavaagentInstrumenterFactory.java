@@ -31,7 +31,7 @@ public final class ElasticsearchRestJavaagentInstrumenterFactory {
         instrumentationName,
         emptyList(),
         Function.identity(),
-        AgentCommonConfig.get().getKnownHttpRequestMethods(),
+        AgentCommonConfig.get().getHttpClientKnownMethods(),
         CAPTURE_SEARCH_QUERY);
   }
 }

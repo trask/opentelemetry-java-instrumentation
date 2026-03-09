@@ -28,7 +28,7 @@ public final class HttpUrlConnectionSingletons {
                 builder
                     .addAttributesExtractor(
                         HttpMethodAttributeExtractor.create(
-                            AgentCommonConfig.get().getKnownHttpRequestMethods()))
+                            AgentCommonConfig.get().getHttpClientKnownMethods()))
                     .addContextCustomizer(
                         (context, httpRequestPacket, startAttributes) ->
                             GetOutputStreamContext.init(context)));

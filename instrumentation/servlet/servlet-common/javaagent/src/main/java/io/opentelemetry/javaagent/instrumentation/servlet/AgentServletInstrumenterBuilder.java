@@ -87,7 +87,7 @@ public final class AgentServletInstrumenterBuilder<REQUEST, RESPONSE> {
         httpAttributesGetter = new ServletHttpAttributesGetter<>(accessor);
     SpanNameExtractor<ServletRequestContext<REQUEST>> spanNameExtractor =
         HttpSpanNameExtractor.builder(httpAttributesGetter)
-            .setKnownMethods(AgentCommonConfig.get().getKnownHttpRequestMethods())
+            .setKnownMethods(AgentCommonConfig.get().getHttpServerKnownMethods())
             .build();
 
     return build(instrumentationName, accessor, spanNameExtractor, httpAttributesGetter);

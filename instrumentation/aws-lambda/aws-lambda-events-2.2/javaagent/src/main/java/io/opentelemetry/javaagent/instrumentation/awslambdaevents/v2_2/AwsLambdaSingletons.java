@@ -22,7 +22,7 @@ public final class AwsLambdaSingletons {
       AwsLambdaEventsInstrumenterFactory.createInstrumenter(
           GlobalOpenTelemetry.get(),
           INSTRUMENTATION_NAME,
-          AgentCommonConfig.get().getKnownHttpRequestMethods());
+          AgentCommonConfig.get().getHttpServerKnownMethods());
   private static final Instrumenter<SQSEvent, Void> MESSAGE_TRACER =
       AwsLambdaSqsInstrumenterFactory.forEvent(GlobalOpenTelemetry.get(), INSTRUMENTATION_NAME);
   private static final Duration FLUSH_TIMEOUT =

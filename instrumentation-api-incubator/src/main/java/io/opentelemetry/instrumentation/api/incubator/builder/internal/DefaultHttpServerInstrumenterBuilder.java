@@ -242,7 +242,7 @@ public final class DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> {
 
   @CanIgnoreReturnValue
   public DefaultHttpServerInstrumenterBuilder<REQUEST, RESPONSE> configure(CommonConfig config) {
-    set(config::getKnownHttpRequestMethods, this::setKnownMethods);
+    set(config::getHttpServerKnownMethods, this::setKnownMethods);
     set(config::getServerRequestHeaders, this::setCapturedRequestHeaders);
     set(config::getServerResponseHeaders, this::setCapturedResponseHeaders);
     set(

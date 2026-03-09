@@ -48,11 +48,13 @@ public final class ConfigPropertiesBackedDeclarativeConfigProperties
         "general.http.server.response_captured_headers",
         "otel.instrumentation.http.server.capture-response-headers");
     SPECIAL_MAPPINGS.put(
+        "general.http.client.known_methods", "otel.instrumentation.http.known-methods");
+    SPECIAL_MAPPINGS.put(
+        "general.http.server.known_methods", "otel.instrumentation.http.known-methods");
+    SPECIAL_MAPPINGS.put(
         "general.sanitization.url.sensitive_query_parameters/development",
         "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters");
     // moving common http, database, messaging, and gen_ai configs under common
-    SPECIAL_MAPPINGS.put(
-        "java.common.http.known_methods", "otel.instrumentation.http.known-methods");
     SPECIAL_MAPPINGS.put(
         "java.common.http.client.redact_query_parameters/development",
         "otel.instrumentation.http.client.experimental.redact-query-parameters");

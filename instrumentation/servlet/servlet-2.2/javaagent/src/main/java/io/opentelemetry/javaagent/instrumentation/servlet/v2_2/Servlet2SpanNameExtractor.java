@@ -15,7 +15,7 @@ public class Servlet2SpanNameExtractor<REQUEST, RESPONSE>
     implements SpanNameExtractor<ServletRequestContext<REQUEST>> {
 
   private final ServletAccessor<REQUEST, RESPONSE> accessor;
-  private final Set<String> knownMethods = AgentCommonConfig.get().getKnownHttpRequestMethods();
+  private final Set<String> knownMethods = AgentCommonConfig.get().getHttpServerKnownMethods();
 
   public Servlet2SpanNameExtractor(ServletAccessor<REQUEST, RESPONSE> accessor) {
     this.accessor = accessor;

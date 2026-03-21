@@ -9,6 +9,7 @@ import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.ERROR;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.EXCEPTION;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD;
+import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.INDEXED_CHILD_FROM_REQUEST_BODY;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.PATH_PARAM;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.QUERY_PARAM;
 import static io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint.REDIRECT;
@@ -24,6 +25,8 @@ import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.context.Context;
+import io.opentelemetry.context.Scope;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpServerTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpServerTestOptions;
 import io.opentelemetry.instrumentation.testing.junit.http.ServerEndpoint;
@@ -125,6 +128,32 @@ public abstract class AbstractArmeriaHttpServerTest extends AbstractHttpServerTe
                     }));
 
     sb.service(
+        INDEXED_CHILD_FROM_REQUEST_BODY.getPath(),
+        (ctx, req) -> {
+          Context parentContext = Context.current();
+          return HttpResponse.from(
+              req.aggregate()
+                  .thenApply(
+                      aggregatedRequest -> {
+                        try (Scope ignore = parentContext.makeCurrent()) {
+                          return testing()
+                              .runWithSpan(
+                                  "controller",
+                                  () -> {
+                                    bodyConsumer(
+                                        INDEXED_CHILD_FROM_REQUEST_BODY,
+                                        aggregatedRequest.contentUtf8());
+                                    return HttpResponse.of(
+                                        HttpStatus.valueOf(
+                                            INDEXED_CHILD_FROM_REQUEST_BODY.getStatus()),
+                                        MediaType.PLAIN_TEXT_UTF_8,
+                                        INDEXED_CHILD_FROM_REQUEST_BODY.getBody());
+                                  });
+                        }
+                      }));
+        });
+
+    sb.service(
         "/captureHeaders",
         (ctx, req) ->
             testing()
@@ -188,5 +217,6 @@ public abstract class AbstractArmeriaHttpServerTest extends AbstractHttpServerTe
         });
 
     options.setTestPathParam(true);
+    options.setTestHttpBodyPipelining(true);
   }
 }

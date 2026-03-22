@@ -105,7 +105,9 @@ For each file in scope:
 Auto-fix boundaries:
 
 - Safe to fix:
-  - import cleanup or direct style-guide conformance
+  - `VirtualField.find(...)` called inside an `@Advice` method — move it to a
+    `static final` field in a dedicated helper class and update the advice to reference
+    the field. See `knowledge/javaagent-module-patterns.md` § VirtualField.
   - obvious assertion API migrations (e.g., AssertJ preference) and idiomatic
     simplifications listed in `testing-general-patterns.md` § AssertJ Idiomatic
     Simplifications (e.g., `assertThat(list.size()).isEqualTo(N)` →

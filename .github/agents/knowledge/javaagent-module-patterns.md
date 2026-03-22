@@ -307,13 +307,28 @@ for associating OpenTelemetry context or state with library objects.
 
 ### Rules
 
-- Call `VirtualField.find(Carrier.class, Value.class)` with class literals.
-- **Inside `@Advice` methods** these calls are **rewritten at bytecode transformation time**
-  by `VirtualFieldFindRewriter` into direct static calls to generated implementations —
-  they are never executed at runtime. It is perfectly fine to call `VirtualField.find()`
-  inside advice methods; do **not** extract them into helper classes or static final fields.
-- **Outside advice** (helper classes, singletons, etc.) the call executes at runtime, so
-  declare the result as a `static final` field to avoid repeated lookups.
-- The first type parameter is the "carrier" class (the library object); the second is the
-  attached value type.
-- Uses weak-key semantics: when the carrier is garbage-collected, the value is released.
+- Call `VirtualField.find(Carrier.class, Value.class)` with **class literals** (not variables).
+- The first type parameter is the carrier class (library object); the second is the value type.
+- Uses weak-key semantics: when the carrier is GC'd, the value is released.
+- **Never call `VirtualField.find()` inside an `@Advice` method.** Declare all lookups as
+  `static final` fields and reference them from advice. Place them either in the module's
+  existing `*Singletons` class (if one exists) or in a dedicated `VirtualFields` class (when
+  the fields are advice-only concerns with no associated `Singletons`).
+  **Review/fix agents**: flag and auto-fix any in-advice `VirtualField.find()` call by
+  moving it to a `static final` field in the appropriate helper class.
+
+```java
+final class VirtualFields {
+  static final VirtualField<Envelope, PropagatedContext> ENVELOPE_PROPAGATED_CONTEXT =
+      VirtualField.find(Envelope.class, PropagatedContext.class);
+  private VirtualFields() {}
+}
+
+public static class DispatchAdvice {
+  @Advice.OnMethodEnter(suppress = Throwable.class)
+  public static PropagatedContext enter(@Advice.Argument(1) Envelope envelope) {
+    return ExecutorAdviceHelper.attachContextToTask(
+        context, VirtualFields.ENVELOPE_PROPAGATED_CONTEXT, envelope);
+  }
+}
+```

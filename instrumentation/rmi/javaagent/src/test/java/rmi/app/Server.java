@@ -17,6 +17,10 @@ public class Server extends UnicastRemoteObject implements Greeter {
     super();
   }
 
+  public Server(int port) throws RemoteException {
+    super(port);
+  }
+
   @Override
   public String hello(String name) {
     return someMethod(name);

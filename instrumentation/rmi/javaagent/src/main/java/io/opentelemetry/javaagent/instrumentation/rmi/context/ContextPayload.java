@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 public class ContextPayload {
 
   private static final Logger logger = Logger.getLogger(ContextPayload.class.getName());
-  private static final int MAX_CONTEXT_ENTRIES = 1000;
 
   private final Map<String, String> context;
 
@@ -44,39 +43,23 @@ public class ContextPayload {
   }
 
   @Nullable
+  @SuppressWarnings("BanSerializableRead")
   public static ContextPayload read(ObjectInput oi) throws IOException {
-    int size = oi.readInt();
-    if (size > MAX_CONTEXT_ENTRIES) {
-      logger.log(
-          FINE,
-          "RMI context propagation payload size {0} exceeds maximum allowed of {1}, skipping context propagation.",
-          new Object[] {size, MAX_CONTEXT_ENTRIES});
-      return null;
+    try {
+      Object object = oi.readObject();
+      if (object instanceof Map) {
+        @SuppressWarnings("unchecked") // readObject returns Object, we know it's Map<String, String>
+        Map<String, String> map = (Map<String, String>) object;
+        return new ContextPayload(map);
+      }
+    } catch (ClassCastException | ClassNotFoundException ex) {
+      logger.log(FINE, "Error reading object", ex);
     }
-    Map<String, String> map = new HashMap<>();
-    for (int i = 0; i < size; i++) {
-      String key = oi.readUTF();
-      String value = oi.readUTF();
-      map.put(key, value);
-    }
-    return new ContextPayload(map);
+    return null;
   }
 
   public void write(ObjectOutput out) throws IOException {
-    int size = context.size();
-    if (size > MAX_CONTEXT_ENTRIES) {
-      logger.log(
-          FINE,
-          "RMI context propagation payload size {0} exceeds maximum allowed of {1}, skipping context propagation.",
-          new Object[] {size, MAX_CONTEXT_ENTRIES});
-      out.writeInt(0);
-      return;
-    }
-    out.writeInt(size);
-    for (Map.Entry<String, String> entry : context.entrySet()) {
-      out.writeUTF(entry.getKey());
-      out.writeUTF(entry.getValue());
-    }
+    out.writeObject(context);
   }
 
   public Context extract() {

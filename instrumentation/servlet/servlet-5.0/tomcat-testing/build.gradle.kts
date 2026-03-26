@@ -3,6 +3,9 @@ plugins {
 }
 
 dependencies {
+  // Tomcat is tested with only servlet instrumentation (no tomcat-specific javaagent
+  // instrumentation), whereas Jetty testing modules also include the Jetty javaagent
+  // instrumentation.
   testInstrumentation(project(":instrumentation:servlet:servlet-5.0:javaagent"))
   testImplementation(project(":instrumentation:servlet:servlet-5.0:testing"))
 

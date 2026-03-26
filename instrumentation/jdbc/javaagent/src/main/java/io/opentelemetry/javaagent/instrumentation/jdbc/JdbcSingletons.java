@@ -10,6 +10,7 @@ import static java.util.Collections.singletonList;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
+import io.opentelemetry.instrumentation.api.incubator.semconv.db.internal.DbQuerySanitizationConfig;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.internal.SqlCommenter;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.internal.SqlCommenterBuilder;
 import io.opentelemetry.instrumentation.api.incubator.semconv.service.peer.ServicePeerAttributesExtractor;
@@ -50,9 +51,8 @@ public final class JdbcSingletons {
             GlobalOpenTelemetry.get(),
             singletonList(servicePeerExtractor),
             true,
-            DeclarativeConfigUtil.getInstrumentationConfig(GlobalOpenTelemetry.get(), "jdbc")
-                .get("statement_sanitizer")
-                .getBoolean("enabled", AgentCommonConfig.get().isQuerySanitizationEnabled()),
+            DbQuerySanitizationConfig.getQuerySanitizationEnabled(
+                GlobalOpenTelemetry.get(), "jdbc"),
             CAPTURE_QUERY_PARAMETERS);
 
     TRANSACTION_INSTRUMENTER =

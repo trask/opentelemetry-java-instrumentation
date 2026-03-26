@@ -14,6 +14,7 @@ import io.opentelemetry.instrumentation.api.incubator.semconv.code.CodeSpanNameE
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientMetrics;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientSpanNameExtractor;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlClientAttributesExtractor;
+import io.opentelemetry.instrumentation.api.incubator.semconv.db.internal.DbQuerySanitizationConfig;
 import io.opentelemetry.instrumentation.api.instrumenter.AttributesExtractor;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor;
@@ -47,13 +48,10 @@ public final class JdbcInstrumenterFactory {
       OpenTelemetry openTelemetry, boolean captureQueryParameters) {
     @SuppressWarnings("deprecation") // using deprecated config property
     boolean querySanitizationEnabled =
-        DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, "common")
-            .get("database")
-            .get("statement_sanitizer")
-            .getBoolean(
-                "enabled",
-                ConfigPropertiesUtil.getBoolean(
-                    "otel.instrumentation.common.db-statement-sanitizer.enabled", true));
+        DbQuerySanitizationConfig.getCommonQuerySanitizationEnabled(
+            openTelemetry,
+            ConfigPropertiesUtil.getBoolean(
+                "otel.instrumentation.common.db-statement-sanitizer.enabled", true));
     return createStatementInstrumenter(
         openTelemetry, emptyList(), true, querySanitizationEnabled, captureQueryParameters);
   }

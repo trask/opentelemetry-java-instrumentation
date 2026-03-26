@@ -10,6 +10,7 @@ import static java.util.Collections.emptySet;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.incubator.config.DeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.incubator.log.LoggingContextConstants;
+import io.opentelemetry.instrumentation.api.incubator.semconv.db.internal.DbQuerySanitizationConfig;
 import io.opentelemetry.instrumentation.api.internal.HttpConstants;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -74,7 +75,7 @@ public final class CommonConfig {
                 .getScalarList(
                     "known_methods", String.class, new ArrayList<>(HttpConstants.KNOWN_METHODS)));
     querySanitizationEnabled =
-        commonConfig.get("database").get("statement_sanitizer").getBoolean("enabled", true);
+        DbQuerySanitizationConfig.getCommonQuerySanitizationEnabled(openTelemetry);
     sqlCommenterEnabled =
         commonConfig.get("database").get("sqlcommenter/development").getBoolean("enabled", false);
     emitExperimentalHttpClientTelemetry =

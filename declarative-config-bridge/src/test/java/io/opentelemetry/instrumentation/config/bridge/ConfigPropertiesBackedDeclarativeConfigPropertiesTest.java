@@ -100,6 +100,36 @@ class ConfigPropertiesBackedDeclarativeConfigPropertiesTest {
   }
 
   @Test
+  void testQuerySanitizationMapping() {
+    DeclarativeConfigProperties config =
+        createConfig("otel.instrumentation.common.db-statement-sanitizer.enabled", "false");
+
+    assertThat(
+            config
+                .getStructured("java")
+                .getStructured("common")
+                .getStructured("database")
+                .getStructured("query_sanitization")
+                .getBoolean("enabled"))
+        .isFalse();
+  }
+
+  @Test
+  void testStatementSanitizerAliasMapping() {
+    DeclarativeConfigProperties config =
+        createConfig("otel.instrumentation.common.db-statement-sanitizer.enabled", "false");
+
+    assertThat(
+            config
+                .getStructured("java")
+                .getStructured("common")
+                .getStructured("database")
+                .getStructured("statement_sanitizer")
+                .getBoolean("enabled"))
+        .isNull();
+  }
+
+  @Test
   void testJavaCommonServicePeerMapping() {
     DeclarativeConfigProperties config =
         createConfig("otel.instrumentation.common.peer-service-mapping", "1.2.3.4=FooService");

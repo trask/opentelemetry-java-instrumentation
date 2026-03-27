@@ -26,46 +26,30 @@ public final class DbQuerySanitizationConfig {
       OpenTelemetry openTelemetry, boolean defaultValue) {
     Boolean querySanitizationEnabled =
         getBooleanWithDeprecatedAlias(
-            DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, "common").get("database"),
-            "query_sanitization",
-            "statement_sanitizer",
-            "enabled");
+            DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, "common")
+                .get("database"));
     return querySanitizationEnabled != null ? querySanitizationEnabled : defaultValue;
   }
 
   public static boolean getQuerySanitizationEnabled(
       OpenTelemetry openTelemetry, String instrumentationName) {
-    return getQuerySanitizationEnabled(openTelemetry, instrumentationName, true);
-  }
-
-  public static boolean getQuerySanitizationEnabled(
-      OpenTelemetry openTelemetry, String instrumentationName, boolean defaultValue) {
     Boolean querySanitizationEnabled =
         getBooleanWithDeprecatedAlias(
-            DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, instrumentationName),
-            "query_sanitization",
-            "statement_sanitizer",
-            "enabled");
+            DeclarativeConfigUtil.getInstrumentationConfig(openTelemetry, instrumentationName));
     if (querySanitizationEnabled != null) {
       return querySanitizationEnabled;
     }
-    return getCommonQuerySanitizationEnabled(openTelemetry, defaultValue);
+    return getCommonQuerySanitizationEnabled(openTelemetry);
   }
 
   @Nullable
-  private static Boolean getBooleanWithDeprecatedAlias(
-      DeclarativeConfigProperties config,
-      String preferredName,
-      String deprecatedName,
-      String valueName) {
-    Boolean value = config.get(preferredName).getBoolean(valueName);
-    Boolean deprecatedValue = config.get(deprecatedName).getBoolean(valueName);
+  private static Boolean getBooleanWithDeprecatedAlias(DeclarativeConfigProperties config) {
+    Boolean value = config.get("query_sanitization").getBoolean("enabled");
+    Boolean deprecatedValue = config.get("statement_sanitizer").getBoolean("enabled");
     if (deprecatedValue != null) {
       logger.warning(
-          deprecatedName
-              + " is deprecated in declarative configuration and has been replaced by "
-              + preferredName
-              + ".");
+          "statement_sanitizer is deprecated in declarative configuration"
+              + " and has been replaced by query_sanitization.");
     }
     return value != null ? value : deprecatedValue;
   }

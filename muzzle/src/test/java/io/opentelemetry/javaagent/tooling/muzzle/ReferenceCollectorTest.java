@@ -9,6 +9,7 @@ import static io.opentelemetry.javaagent.tooling.muzzle.references.Flag.MinimumV
 import static io.opentelemetry.javaagent.tooling.muzzle.references.Flag.MinimumVisibilityFlag.PROTECTED_OR_HIGHER;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.entry;
 
@@ -334,6 +335,21 @@ class ReferenceCollectorTest {
 
     assertThat(collector.getReferences()).isEmpty();
     assertThat(collector.getSortedHelperClasses()).isEmpty();
+  }
+
+  @Test
+  public void shouldRejectUnexpectedSpiResourcePath() {
+    ReferenceCollector collector = new ReferenceCollector(s -> false);
+
+    assertThatIllegalArgumentException()
+        .isThrownBy(
+            () ->
+                collector.collectReferencesFromResource(
+                    HelperResource.create(
+                        "META-INF/services/test.resource.file",
+                        "unexpected/test.resource.file",
+                        false)))
+        .withMessageContaining("Unexpected SPI resource");
   }
 
   @Test

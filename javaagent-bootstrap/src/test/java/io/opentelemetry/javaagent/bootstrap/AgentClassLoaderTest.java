@@ -120,4 +120,15 @@ class AgentClassLoaderTest {
       assertThat(result.length > 0).isNotEqualTo(jdk8);
     }
   }
+
+  @Test
+  void rejectsNonNormalizedResourceNames() throws Exception {
+    URL testJarLocation = OpenTelemetrySdk.class.getProtectionDomain().getCodeSource().getLocation();
+
+    try (AgentClassLoader loader = new AgentClassLoader(new File(testJarLocation.toURI()))) {
+      assertThat(loader.getResource("../test.txt")).isNull();
+      assertThat(loader.getResource("/test.txt")).isNull();
+      assertThat(loader.findResource("META-INF/../MANIFEST.MF")).isNull();
+    }
+  }
 }

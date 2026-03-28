@@ -147,9 +147,7 @@ public class AgentClassLoader extends URLClassLoader {
               @Nullable
               @Override
               public URL apply(String resourceName) {
-                JarEntry jarEntry = jarFile.getJarEntry(resourceName);
-                AgentJarResource jarResource = AgentJarResource.create(resourceName, jarEntry);
-                return getAgentJarResourceUrl(jarResource);
+                return findJarResource(resourceName);
               }
             });
 
@@ -281,8 +279,43 @@ public class AgentClassLoader extends URLClassLoader {
     return index == -1 ? null : className.substring(0, index);
   }
 
+  private static boolean isNormalizedResourcePath(String resourceName) {
+    if (resourceName.isEmpty()
+        || resourceName.startsWith("/")
+        || resourceName.startsWith("\\")) {
+      return false;
+    }
+
+    int segmentStart = 0;
+    for (int i = 0; i <= resourceName.length(); i++) {
+      if (i == resourceName.length() || resourceName.charAt(i) == '/') {
+        if (!isValidResourceSegment(resourceName, segmentStart, i)) {
+          return false;
+        }
+        segmentStart = i + 1;
+      } else if (resourceName.charAt(i) == '\\') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private static boolean isValidResourceSegment(String resourceName, int start, int end) {
+    int length = end - start;
+    return length > 0
+        && !(length == 1 && resourceName.charAt(start) == '.')
+        && !(length == 2
+            && resourceName.charAt(start) == '.'
+            && resourceName.charAt(start + 1) == '.');
+  }
+
   @Nullable
   private AgentJarResource findAgentJarResource(String name) {
+    if (!isNormalizedResourcePath(name)) {
+      return null;
+    }
+
     // shading renames .class to .classdata
     boolean isClass = name.endsWith(".class");
     if (isClass) {

@@ -75,12 +75,20 @@ public final class ReferenceCollector {
    * @see HelperClassPredicate
    */
   public void collectReferencesFromResource(HelperResource helperResource) {
-    if (!isSpiFile(helperResource.getApplicationPath())) {
+    String applicationPath = helperResource.getApplicationPath();
+    if (!isSpiFile(applicationPath)) {
       return;
     }
 
+    String agentPath = helperResource.getAgentPath();
+    Preconditions.checkArgument(
+        isKnownSpiResourcePath(agentPath),
+        "Unexpected SPI resource %s for %s",
+        agentPath,
+        applicationPath);
+
     List<String> spiImplementations = new ArrayList<>();
-    try (InputStream stream = getResourceStream(helperResource.getAgentPath())) {
+    try (InputStream stream = getResourceStream(agentPath)) {
       BufferedReader reader = new BufferedReader(new InputStreamReader(stream, UTF_8));
       while (reader.ready()) {
         String line = reader.readLine();
@@ -89,7 +97,7 @@ public final class ReferenceCollector {
         }
       }
     } catch (IOException e) {
-      throw new IllegalStateException("Error reading resource " + helperResource.getAgentPath(), e);
+      throw new IllegalStateException("Error reading resource " + agentPath, e);
     }
 
     visitClassesAndCollectReferences(spiImplementations, /* startsFromAdviceClass= */ false);
@@ -107,6 +115,15 @@ public final class ReferenceCollector {
         || resource.equals("com/amazonaws/global/handlers/request.handler2s")
         || AWS_SDK_V2_SERVICE_INTERCEPTOR_SPI.matcher(resource).matches()
         || AWS_SDK_V1_SERVICE_INTERCEPTOR_SPI.matcher(resource).matches();
+  }
+
+  private static boolean isKnownSpiResourcePath(String resource) {
+    if (isSpiFile(resource)) {
+      return true;
+    }
+
+    int prefixSeparator = resource.indexOf('/');
+    return prefixSeparator > 0 && isSpiFile(resource.substring(prefixSeparator + 1));
   }
 
   /**

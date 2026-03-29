@@ -127,8 +127,10 @@ class AgentClassLoaderTest {
 
     try (AgentClassLoader loader = new AgentClassLoader(new File(testJarLocation.toURI()))) {
       assertThat(loader.getResource("../test.txt")).isNull();
+      assertThat(loader.getBootstrapProxy().getResource("../test.txt")).isNull();
       assertThat(loader.getResource("/test.txt")).isNull();
       assertThat(loader.findResource("META-INF/../MANIFEST.MF")).isNull();
+      assertThat(loader.findResources("META-INF/../MANIFEST.MF").hasMoreElements()).isFalse();
     }
   }
 }

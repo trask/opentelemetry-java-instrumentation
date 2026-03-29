@@ -126,6 +126,37 @@ public final class ReferenceCollector {
     return prefixSeparator > 0 && isSpiFile(resource.substring(prefixSeparator + 1));
   }
 
+  private static boolean isNormalizedResourcePath(String resourceName) {
+    if (resourceName.isEmpty()
+        || resourceName.startsWith("/")
+        || resourceName.startsWith("\\")) {
+      return false;
+    }
+
+    int segmentStart = 0;
+    for (int i = 0; i <= resourceName.length(); i++) {
+      if (i == resourceName.length() || resourceName.charAt(i) == '/') {
+        if (!isValidResourceSegment(resourceName, segmentStart, i)) {
+          return false;
+        }
+        segmentStart = i + 1;
+      } else if (resourceName.charAt(i) == '\\') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private static boolean isValidResourceSegment(String resourceName, int start, int end) {
+    int length = end - start;
+    return length > 0
+        && !(length == 1 && resourceName.charAt(start) == '.')
+        && !(length == 2
+            && resourceName.charAt(start) == '.'
+            && resourceName.charAt(start + 1) == '.');
+  }
+
   /**
    * Traverse a graph of classes starting from {@code adviceClassName} and collect all references to
    * both internal (instrumentation) and external classes.
@@ -186,6 +217,10 @@ public final class ReferenceCollector {
   }
 
   private InputStream getResourceStream(String resource) throws IOException {
+    if (!isNormalizedResourcePath(resource)) {
+      throw new IllegalArgumentException("Unexpected resource path " + resource);
+    }
+
     URLConnection connection =
         Preconditions.checkNotNull(
                 resourceLoader.getResource(resource), "Couldn't find resource %s", resource)

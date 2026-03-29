@@ -22,6 +22,7 @@ import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.Permissions;
 import java.security.cert.Certificate;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
@@ -358,7 +359,12 @@ public class AgentClassLoader extends URLClassLoader {
   }
 
   @Override
+  @Nullable
   public URL getResource(String resourceName) {
+    if (!isNormalizedResourcePath(resourceName)) {
+      return null;
+    }
+
     URL bootstrapResource = bootstrapProxy.getResource(resourceName);
     if (null == bootstrapResource) {
       return super.getResource(resourceName);
@@ -368,7 +374,12 @@ public class AgentClassLoader extends URLClassLoader {
   }
 
   @Override
+  @Nullable
   public URL findResource(String name) {
+    if (!isNormalizedResourcePath(name)) {
+      return null;
+    }
+
     URL url = findJarResource(name);
     if (url != null) {
       return url;
@@ -400,6 +411,10 @@ public class AgentClassLoader extends URLClassLoader {
 
   @Override
   public Enumeration<URL> findResources(String name) throws IOException {
+    if (!isNormalizedResourcePath(name)) {
+      return Collections.enumeration(Collections.<URL>emptyList());
+    }
+
     // find resources from agent initializer jar
     Enumeration<URL> delegate = super.findResources(name);
     // agent jar can have only one resource for given name
@@ -452,6 +467,10 @@ public class AgentClassLoader extends URLClassLoader {
     @Override
     @Nullable
     public URL getResource(String resourceName) {
+      if (!isNormalizedResourcePath(resourceName)) {
+        return null;
+      }
+
       // find resource from boot loader
       URL url = super.getResource(resourceName);
       if (url != null) {

@@ -189,6 +189,15 @@ class ReferenceCollectorTest {
     assertHelperInterfaceMethod(helperClass, false);
   }
 
+    @Test
+    public void shouldRejectNonNormalizedClassResourcePath() {
+        ReferenceCollector collector = new ReferenceCollector(s -> false);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> collector.collectReferencesFromAdvice("../Bad"))
+                .withMessageContaining("Unexpected resource path");
+    }
+
   @Test
   public void shouldCollectFieldDeclarationReferences() {
     ReferenceCollector collector =

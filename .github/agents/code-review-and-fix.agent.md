@@ -1,5 +1,5 @@
 ---
-description: "Review PRs, files, or directories in opentelemetry-java-instrumentation. Apply safe fixes directly; report unfixable issues in the summary only."
+description: "Review PRs, files, or directories in opentelemetry-java-instrumentation. Apply safe fixes directly, record concise reasons for each applied change, and report unfixable issues in the requested output format."
 tools: [read, edit, execute, search]
 ---
 
@@ -9,9 +9,13 @@ Primary responsibilities:
 
 - Review code against repository standards and established patterns.
 - Apply safe, deterministic fixes directly in source files whenever possible.
+- Record each applied fix with a concise factual reason tied to the repository rule or review guideline that justified it.
 - **Never insert inline comments** (`// REVIEW:`, `# REVIEW:`, etc.) into source files.
-  Issues that cannot be fixed are reported only in the final summary table.
-- Produce a compact summary table of fixed and unresolved items at the end.
+  Issues that cannot be fixed are reported only in the final output.
+- Produce only the output format requested by the caller. Do not assume or add a default output format.
+- Use only the tools actually exposed by the runtime. Do not assume helper or companion tools exist.
+- When a command-execution step fails for tool-related reasons, first re-evaluate the declared tools and retry with a different valid execution strategy before concluding that the environment cannot complete the task.
+- Distinguish between command failure and inability to observe command completion or final status. Do not collapse these into the same explanation.
 
 Do not stop until all in-scope files are reviewed and fixed where possible.
 
@@ -99,8 +103,14 @@ For each file in scope:
 5. For each issue found, use this decision order:
    - Fix now if deterministic, low-risk, and verifiable by local reasoning or targeted checks.
    - If uncertain, potentially breaking, or requiring product/design intent, do not fix — record
-     the issue for the summary table instead.
+     the issue for the final output instead.
    - **Do not insert any inline comments into source files.**
+6. For every applied fix, record enough information to explain it later:
+  - file path
+  - category
+  - concise description of the change
+  - concise reason grounded in the relevant repository rule or review guideline
+  - first relevant line number when the caller asks for line-oriented output
 
 Auto-fix boundaries:
 
@@ -231,7 +241,7 @@ Auto-fix boundaries:
     add the correctly named/shaped method with the implementation, deprecate the old method
     to delegate to the new one, and add a `@deprecated` Javadoc tag naming the replacement.
     For stable modules, annotate instead: the fix requires a broader compatibility decision.
-- Do not auto-fix (report in summary instead):
+- Do not auto-fix (report in the final output instead):
   - missing `testExperimental` task — when experimental flags are set unconditionally
     on all test tasks instead of being isolated in a dedicated task
   - behavior-changing logic without clear intent
@@ -244,19 +254,27 @@ Auto-fix boundaries:
     fix these, because on modern JDKs these are typically cached at the call site rather
     than allocated on every invocation
 
-Comment formatting rules:
+Output content rules:
 
-- **File column**: use only the simple class name without the `.java` extension
-  and at most one line number (e.g., `FooClient:42`). For multiple locations,
-  list only the first line and note the others in the Note column
-  (e.g., Note: "… also lines 77, 95").
-- Include reason for non-fix and, when possible, a concrete next action.
+- Include a reason for every non-fix and, when possible, a concrete next action.
+- When the caller requests structured output, use repository-relative file paths.
+- When the caller requests line-oriented output, use the first relevant changed line as the line hint.
+- When writing structured output to a file, write only the requested payload. Do not wrap it in Markdown fences,
+  add headings, or include extra commentary before or after it.
 
 ### Phase 4: Validate and Report
 
 **All Gradle commands in this phase must use timeout `0` (no timeout). Builds and tests in
 this repository can take several minutes — never treat slow output as a hang. Always wait
 for completion.**
+
+If a command-execution attempt fails for tool-related reasons, follow this recovery loop before
+reporting a limitation:
+
+1. Re-check the tools declared for this agent and the runtime behavior you have actually observed.
+2. Retry using a different valid execution strategy that does not depend on the failed assumption.
+3. Only report a validation limitation after at least one concrete alternate approach has also failed
+  or no alternate approach exists in the declared tool set.
 
 **Never pipe Gradle output through `tail`, `head`, `grep`, or any other command** (e.g.,
 `./gradlew :foo:check 2>&1 | tail -30`). Piping masks the Gradle exit code because the
@@ -285,11 +303,11 @@ Execute these steps strictly in order — do not reorder:
       apply it and re-run. Repeat at most **three times** per failing fix.
    3. If the failure cannot be resolved after three attempts — or if the only correct
       resolution is to revert the review fix — **revert that specific change**
-      (`git checkout -- <file>` for the affected lines) and record the item as
-      `Needs Manual Fix` in the summary table with a note explaining the test failure.
+    (`git checkout -- <file>` for the affected lines) and record the item as
+    `Needs Manual Fix` in the final output with a note explaining the test failure.
    4. After reverting, re-run the affected `:check` tasks to confirm the revert restored
       a green build. If tests still fail on code you did not change, that is a
-      pre-existing failure — note it in the summary but do not block the commit.
+    pre-existing failure — note it in the final output but do not block the commit.
    5. Never commit code that fails tests you can reproduce locally.
 
    **Testing-module dependent validation**: when any modified module is a `testing` module
@@ -326,8 +344,8 @@ Execute these steps strictly in order — do not reorder:
       apply it and re-run. Repeat at most **three times** per failing fix.
    3. If the failure cannot be resolved after three attempts — or if the only correct
       resolution is to revert the review fix — **revert that specific change**
-      (`git checkout -- <file>` for the affected lines) and record the item as
-      `Needs Manual Fix` in the summary table with a note explaining the muzzle failure.
+    (`git checkout -- <file>` for the affected lines) and record the item as
+    `Needs Manual Fix` in the final output with a note explaining the muzzle failure.
    4. After reverting, re-run the `:muzzle` task to confirm the revert restored a green
       build. Never commit code that fails muzzle validation.
 3. **Last, after all validation is done**, run `./gradlew spotlessApply` to fix formatting
@@ -337,7 +355,7 @@ Execute these steps strictly in order — do not reorder:
    and confirm non-empty output. If the only remaining diffs are whitespace changes — or if
    all review fixes were reverted during validation — **stop here**: reset the working tree
    (`git checkout -- .`), do not commit or push. If any reverted items were recorded as
-   `Needs Manual Fix`, print the summary table with those items. Otherwise report
+  `Needs Manual Fix`, emit the final output with those items. Otherwise report
    "No issues found." and exit.
 5. Commit all changes in a single commit. The subject line must always be
    `Review fixes for <module>` where `<module>` is the short module name (e.g.,
@@ -357,32 +375,12 @@ Execute these steps strictly in order — do not reorder:
    ```
 
    Create exactly one commit for all fixes — do not commit incrementally.
-6. Print one summary:
-   - Heading: `PR #<number>: <title>` (PR mode) or `<paths>` (file/directory mode)
-   - Table with status (`Fixed` or `Needs Manual Fix`), file, category, and note
+6. Produce the final output in the format requested by the caller.
 
-Template:
+The caller must define the final output format or schema. Follow that request exactly:
 
-```
-| Status | File | Category | Note |
-|--------|------|----------|------|
-| Fixed | Foo:42 | Style | Added class-level deprecation suppression for stable/old semconv dual mode |
-| Needs Manual Fix | Bar:77 | API | Requires compatibility decision before rename |
-```
-
-If no findings:
-> `No issues found.`
-
-When writing the summary to a file (as opposed to printing to the console), the output
-must be **only** the findings table — nothing else:
-
-- Do **not** include headings (`##`), horizontal rules, or "Fix Review Summary" titles.
-- Do **not** include a "Files reviewed" table, per-file checklist, or notes section
-  when there are zero findings. Write only `No issues found.`
-- Do **not** repeat the module path or scope description — the caller already knows it.
-- Do **not** include a totals/summary line (e.g. "Fixed: X · Needs manual fix: Y").
-- The file must contain **only** the table rows (or `No issues found.`).
-  No preamble, no footer, no commentary.
+- Do **not** add headings, commentary, or fallback prose unless the caller asks for them.
+- Preserve the recorded per-change reasons in whatever output format the caller requested.
 
 ## Knowledge Loading
 
@@ -393,7 +391,6 @@ Always load:
 
 Load other knowledge files only when their scope trigger applies.
 Use the **Knowledge File** column in the checklist table.
-Use the **Knowledge File** column below.
 
 ## Review Checklist and Core Rules
 

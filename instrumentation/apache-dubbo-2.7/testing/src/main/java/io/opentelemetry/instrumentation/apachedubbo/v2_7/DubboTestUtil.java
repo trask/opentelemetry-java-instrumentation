@@ -9,7 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import org.apache.dubbo.config.bootstrap.DubboBootstrap;
 
-/** compatible with dubbo3.x and dubbo 2.7 */
+/** Compatible with Dubbo 3.x and Dubbo 2.7. */
 class DubboTestUtil {
 
   private DubboTestUtil() {}

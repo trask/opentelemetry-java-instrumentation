@@ -99,7 +99,7 @@ public abstract class AbstractDubboTest {
   void testApacheDubboBase() throws ReflectiveOperationException {
     int port = PortUtils.findOpenPort();
     protocolConfig.setPort(port);
-    // provider boostrap
+    // provider bootstrap
     DubboBootstrap bootstrap = DubboTestUtil.newDubboBootstrap();
     cleanup.deferCleanup(bootstrap::destroy);
     bootstrap
@@ -108,7 +108,7 @@ public abstract class AbstractDubboTest {
         .protocol(protocolConfig)
         .start();
 
-    // consumer boostrap
+    // consumer bootstrap
     DubboBootstrap consumerBootstrap = DubboTestUtil.newDubboBootstrap();
     cleanup.deferCleanup(consumerBootstrap::destroy);
     ReferenceConfig<HelloService> referenceConfig = configureClient(port);

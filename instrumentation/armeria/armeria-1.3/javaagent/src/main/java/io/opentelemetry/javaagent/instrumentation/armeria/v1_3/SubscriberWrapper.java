@@ -7,16 +7,18 @@ package io.opentelemetry.javaagent.instrumentation.armeria.v1_3;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import javax.annotation.Nullable;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 public class SubscriberWrapper<T> implements Subscriber<T> {
-  private static final Class<?> abortingSubscriberClass = getAbortingSubscriberClass();
-  private static final Class<?> noopSubscriberClass = getNoopSubscriberClass();
+  @Nullable private static final Class<?> abortingSubscriberClass = getAbortingSubscriberClass();
+  @Nullable private static final Class<?> noopSubscriberClass = getNoopSubscriberClass();
 
   private final Subscriber<T> delegate;
   private final Context context;
 
+  @Nullable
   private static Class<?> getAbortingSubscriberClass() {
     // AbortingSubscriber is package private
     try {
@@ -26,6 +28,7 @@ public class SubscriberWrapper<T> implements Subscriber<T> {
     }
   }
 
+  @Nullable
   private static Class<?> getNoopSubscriberClass() {
     // NoopSubscriber is package private
     try {

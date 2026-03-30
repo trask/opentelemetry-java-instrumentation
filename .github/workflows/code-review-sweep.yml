@@ -1,9 +1,10 @@
 name: Code Review Sweep
 
 on:
-  schedule:
-    # Every 15 minutes
-    - cron: "*/15 * * * *"
+  # schedule:
+  #   # Every 15 minutes
+  #   - cron: "*/15 * * * *"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -56,10 +57,14 @@ jobs:
     environment: protected
     permissions:
       contents: write  # for git push
+      pull-requests: write  # for creating PRs
     env:
       MODULE_DIR: ${{ matrix.module_dir }}
       SHORT_NAME: ${{ matrix.short_name }}
-      MODELS: "gpt-5.4 claude-sonnet-4.6"
+      MODEL: "gpt-5.4"
+      COPILOT_OUTPUT: /tmp/copilot-output.jsonl
+      REVIEW_REPORT: /tmp/review-report.json
+      PR_BODY: /tmp/pr-body.md
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -92,15 +97,30 @@ jobs:
         env:
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
         run: |
-          for model in $MODELS; do
-            echo "::group::Copilot review ($model) for $MODULE_DIR"
-            copilot -p "Review all files under $MODULE_DIR. Write ONLY the findings table and totals to /tmp/summary-${model}.md — no headings, no file-reviewed lists, no git diff instructions. If no issues, write 'No issues found.'" \
-              --agent code-review-and-fix \
-              --model "$model" \
-              --yolo \
-              || echo "::warning::copilot ($model) exited with code $?"
-            echo "::endgroup::"
-          done
+          rm -f "$COPILOT_OUTPUT"
+          rm -f "$REVIEW_REPORT"
+          echo "::group::Copilot review ($MODEL) for $MODULE_DIR"
+          copilot -p "Review all files under $MODULE_DIR. Apply safe repository-guideline fixes directly. Return ONLY a valid JSON object as your final answer with this exact schema: {\"summary\": string, \"changes\": [{\"path\": string, \"category\": string, \"change\": string, \"reason\": string, \"line_hint\": number|null}], \"unresolved\": [{\"path\": string, \"reason\": string}]}. Include one changes entry for every file you changed. Use concise factual reasons that cite the review guideline or repository rule behind each change. If no safe fixes were applied, still return valid JSON with an empty changes array and a brief summary. Do not write markdown and do not wrap the JSON in code fences." \
+            --agent code-review-and-fix \
+            --model "$MODEL" \
+            --output-format json \
+            --silent \
+            --stream off \
+            --yolo \
+            > "$COPILOT_OUTPUT"
+          python .github/scripts/code-review-extract-report.py \
+            --input "$COPILOT_OUTPUT" \
+            --output "$REVIEW_REPORT"
+          echo "::endgroup::"
+
+      - name: Prepare PR body
+        run: |
+          python .github/scripts/code-review-pr-body.py \
+            --input "$REVIEW_REPORT" \
+            --output "$PR_BODY" \
+            --module-dir "$MODULE_DIR" \
+            --model "$MODEL" \
+            --run-url "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
       - name: Commit and push fixes
         id: commit
@@ -134,36 +154,17 @@ jobs:
           git push -f origin "$branch"
           echo "pushed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Prepare PR body
-        run: |
-          {
-            echo "Automated code review of \`${MODULE_DIR}\`."
-            echo ""
-            for model in $MODELS; do
-              f="/tmp/summary-${model}.md"
-              if [[ -s "$f" ]]; then
-                echo "### ${model}"
-                echo ""
-                cat "$f"
-                echo ""
-              fi
-            done
-            echo "---"
-            echo ""
-            echo "[View workflow run](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID})"
-          } > /tmp/pr-body.md
-
-      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
-        id: otelbot-token
-        if: steps.commit.outputs.pushed == 'true'
-        with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+      # - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+      #   id: otelbot-token
+      #   if: steps.commit.outputs.pushed == 'true'
+      #   with:
+      #     app-id: ${{ vars.OTELBOT_APP_ID }}
+      #     private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
       - name: Create PR
         if: steps.commit.outputs.pushed == 'true'
         env:
-          GH_TOKEN: ${{ steps.otelbot-token.outputs.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           branch="otelbot/code-review-${SHORT_NAME//:/-}"
           # Create PR (skip if one already exists for this branch)
@@ -171,10 +172,10 @@ jobs:
           if [[ "$existing" -eq 0 ]]; then
             gh pr create \
               --title "Review fixes for ${SHORT_NAME}" \
-              --body-file /tmp/pr-body.md \
+              --body-file "$PR_BODY" \
               --base main \
               --head "$branch" \
-              --label automated-code-review
+              --label "automated code review"
           else
             echo "PR already exists for $branch — skipping creation"
           fi

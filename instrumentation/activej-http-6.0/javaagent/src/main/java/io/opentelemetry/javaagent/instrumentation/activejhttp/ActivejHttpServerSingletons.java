@@ -10,22 +10,22 @@ import io.activej.http.HttpResponse;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.javaagent.bootstrap.internal.JavaagentHttpServerInstrumenters;
 
-public final class ActivejHttpServerSingletons {
+final class ActivejHttpServerSingletons {
 
   private static final String INSTRUMENTATION_NAME = "io.opentelemetry.activej-http-6.0";
 
-  private static final Instrumenter<HttpRequest, HttpResponse> INSTRUMENTER;
+  private static final Instrumenter<HttpRequest, HttpResponse> httpServerInstrumenter;
 
   static {
-    INSTRUMENTER =
+    httpServerInstrumenter =
         JavaagentHttpServerInstrumenters.create(
             INSTRUMENTATION_NAME,
             new ActivejHttpServerAttributesGetter(),
             new ActivejHttpServerRequestGetter());
   }
 
-  public static Instrumenter<HttpRequest, HttpResponse> instrumenter() {
-    return INSTRUMENTER;
+  static Instrumenter<HttpRequest, HttpResponse> instrumenter() {
+    return httpServerInstrumenter;
   }
 
   private ActivejHttpServerSingletons() {}

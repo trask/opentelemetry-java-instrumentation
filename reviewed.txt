@@ -18,3 +18,4 @@ apache-dubbo-2.7:testing
 apache-httpclient-4.3:testing
 apache-httpclient-5.0:javaagent
 apache-shenyu-2.4:javaagent
+apache-elasticjob-3.0:javaagent

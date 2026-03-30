@@ -10,7 +10,6 @@ import io.opentelemetry.instrumentation.alibabadruid.AbstractDruidInstrumentatio
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
 import javax.management.ObjectName;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 class DruidInstrumentationTest extends AbstractDruidInstrumentationTest {
@@ -18,16 +17,11 @@ class DruidInstrumentationTest extends AbstractDruidInstrumentationTest {
   @RegisterExtension
   static final InstrumentationExtension testing = LibraryInstrumentationExtension.create();
 
-  private static DruidTelemetry telemetry;
+  private static final DruidTelemetry telemetry = DruidTelemetry.create(testing.getOpenTelemetry());
 
   @Override
   protected InstrumentationExtension testing() {
     return testing;
-  }
-
-  @BeforeAll
-  static void setup() {
-    telemetry = DruidTelemetry.create(testing.getOpenTelemetry());
   }
 
   @Override

@@ -17,13 +17,13 @@ final class DubboNetworkServerAttributesGetter
   @Override
   public InetSocketAddress getNetworkLocalInetSocketAddress(
       DubboRequest request, @Nullable Result result) {
-    return request.localAddress();
+    return request.getLocalAddress();
   }
 
   @Override
   @Nullable
   public InetSocketAddress getNetworkPeerInetSocketAddress(
       DubboRequest request, @Nullable Result result) {
-    return request.remoteAddress();
+    return request.getRemoteAddress();
   }
 }

@@ -15,7 +15,7 @@ final class DubboHeadersSetter implements TextMapSetter<DubboRequest> {
     if (request == null) {
       return;
     }
-    request.context().setAttachment(key, value);
+    request.getContext().setAttachment(key, value);
     request.invocation().setAttachment(key, value);
   }
 }

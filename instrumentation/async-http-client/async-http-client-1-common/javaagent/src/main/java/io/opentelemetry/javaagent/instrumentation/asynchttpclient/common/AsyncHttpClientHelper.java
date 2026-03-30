@@ -23,16 +23,18 @@ public interface AsyncHttpClientHelper {
    * Get the server address (host) from the request.
    *
    * @param request the HTTP request
-   * @return the server address
+   * @return the server address, or null if it cannot be determined
    */
+  @Nullable
   String getServerAddress(Request request);
 
   /**
    * Get the server port from the request.
    *
    * @param request the HTTP request
-   * @return the server port
+   * @return the server port, or null if it cannot be determined
    */
+  @Nullable
   Integer getServerPort(Request request);
 
   /**

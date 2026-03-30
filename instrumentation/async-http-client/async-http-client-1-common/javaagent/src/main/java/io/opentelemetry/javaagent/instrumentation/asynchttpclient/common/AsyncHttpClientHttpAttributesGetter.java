@@ -50,11 +50,13 @@ final class AsyncHttpClientHttpAttributesGetter
   }
 
   @Override
+  @Nullable
   public String getServerAddress(Request request) {
     return helper.getServerAddress(request);
   }
 
   @Override
+  @Nullable
   public Integer getServerPort(Request request) {
     return helper.getServerPort(request);
   }

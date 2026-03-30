@@ -42,9 +42,7 @@ public class PoolMasterActorInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void exit(@Advice.Enter Scope scope) {
-      if (scope != null) {
-        scope.close();
-      }
+      scope.close();
     }
   }
 }

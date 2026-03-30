@@ -37,7 +37,9 @@ public class DubboInstrumentationModule extends InstrumentationModule
 
   @Override
   public ElementMatcher.Junction<ClassLoader> classLoaderMatcher() {
-    return hasClassesNamed("org.apache.dubbo.rpc.Filter");
+    return hasClassesNamed(
+        // added in 2.7.0
+        "org.apache.dubbo.rpc.Filter");
   }
 
   @Override
@@ -58,7 +60,7 @@ public class DubboInstrumentationModule extends InstrumentationModule
   }
 
   // A type instrumentation is needed to trigger resource injection.
-  public static class ResourceInjectingTypeInstrumentation implements TypeInstrumentation {
+  private static final class ResourceInjectingTypeInstrumentation implements TypeInstrumentation {
     @Override
     public ElementMatcher<TypeDescription> typeMatcher() {
       return named("org.apache.dubbo.common.extension.ExtensionLoader");

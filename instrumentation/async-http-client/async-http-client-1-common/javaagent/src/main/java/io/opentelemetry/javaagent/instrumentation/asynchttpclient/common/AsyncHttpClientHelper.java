@@ -31,8 +31,9 @@ public interface AsyncHttpClientHelper {
    * Get the server port from the request.
    *
    * @param request the HTTP request
-   * @return the server port
+   * @return the server port, or null if it cannot be determined
    */
+  @Nullable
   Integer getServerPort(Request request);
 
   /**

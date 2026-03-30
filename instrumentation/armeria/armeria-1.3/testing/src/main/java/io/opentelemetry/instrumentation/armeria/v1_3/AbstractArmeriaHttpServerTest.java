@@ -162,7 +162,7 @@ public abstract class AbstractArmeriaHttpServerTest extends AbstractHttpServerTe
               return delegate.serve(ctx, req);
             });
 
-    configureServer(sb);
+    sb = configureServer(sb);
 
     Server server = sb.build();
     server.start().join();
@@ -172,7 +172,7 @@ public abstract class AbstractArmeriaHttpServerTest extends AbstractHttpServerTe
 
   @Override
   protected void stopServer(Server server) {
-    server.stop();
+    server.stop().join();
   }
 
   @Override

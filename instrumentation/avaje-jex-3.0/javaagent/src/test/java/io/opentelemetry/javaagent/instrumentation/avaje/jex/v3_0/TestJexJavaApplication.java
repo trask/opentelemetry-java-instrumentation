@@ -10,8 +10,6 @@ import io.avaje.jex.Jex.Server;
 
 class TestJexJavaApplication {
 
-  private TestJexJavaApplication() {}
-
   static Server initJex() {
     Jex app = Jex.create().contextPath("/test");
     app.get(
@@ -27,4 +25,6 @@ class TestJexJavaApplication {
         });
     return app.port(0).start();
   }
+
+  private TestJexJavaApplication() {}
 }

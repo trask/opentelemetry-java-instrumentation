@@ -9,6 +9,4 @@ dependencies {
 
   api("org.junit-pioneer:junit-pioneer")
   api("org.mockito:mockito-junit-jupiter")
-
-  implementation("io.opentelemetry:opentelemetry-api")
 }

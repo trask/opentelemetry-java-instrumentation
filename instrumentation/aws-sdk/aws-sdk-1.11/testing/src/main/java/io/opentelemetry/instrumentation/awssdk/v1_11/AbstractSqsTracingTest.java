@@ -451,6 +451,6 @@ public abstract class AbstractSqsTracingTest {
     sqsClient.receiveMessage(receive);
     sqsClient.sendMessage(send);
     sqsClient.receiveMessage(receive);
-    assertThat(receive.getAttributeNames()).isEqualTo(singletonList("AWSTraceHeader"));
+    assertThat(receive.getAttributeNames()).containsExactly("AWSTraceHeader");
   }
 }

@@ -5,7 +5,6 @@
 
 package io.opentelemetry.javaagent.instrumentation.awssdk.v1_11;
 
-import static io.opentelemetry.javaagent.extension.matcher.AgentElementMatchers.hasClassesNamed;
 import static java.util.Collections.singletonList;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
@@ -33,13 +32,6 @@ abstract class AbstractAwsSdkInstrumentationModule extends InstrumentationModule
   @Override
   public String getModuleGroup() {
     return "aws-sdk";
-  }
-
-  @Override
-  public ElementMatcher.Junction<ClassLoader> classLoaderMatcher() {
-    // We don't actually transform it but want to make sure we only apply the instrumentation when
-    // our key dependency is present.
-    return hasClassesNamed("com.amazonaws.AmazonWebServiceClient");
   }
 
   @Override

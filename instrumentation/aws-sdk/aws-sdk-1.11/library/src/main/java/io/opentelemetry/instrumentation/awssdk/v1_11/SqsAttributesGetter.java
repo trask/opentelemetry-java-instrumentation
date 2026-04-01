@@ -24,6 +24,7 @@ class SqsAttributesGetter implements MessagingAttributesGetter<Request<?>, Respo
     return AWS_SQS;
   }
 
+  @Nullable
   @Override
   public String getDestination(Request<?> request) {
     Object originalRequest = request.getOriginalRequest();

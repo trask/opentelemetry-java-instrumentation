@@ -24,6 +24,7 @@ class SqsProcessRequestAttributesGetter
     return AWS_SQS;
   }
 
+  @Nullable
   @Override
   public String getDestination(SqsProcessRequest request) {
     Object originalRequest = request.getRequest().getOriginalRequest();

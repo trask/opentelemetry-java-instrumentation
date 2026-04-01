@@ -24,6 +24,7 @@ class SqsReceiveRequestAttributesGetter
     return AWS_SQS;
   }
 
+  @Nullable
   @Override
   public String getDestination(SqsReceiveRequest request) {
     Object originalRequest = request.getRequest().getOriginalRequest();

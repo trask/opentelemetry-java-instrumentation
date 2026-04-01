@@ -40,7 +40,7 @@ class HeadersFactoryTest {
   }
 
   @Test
-  void shouldReturnNullIfNoHeadersInStream() {
+  void shouldReturnEmptyMapIfNoHeadersInStream() {
     // given
     String json = "{\"something\" : \"else\"}";
     InputStream inputStream = new ByteArrayInputStream(json.getBytes(Charset.defaultCharset()));

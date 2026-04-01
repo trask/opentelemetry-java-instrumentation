@@ -113,13 +113,13 @@ public abstract class AbstractSpringJpaTest<
         span ->
             span.hasKind(SpanKind.CLIENT)
                 .satisfies(
-                    s -> {
+                    val -> {
                       if (emitStableDatabaseSemconv()) {
                         // Hibernate 5.x uses "hibernate_sequence", 6.x+ uses "JpaCustomer_SEQ"
-                        assertThat(s.getName())
+                        assertThat(val.getName())
                             .isIn("CALL hibernate_sequence", "CALL JpaCustomer_SEQ");
                       } else {
-                        assertThat(s.getName()).isEqualTo("CALL test");
+                        assertThat(val.getName()).isEqualTo("CALL test");
                       }
                     })
                 .hasAttributesSatisfyingExactly(

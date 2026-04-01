@@ -94,9 +94,9 @@ class ExceptionHandlerTest {
         .hasSize(initLogEvents + 1)
         .last()
         .satisfies(
-            event -> {
-              assertThat(event.getLevel()).isEqualTo(FINE);
-              assertThat(event.getMessage())
+            val -> {
+              assertThat(val.getLevel()).isEqualTo(FINE);
+              assertThat(val.getMessage())
                   .startsWith("Failed to handle exception in instrumentation for");
             });
   }

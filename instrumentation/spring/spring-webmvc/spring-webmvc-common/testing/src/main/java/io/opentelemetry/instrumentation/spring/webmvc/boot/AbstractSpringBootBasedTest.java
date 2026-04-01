@@ -116,8 +116,7 @@ public abstract class AbstractSpringBootBasedTest
                 trace.hasSpansSatisfyingExactly(
                     span -> assertServerSpan(span, "GET", AUTH_ERROR, AUTH_ERROR.getStatus()),
                     span ->
-                        span.satisfies(
-                                spanData -> assertThat(spanData.getName()).endsWith(".sendError"))
+                        span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"))
                             .hasKind(SpanKind.INTERNAL),
                     span -> errorPageSpanAssertions(null, null)));
   }
@@ -146,9 +145,7 @@ public abstract class AbstractSpringBootBasedTest
                 trace.hasSpansSatisfyingExactly(
                     span -> assertServerSpan(span, "POST", LOGIN, LOGIN.getStatus()),
                     span ->
-                        span.satisfies(
-                                spanData ->
-                                    assertThat(spanData.getName()).endsWith(".sendRedirect"))
+                        span.satisfies(val -> assertThat(val.getName()).endsWith(".sendRedirect"))
                             .hasKind(SpanKind.INTERNAL)));
   }
 
@@ -202,9 +199,9 @@ public abstract class AbstractSpringBootBasedTest
       SpanDataAssert span, String method, ServerEndpoint endpoint) {
     String methodName = endpoint == NOT_FOUND ? "sendError" : "sendRedirect";
     if (endpoint == NOT_FOUND) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"));
     } else {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendRedirect"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendRedirect"));
     }
 
     span.hasKind(SpanKind.INTERNAL)

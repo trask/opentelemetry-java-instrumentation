@@ -164,31 +164,31 @@ abstract class SpringBatchTest {
                         .hasAttribute(stringKey("job.system"), "spring_batch"),
                 span ->
                     span.satisfies(
-                            spanData ->
-                                assertThat(spanData.getName())
+                            val ->
+                                assertThat(val.getName())
                                     .matches("BatchJob splitJob.splitFlowStep[12]"))
                         .hasKind(SpanKind.INTERNAL)
                         .hasParent(trace.getSpan(0)),
                 span ->
                     span.satisfies(
-                            spanData ->
-                                assertThat(spanData.getName())
+                            val ->
+                                assertThat(val.getName())
                                     .matches("BatchJob splitJob.splitFlowStep[12].Tasklet"))
                         .hasKind(SpanKind.INTERNAL)
                         .hasTotalAttributeCount(0)
                         .hasParent(trace.getSpan(1)),
                 span ->
                     span.satisfies(
-                            spanData ->
-                                assertThat(spanData.getName())
+                            val ->
+                                assertThat(val.getName())
                                     .matches("BatchJob splitJob.splitFlowStep[12]"))
                         .hasKind(SpanKind.INTERNAL)
                         .hasTotalAttributeCount(0)
                         .hasParent(trace.getSpan(0)),
                 span ->
                     span.satisfies(
-                            spanData ->
-                                assertThat(spanData.getName())
+                            val ->
+                                assertThat(val.getName())
                                     .matches("BatchJob splitJob.splitFlowStep[12].Tasklet"))
                         .hasKind(SpanKind.INTERNAL)
                         .hasTotalAttributeCount(0)
@@ -245,8 +245,8 @@ abstract class SpringBatchTest {
                       .hasParent(trace.getSpan(0)),
               span ->
                   span.satisfies(
-                          spanData ->
-                              assertThat(spanData.getName())
+                          val ->
+                              assertThat(val.getName())
                                   .matches(
                                       "BatchJob partitionedJob.partitionWorkerStep:partition[01]"))
                       .hasKind(SpanKind.INTERNAL)
@@ -255,8 +255,8 @@ abstract class SpringBatchTest {
               span -> partitionChunk(trace, span, 2),
               span ->
                   span.satisfies(
-                          spanData ->
-                              assertThat(spanData.getName())
+                          val ->
+                              assertThat(val.getName())
                                   .matches(
                                       "BatchJob partitionedJob.partitionWorkerStep:partition[01]"))
                       .hasParent(trace.getSpan(1)),
@@ -267,8 +267,8 @@ abstract class SpringBatchTest {
 
   private static void partitionChunk(TraceAssert trace, SpanDataAssert span, int index) {
     span.satisfies(
-            spanData ->
-                assertThat(spanData.getName())
+            val ->
+                assertThat(val.getName())
                     .matches("BatchJob partitionedJob.partitionWorkerStep:partition[01].Chunk"))
         .hasParent(trace.getSpan(index));
   }

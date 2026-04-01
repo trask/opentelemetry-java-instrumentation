@@ -37,9 +37,7 @@ class JfrClassesLoadedCountTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData ->
-                                        assertThat(pointData.getValue())
-                                            .isGreaterThanOrEqualTo(0)))),
+                                    val -> assertThat(val.getValue()).isGreaterThanOrEqualTo(0)))),
         metric ->
             metric
                 .hasName("jvm.class.count")
@@ -50,9 +48,7 @@ class JfrClassesLoadedCountTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData ->
-                                        assertThat(pointData.getValue())
-                                            .isGreaterThanOrEqualTo(0)))),
+                                    val -> assertThat(val.getValue()).isGreaterThanOrEqualTo(0)))),
         metric ->
             metric
                 .hasName("jvm.class.unloaded")
@@ -63,8 +59,6 @@ class JfrClassesLoadedCountTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData ->
-                                        assertThat(pointData.getValue())
-                                            .isGreaterThanOrEqualTo(0)))));
+                                    val -> assertThat(val.getValue()).isGreaterThanOrEqualTo(0)))));
   }
 }

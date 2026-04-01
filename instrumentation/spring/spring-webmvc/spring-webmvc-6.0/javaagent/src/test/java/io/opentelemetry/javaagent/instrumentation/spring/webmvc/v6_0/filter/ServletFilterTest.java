@@ -88,7 +88,7 @@ class ServletFilterTest extends AbstractServletFilterTest {
   protected SpanDataAssert assertResponseSpan(
       SpanDataAssert span, SpanData parentSpan, String method, ServerEndpoint endpoint) {
     if (testLatestDeps && endpoint == ServerEndpoint.NOT_FOUND) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"));
       span.hasKind(SpanKind.INTERNAL);
       // not verifying the parent span, in the latest version the responseSpan is the child of the
       // SERVER span, not the handler span

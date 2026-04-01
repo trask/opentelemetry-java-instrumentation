@@ -59,7 +59,7 @@ public abstract class AbstractJettyServletHandlerTest
       String method,
       ServerEndpoint endpoint) {
     if (AbstractJettyServlet3Test.IS_BEFORE_94 && endpoint.equals(EXCEPTION)) {
-      span.satisfies(it -> assertThat(it.getName()).matches(".*\\.sendError"))
+      span.satisfies(val -> assertThat(val.getName()).matches(".*\\.sendError"))
           .hasKind(SpanKind.INTERNAL)
           .hasParent(serverSpan);
     }

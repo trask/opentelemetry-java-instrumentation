@@ -36,7 +36,7 @@ public final class HttpSpanDataAssert {
   public HttpSpanDataAssert assertClientGetRequest(String path) {
     span.hasKind(SpanKind.CLIENT)
         .hasAttributesSatisfying(
-            satisfies(URL_FULL, a -> a.endsWith(path)),
+            satisfies(URL_FULL, val -> val.endsWith(path)),
             // this attribute is set by the experimental http instrumentation
             satisfies(HTTP_RESPONSE_BODY_SIZE, AbstractLongAssert::isNotNegative));
     return this;

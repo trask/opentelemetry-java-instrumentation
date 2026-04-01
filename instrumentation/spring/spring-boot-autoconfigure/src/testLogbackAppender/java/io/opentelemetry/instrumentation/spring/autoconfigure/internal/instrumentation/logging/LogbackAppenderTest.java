@@ -124,8 +124,9 @@ class LogbackAppenderTest {
             event ->
                 assertThat(event)
                     .satisfies(
-                        e -> assertThat(e.getMessage()).isEqualTo("test log message: {}"),
-                        e -> assertThat(e.getMDCPropertyMap()).containsOnlyKeys("key1", "key2")));
+                        val -> assertThat(val.getMessage()).isEqualTo("test log message: {}"),
+                        val ->
+                            assertThat(val.getMDCPropertyMap()).containsOnlyKeys("key1", "key2")));
   }
 
   @Test
@@ -182,9 +183,9 @@ class LogbackAppenderTest {
             event ->
                 assertThat(event)
                     .satisfies(
-                        e -> assertThat(e.getMessage()).isEqualTo("test log message"),
-                        e ->
-                            assertThat(e.getMDCPropertyMap())
+                        val -> assertThat(val.getMessage()).isEqualTo("test log message"),
+                        val ->
+                            assertThat(val.getMDCPropertyMap())
                                 .containsOnlyKeys(
                                     "traceid", "spanid", "traceflags", "baggage.key")));
   }
@@ -220,9 +221,9 @@ class LogbackAppenderTest {
             event ->
                 assertThat(event)
                     .satisfies(
-                        e -> assertThat(e.getMessage()).isEqualTo("test log message"),
-                        e ->
-                            assertThat(e.getMDCPropertyMap())
+                        val -> assertThat(val.getMessage()).isEqualTo("test log message"),
+                        val ->
+                            assertThat(val.getMDCPropertyMap())
                                 .containsOnlyKeys("trace_id", "span_id", "trace_flags")));
   }
 
@@ -257,8 +258,8 @@ class LogbackAppenderTest {
             event ->
                 assertThat(event)
                     .satisfies(
-                        e -> assertThat(e.getMessage()).isEqualTo("test log message"),
-                        e -> assertThat(e.getMDCPropertyMap()).isEmpty()));
+                        val -> assertThat(val.getMessage()).isEqualTo("test log message"),
+                        val -> assertThat(val.getMDCPropertyMap()).isEmpty()));
   }
 
   @SuppressWarnings("unchecked")

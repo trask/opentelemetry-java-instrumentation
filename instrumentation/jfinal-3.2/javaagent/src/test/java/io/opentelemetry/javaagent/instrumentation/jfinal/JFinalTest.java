@@ -95,7 +95,7 @@ class JFinalTest extends AbstractHttpServerTest<Server> {
       SpanData handlerSpan,
       String method,
       ServerEndpoint endpoint) {
-    return span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendRedirect"))
+    return span.satisfies(val -> assertThat(val.getName()).endsWith(".sendRedirect"))
         .hasParent(serverSpan)
         .hasKind(SpanKind.INTERNAL)
         .hasAttributesSatisfying(Attributes::isEmpty);

@@ -1085,8 +1085,8 @@ public abstract class AbstractHttpServerTest<SERVER> extends AbstractHttpServerU
     span.hasName(name)
         .hasKind(SpanKind.SERVER)
         .satisfies(
-            spanData ->
-                assertThat(spanData.getInstrumentationScopeInfo().getSchemaUrl())
+            val ->
+                assertThat(val.getInstrumentationScopeInfo().getSchemaUrl())
                     .isEqualTo(SchemaUrls.V1_37_0));
     if (statusCode >= 500) {
       span.hasStatus(StatusData.error());
@@ -1211,8 +1211,8 @@ public abstract class AbstractHttpServerTest<SERVER> extends AbstractHttpServerU
         .hasKind(SpanKind.INTERNAL)
         // The request id belongs on the nested body-consumer span only, not on the controller.
         .satisfies(
-            spanData ->
-                assertThat(spanData.getAttributes().get(longKey(ServerEndpoint.ID_ATTRIBUTE_NAME)))
+            val ->
+                assertThat(val.getAttributes().get(longKey(ServerEndpoint.ID_ATTRIBUTE_NAME)))
                     .isNull());
     return span;
   }

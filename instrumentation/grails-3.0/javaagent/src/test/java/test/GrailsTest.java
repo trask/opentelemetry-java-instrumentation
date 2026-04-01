@@ -185,7 +185,7 @@ class GrailsTest extends AbstractHttpServerTest<ConfigurableApplicationContext> 
     }
 
     span.hasKind(SpanKind.INTERNAL)
-        .satisfies(spanData -> assertThat(spanData.getName()).endsWith("." + methodName))
+        .satisfies(val -> assertThat(val.getName()).endsWith("." + methodName))
         .hasAttributesSatisfyingExactly(
             SemconvCodeStabilityUtil.codeFunctionSuffixAssertions(methodName));
     return span;
@@ -207,7 +207,7 @@ class GrailsTest extends AbstractHttpServerTest<ConfigurableApplicationContext> 
     if (endpoint == NOT_FOUND) {
       spanAssertions.add(
           span ->
-              span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"))
+              span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"))
                   .hasKind(SpanKind.INTERNAL)
                   .hasAttributesSatisfyingExactly(
                       SemconvCodeStabilityUtil.codeFunctionSuffixAssertions("sendError")));

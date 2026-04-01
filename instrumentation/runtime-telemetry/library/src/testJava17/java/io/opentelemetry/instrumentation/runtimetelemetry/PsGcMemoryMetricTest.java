@@ -97,8 +97,8 @@ class PsGcMemoryMetricTest {
                 .hasUnit(SECONDS)
                 .hasDescription(METRIC_DESCRIPTION_GC_DURATION)
                 .satisfies(
-                    data ->
-                        assertThat(data.getHistogramData().getPoints())
+                    val ->
+                        assertThat(val.getHistogramData().getPoints())
                             .anyMatch(
                                 p ->
                                     p.getSum() > 0

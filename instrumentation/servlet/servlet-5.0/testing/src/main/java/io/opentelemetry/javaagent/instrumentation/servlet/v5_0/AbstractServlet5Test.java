@@ -131,14 +131,14 @@ public abstract class AbstractServlet5Test<SERVER, CONTEXT> extends AbstractHttp
     switch (endpoint.name()) {
       case "REDIRECT":
         SpanDataAssert spanDataAssert =
-            span.satisfies(s -> assertThat(s.getName()).matches(".*\\.sendRedirect"))
+            span.satisfies(val -> assertThat(val.getName()).matches(".*\\.sendRedirect"))
                 .hasKind(SpanKind.INTERNAL);
         if (assertParentOnRedirect()) {
           return spanDataAssert.hasParent(parentSpan);
         }
         return spanDataAssert;
       case "ERROR":
-        return span.satisfies(s -> assertThat(s.getName()).matches(".*\\.sendError"))
+        return span.satisfies(val -> assertThat(val.getName()).matches(".*\\.sendError"))
             .hasKind(SpanKind.INTERNAL)
             .hasParent(parentSpan);
       default:

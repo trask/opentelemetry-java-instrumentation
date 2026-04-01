@@ -70,8 +70,8 @@ public abstract class AbstractLongTaskTimerMillisecondsTest {
                                                 point
                                                     .hasAttributes(attributeEntry("tag", "value"))
                                                     .satisfies(
-                                                        pointData ->
-                                                            assertThat(pointData.getValue())
+                                                        val ->
+                                                            assertThat(val.getValue())
                                                                 .isPositive())))));
 
     // when

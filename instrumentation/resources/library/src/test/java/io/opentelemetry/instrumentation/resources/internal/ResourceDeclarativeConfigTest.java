@@ -50,13 +50,13 @@ class ResourceDeclarativeConfigTest {
     assertThat(openTelemetrySdk.getSdkTracerProvider())
         .extracting("sharedState.resource", as(InstanceOfAssertFactories.type(Resource.class)))
         .satisfies(
-            resource -> {
-              // From .resource.attributes
-              assertThat(resource.getAttribute(stringKey("service.name"))).isEqualTo("my-service");
+            val -> {
+              // From .val.attributes
+              assertThat(val.getAttribute(stringKey("service.name"))).isEqualTo("my-service");
 
               // From ComponentProvider SPI
               Set<String> attributeKeys =
-                  resource.getAttributes().asMap().keySet().stream()
+                  val.getAttributes().asMap().keySet().stream()
                       .map(AttributeKey::getKey)
                       .collect(toSet());
               // ContainerResourceComponentProvider - no container attributes reliably provided

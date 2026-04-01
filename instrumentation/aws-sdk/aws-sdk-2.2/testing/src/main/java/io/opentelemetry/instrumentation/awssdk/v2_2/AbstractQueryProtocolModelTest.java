@@ -98,8 +98,8 @@ public abstract class AbstractQueryProtocolModelTest {
                                   entry -> {
                                     assertThat(entry)
                                         .satisfies(
-                                            value -> {
-                                              URI uri = URI.create(value);
+                                            val -> {
+                                              URI uri = URI.create(val);
                                               assertThat(uri.getQuery()).isNull();
                                             });
                                   });

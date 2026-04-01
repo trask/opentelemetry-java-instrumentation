@@ -78,8 +78,8 @@ class OpenTelemetryAutoConfigurationTest {
                 assertThat(context)
                     .getBean("otelProperties")
                     .satisfies(
-                        p -> {
-                          ConfigProperties configProperties = (ConfigProperties) p;
+                        val -> {
+                          ConfigProperties configProperties = (ConfigProperties) val;
                           assertThat(configProperties.getList("otel.propagators"))
                               .containsExactly("b3");
                           assertThat(
@@ -116,10 +116,8 @@ class OpenTelemetryAutoConfigurationTest {
                 assertThat(context)
                     .getBean("otelProperties", ConfigProperties.class)
                     .satisfies(
-                        configProperties ->
-                            assertThat(
-                                    configProperties.getList(
-                                        "otel.java.enabled.resource.providers"))
+                        val ->
+                            assertThat(val.getList("otel.java.enabled.resource.providers"))
                                 .containsExactly("e1", "e2")));
   }
 

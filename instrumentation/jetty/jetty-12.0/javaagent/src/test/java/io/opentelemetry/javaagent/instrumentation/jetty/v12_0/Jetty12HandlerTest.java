@@ -74,7 +74,7 @@ class Jetty12HandlerTest extends AbstractHttpServerTest<Server> {
       throw new AssertionError("Unexpected endpoint: " + endpoint.name());
     }
     span.hasKind(SpanKind.INTERNAL)
-        .satisfies(spanData -> assertThat(spanData.getName()).endsWith("." + methodName))
+        .satisfies(val -> assertThat(val.getName()).endsWith("." + methodName))
         .hasAttributesSatisfyingExactly(
             codeFunctionAssertions("org.eclipse.jetty.server.Response", methodName));
     return span;

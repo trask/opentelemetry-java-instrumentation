@@ -150,8 +150,8 @@ class SqlCommenterTest {
       assertThat(queries)
           .singleElement()
           .satisfies(
-              query ->
-                  assertThat(query)
+              val ->
+                  assertThat(val)
                       .contains("SELECT 3")
                       .contains("traceparent")
                       .contains(spanContext.getTraceId())

@@ -56,9 +56,9 @@ class BufferMetricTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData -> {
-                                      assertThat(pointData.getValue()).isGreaterThan(0);
-                                      assertThat(pointData.getAttributes()).isEqualTo(directBuffer);
+                                    val -> {
+                                      assertThat(val.getValue()).isGreaterThan(0);
+                                      assertThat(val.getAttributes()).isEqualTo(directBuffer);
                                     }))),
         metric ->
             metric
@@ -70,9 +70,9 @@ class BufferMetricTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData -> {
-                                      assertThat(pointData.getValue()).isGreaterThan(0);
-                                      assertThat(pointData.getAttributes()).isEqualTo(directBuffer);
+                                    val -> {
+                                      assertThat(val.getValue()).isGreaterThan(0);
+                                      assertThat(val.getAttributes()).isEqualTo(directBuffer);
                                     }))),
         metric ->
             metric
@@ -84,9 +84,9 @@ class BufferMetricTest {
                         sum.hasPointsSatisfying(
                             point ->
                                 point.satisfies(
-                                    pointData -> {
-                                      assertThat(pointData.getValue()).isGreaterThan(0);
-                                      assertThat(pointData.getAttributes()).isEqualTo(directBuffer);
+                                    val -> {
+                                      assertThat(val.getValue()).isGreaterThan(0);
+                                      assertThat(val.getAttributes()).isEqualTo(directBuffer);
                                     }))));
   }
 }

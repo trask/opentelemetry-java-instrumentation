@@ -154,24 +154,24 @@ public abstract class AbstractVaadinTest
               List<List<SpanData>> traces = testing.waitForTraces(1);
               assertThat(traces.get(0))
                   .satisfies(
-                      spans -> {
-                        assertThat(spans.get(0))
+                      val -> {
+                        assertThat(val.get(0))
                             .hasName("POST " + getContextPath() + "/main")
                             .hasNoParent()
                             .hasKind(SpanKind.SERVER);
-                        assertThat(spans.get(1))
+                        assertThat(val.get(1))
                             .hasName("SpringVaadinServletService.handleRequest")
-                            .hasParent(spans.get(0))
+                            .hasParent(val.get(0))
                             .hasKind(SpanKind.INTERNAL);
-                        // we don't assert all the handler spans as these vary between
+                        // we don't assert all the handler val as these vary between
                         // vaadin versions
-                        assertThat(spans.get(spans.size() - 2))
+                        assertThat(val.get(val.size() - 2))
                             .hasName("UidlRequestHandler.handleRequest")
-                            .hasParent(spans.get(1))
+                            .hasParent(val.get(1))
                             .hasKind(SpanKind.INTERNAL);
-                        assertThat(spans.get(spans.size() - 1))
+                        assertThat(val.get(val.size() - 1))
                             .hasName("EventRpcHandler.handle/click")
-                            .hasParent(spans.get(spans.size() - 2))
+                            .hasParent(val.get(val.size() - 2))
                             .hasKind(SpanKind.INTERNAL)
                             .hasAttributesSatisfyingExactly(
                                 codeFunctionAssertions(

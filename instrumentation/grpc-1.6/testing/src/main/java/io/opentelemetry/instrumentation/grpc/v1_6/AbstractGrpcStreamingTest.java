@@ -251,8 +251,8 @@ public abstract class AbstractGrpcStreamingTest {
                                     equalTo(SERVER_ADDRESS, "localhost"),
                                     equalTo(SERVER_PORT, (long) server.getPort())))
                             .satisfies(
-                                spanData ->
-                                    assertThat(spanData.getEvents())
+                                val ->
+                                    assertThat(val.getEvents())
                                         .satisfiesExactlyInAnyOrder(toArray(clientEvents))),
                     span ->
                         span.hasName("example.Greeter/Conversation")
@@ -290,8 +290,8 @@ public abstract class AbstractGrpcStreamingTest {
                                     GRPC_SENT_MESSAGE_COUNT, v -> assertThat(v).isGreaterThan(0)),
                                 satisfies(NETWORK_PEER_PORT, val -> val.isNotNull()))
                             .satisfies(
-                                spanData ->
-                                    assertThat(spanData.getEvents())
+                                val ->
+                                    assertThat(val.getEvents())
                                         .satisfiesExactlyInAnyOrder(toArray(serverEvents))),
                     span ->
                         span.hasName("clientOnNext")

@@ -52,12 +52,12 @@ class JarAnalyzerInstallerTest {
                     .hasEntrySatisfying(
                         stringKey("package.path"), value -> assertThat(value).isNotNull())
                     .satisfies(
-                        attributes -> {
-                          String packageName = attributes.get(stringKey("package.name"));
+                        val -> {
+                          String packageName = val.get(stringKey("package.name"));
                           if (packageName != null) {
                             assertThat(packageName).matches(".*:.*");
                           }
-                          String packageVersion = attributes.get(stringKey("package.version"));
+                          String packageVersion = val.get(stringKey("package.version"));
                           if (packageVersion != null) {
                             assertThat(packageVersion).matches(".*\\..*");
                           }

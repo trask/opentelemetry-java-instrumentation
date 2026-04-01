@@ -55,9 +55,9 @@ public abstract class AbstractServletFilterTest
   protected SpanDataAssert assertResponseSpan(
       SpanDataAssert span, String method, ServerEndpoint endpoint) {
     if (endpoint == REDIRECT) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendRedirect"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendRedirect"));
     } else if (endpoint == ERROR || endpoint == NOT_FOUND) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"));
     }
     span.hasKind(SpanKind.INTERNAL);
     return span;

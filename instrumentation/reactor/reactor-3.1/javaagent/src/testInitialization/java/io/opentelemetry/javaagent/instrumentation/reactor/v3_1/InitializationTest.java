@@ -32,8 +32,8 @@ class InitializationTest {
               assertThat(op)
                   .extracting("source")
                   .satisfies(
-                      source ->
-                          assertThat(source.getClass().getSimpleName())
+                      val ->
+                          assertThat(val.getClass().getSimpleName())
                               .isEqualTo("ScalarPropagatingMono"));
             });
 

@@ -83,7 +83,7 @@ class MethodTest {
 
     // span is ended when CompletableFuture is completed
     // verify that span has not been ended yet
-    assertThat(traced.span).isNotNull().satisfies(span -> assertThat(span.isRecording()).isTrue());
+    assertThat(traced.span).isNotNull().satisfies(val -> assertThat(val.isRecording()).isTrue());
 
     traced.countDownLatch.countDown();
     assertThat(future.get(10, SECONDS)).isEqualTo("Hello!");

@@ -35,15 +35,15 @@ class Vaadin16Test extends AbstractVaadinTest {
               List<List<SpanData>> traces = testing.waitForTraces(1);
               TracesAssert.assertThat(traces)
                   .satisfies(
-                      trace -> {
-                        assertThat(trace.get(0))
+                      val -> {
+                        assertThat(val.get(0))
                             .satisfies(
-                                spans ->
-                                    assertThat(spans.get(0))
+                                v ->
+                                    assertThat(v.get(0))
                                         .hasName("GET IndexHtmlRequestHandler.handleRequest")
                                         .hasNoParent()
                                         .hasKind(SpanKind.SERVER));
-                        assertThat(trace)
+                        assertThat(val)
                             .anySatisfy(
                                 spans -> {
                                   assertThat(spans.get(0))

@@ -53,8 +53,8 @@ class JfrThreadCountTest {
                 .hasName("jvm.thread.count")
                 .hasUnit(UNIT_THREADS)
                 .satisfies(
-                    data ->
-                        assertThat(data.getLongSumData().getPoints())
+                    val ->
+                        assertThat(val.getLongSumData().getPoints())
                             .anyMatch(p -> p.getValue() > 0 && !isDaemon(p))
                             .anyMatch(p -> p.getValue() > 0 && isDaemon(p))));
   }

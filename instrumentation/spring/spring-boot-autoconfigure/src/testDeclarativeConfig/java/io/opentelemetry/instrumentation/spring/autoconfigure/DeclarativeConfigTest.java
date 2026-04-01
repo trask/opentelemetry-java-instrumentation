@@ -62,9 +62,9 @@ class DeclarativeConfigTest {
                 .getBean("openTelemetry", OpenTelemetry.class)
                 .isNotNull()
                 .satisfies(
-                    o -> {
+                    val -> {
                       DeclarativeConfigProperties config =
-                          DeclarativeConfigUtil.getInstrumentationConfig(o, "foo");
+                          DeclarativeConfigUtil.getInstrumentationConfig(val, "foo");
                       assertThat(config.getString("string_key")).isEqualTo("string_value");
                       assertThat(config.getBoolean("bool_key")).isTrue();
                       assertThat(config.getDouble("double_key")).isEqualTo(3.14);
@@ -93,15 +93,15 @@ class DeclarativeConfigTest {
                 .getBean(OpenTelemetry.class)
                 .isNotNull()
                 .satisfies(
-                    o -> {
+                    val -> {
                       DeclarativeConfigProperties config =
-                          DeclarativeConfigUtil.getInstrumentationConfig(o, "foo");
+                          DeclarativeConfigUtil.getInstrumentationConfig(val, "foo");
                       assertThat(config.getString("string_key")).isEqualTo("new_value");
                       assertThat(config.getBoolean("bool_key")).isFalse();
                       assertThat(config.getDouble("double_key")).isEqualTo(4.14);
                       assertThat(config.getLong("int_key")).isEqualTo(43);
 
-                      assertThat(o.toString())
+                      assertThat(val.toString())
                           .contains("OtlpHttpSpanExporter{endpoint=http://custom:4318/v1/traces");
                     }));
   }
@@ -119,9 +119,9 @@ class DeclarativeConfigTest {
                 .getBean(OpenTelemetry.class)
                 .isNotNull()
                 .satisfies(
-                    o -> {
+                    val -> {
                       DeclarativeConfigProperties config =
-                          DeclarativeConfigUtil.getInstrumentationConfig(o, "foo");
+                          DeclarativeConfigUtil.getInstrumentationConfig(val, "foo");
                       assertThat(config.getString("string_key")).isEqualTo("string_value");
                       assertThat(config.getString("string_key_with_env")).isEqualTo("string_value");
                       assertThat(config.getString("string_key_with_env_quoted"))

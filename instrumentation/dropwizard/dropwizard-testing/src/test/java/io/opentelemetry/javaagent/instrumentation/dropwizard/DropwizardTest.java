@@ -129,7 +129,7 @@ class DropwizardTest extends AbstractHttpServerTest<DropwizardTestSupport<Config
   @Override
   protected SpanDataAssert assertResponseSpan(
       SpanDataAssert span, String method, ServerEndpoint endpoint) {
-    return span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"))
+    return span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError"))
         .hasKind(INTERNAL);
   }
 

@@ -94,10 +94,9 @@ class Struts2ActionSpanTest extends AbstractHttpServerTest<Server> {
   protected SpanDataAssert assertResponseSpan(
       SpanDataAssert span, SpanData parentSpan, String method, ServerEndpoint endpoint) {
     if (endpoint.equals(REDIRECT)) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendRedirect"));
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendRedirect"));
     } else if (endpoint.equals(NOT_FOUND)) {
-      span.satisfies(spanData -> assertThat(spanData.getName()).endsWith(".sendError"))
-          .hasParent(parentSpan);
+      span.satisfies(val -> assertThat(val.getName()).endsWith(".sendError")).hasParent(parentSpan);
     }
 
     span.hasKind(SpanKind.INTERNAL);

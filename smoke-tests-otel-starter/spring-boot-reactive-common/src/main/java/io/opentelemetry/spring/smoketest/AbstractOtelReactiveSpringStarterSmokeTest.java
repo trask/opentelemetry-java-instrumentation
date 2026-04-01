@@ -58,8 +58,8 @@ public class AbstractOtelReactiveSpringStarterSmokeTest extends AbstractSpringSt
                 span ->
                     span.hasKind(SpanKind.CLIENT)
                         .satisfies(
-                            s ->
-                                assertThat(s.getName())
+                            val ->
+                                assertThat(val.getName())
                                     .isEqualToIgnoringCase("SELECT testdb.PLAYER"))
                         .hasAttribute(DB_NAME, "testdb")
                         // 2 is not replaced by ?,

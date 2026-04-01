@@ -34,8 +34,8 @@ class CodeCacheMemoryInitMetricTest {
                 .hasDescription(METRIC_DESCRIPTION_MEMORY_INIT)
                 .hasUnit(BYTES)
                 .satisfies(
-                    data ->
-                        assertThat(data.getLongSumData().getPoints())
+                    val ->
+                        assertThat(val.getLongSumData().getPoints())
                             .anyMatch(
                                 pointData ->
                                     pointData.getValue() > 0

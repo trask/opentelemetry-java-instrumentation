@@ -53,19 +53,19 @@ abstract class CustomSpanEventTest {
                               .hasKind(SpanKind.INTERNAL)
                               .hasParent(trace.getSpan(0))
                               .satisfies(
-                                  spanData -> {
+                                  val -> {
                                     // CompositeChunkListener has broken ordering that causes
                                     // listeners that do not override order() to appear first at all
                                     // times because of that a custom ChunkListener will always see
                                     // a Step span when using spring-batch versions [3, 4)
                                     // that bug was fixed in 4.0
                                     if (VERSION_GREATER_THAN_4_0) {
-                                      assertThat(spanData)
+                                      assertThat(val)
                                           .hasEventsSatisfyingExactly(
                                               event -> event.hasName("step.before"),
                                               event -> event.hasName("step.after"));
                                     } else {
-                                      assertThat(spanData)
+                                      assertThat(val)
                                           .hasEventsSatisfyingExactly(
                                               event -> event.hasName("step.before"),
                                               event -> event.hasName("chunk.before"),
@@ -79,19 +79,19 @@ abstract class CustomSpanEventTest {
                               .hasKind(SpanKind.INTERNAL)
                               .hasParent(trace.getSpan(1))
                               .satisfies(
-                                  spanData -> {
+                                  val -> {
                                     // CompositeChunkListener has broken ordering that causes
                                     // listeners that do not override order() to appear first at all
                                     // times because of that a custom ChunkListener will always see
                                     // a Step span when using spring-batch versions [3, 4)
                                     // that bug was fixed in 4.0
                                     if (VERSION_GREATER_THAN_4_0) {
-                                      assertThat(spanData)
+                                      assertThat(val)
                                           .hasEventsSatisfyingExactly(
                                               event -> event.hasName("chunk.before"),
                                               event -> event.hasName("chunk.after"));
                                     } else {
-                                      assertThat(spanData.getEvents()).isEmpty();
+                                      assertThat(val.getEvents()).isEmpty();
                                     }
                                   })));
           itemSpans(trace, assertions);

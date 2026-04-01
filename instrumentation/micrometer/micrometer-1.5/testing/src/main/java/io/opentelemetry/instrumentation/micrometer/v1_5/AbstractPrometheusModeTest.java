@@ -250,8 +250,8 @@ public abstract class AbstractPrometheusModeTest {
                                                 point
                                                     .hasAttributes(attributeEntry("tag", "value"))
                                                     .satisfies(
-                                                        pointData ->
-                                                            assertThat(pointData.getValue())
+                                                        val ->
+                                                            assertThat(val.getValue())
                                                                 .isPositive())))));
 
     // when

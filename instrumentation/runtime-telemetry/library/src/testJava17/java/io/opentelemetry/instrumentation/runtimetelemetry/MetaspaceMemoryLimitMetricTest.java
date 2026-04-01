@@ -35,8 +35,8 @@ class MetaspaceMemoryLimitMetricTest {
                 .hasUnit(BYTES)
                 .hasDescription(METRIC_DESCRIPTION_MEMORY_LIMIT)
                 .satisfies(
-                    data ->
-                        assertThat(data.getLongSumData().getPoints())
+                    val ->
+                        assertThat(val.getLongSumData().getPoints())
                             .anyMatch(p -> p.getAttributes().equals(ATTR_COMPRESSED_CLASS_SPACE))));
   }
 }

@@ -91,10 +91,10 @@ public abstract class AbstractAwsLambdaSqsEventHandlerTest {
                                     assertThat(links)
                                         .singleElement()
                                         .satisfies(
-                                            link -> {
-                                              assertThat(link.getSpanContext().getTraceId())
+                                            val -> {
+                                              assertThat(val.getSpanContext().getTraceId())
                                                   .isEqualTo("5759e988bd862e3fe1be46a994272793");
-                                              assertThat(link.getSpanContext().getSpanId())
+                                              assertThat(val.getSpanContext().getSpanId())
                                                   .isEqualTo("53995c3f42cd8ad8");
                                             }))));
   }
@@ -137,10 +137,10 @@ public abstract class AbstractAwsLambdaSqsEventHandlerTest {
                                     assertThat(links)
                                         .singleElement()
                                         .satisfies(
-                                            link -> {
-                                              assertThat(link.getSpanContext().getTraceId())
+                                            val -> {
+                                              assertThat(val.getSpanContext().getTraceId())
                                                   .isEqualTo("5759e988bd862e3fe1be46a994272793");
-                                              assertThat(link.getSpanContext().getSpanId())
+                                              assertThat(val.getSpanContext().getSpanId())
                                                   .isEqualTo("53995c3f42cd8ad8");
                                             }))));
   }

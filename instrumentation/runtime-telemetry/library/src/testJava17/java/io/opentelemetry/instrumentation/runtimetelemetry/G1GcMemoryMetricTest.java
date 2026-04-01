@@ -60,8 +60,8 @@ class G1GcMemoryMetricTest {
                 .hasDescription(METRIC_DESCRIPTION_COMMITTED)
                 // TODO: need JFR support for the other G1 pools
                 .satisfies(
-                    data ->
-                        assertThat(data.getLongSumData().getPoints())
+                    val ->
+                        assertThat(val.getLongSumData().getPoints())
                             .anyMatch(p -> p.getAttributes().equals(ATTR_G1_EDEN_SPACE))),
         metric ->
             metric
@@ -92,8 +92,8 @@ class G1GcMemoryMetricTest {
                 .hasUnit(SECONDS)
                 .hasDescription(METRIC_DESCRIPTION_GC_DURATION)
                 .satisfies(
-                    data ->
-                        assertThat(data.getHistogramData().getPoints())
+                    val ->
+                        assertThat(val.getHistogramData().getPoints())
                             .anyMatch(
                                 p ->
                                     p.getSum() > 0

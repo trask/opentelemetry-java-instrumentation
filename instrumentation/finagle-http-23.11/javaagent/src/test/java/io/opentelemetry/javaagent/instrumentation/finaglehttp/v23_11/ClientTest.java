@@ -146,8 +146,8 @@ class ClientTest extends AbstractHttpClientTest<Request> {
                 .cause()
                 // On Linux: ConnectException, On Windows: ClosedChannelException
                 .satisfies(
-                    cause -> {
-                      assertThat(cause)
+                    val -> {
+                      assertThat(val)
                           .isInstanceOfAny(ConnectException.class, ClosedChannelException.class);
                     });
             error = error.getCause().getCause().getCause();

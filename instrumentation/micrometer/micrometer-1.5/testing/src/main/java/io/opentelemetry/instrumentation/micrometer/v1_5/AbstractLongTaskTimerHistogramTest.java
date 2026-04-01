@@ -79,8 +79,8 @@ public abstract class AbstractLongTaskTimerHistogramTest {
                                                 point
                                                     .hasAttributes(Attributes.empty())
                                                     .satisfies(
-                                                        pointData ->
-                                                            assertThat(pointData.getValue())
+                                                        val ->
+                                                            assertThat(val.getValue())
                                                                 .isPositive())))));
     testing()
         .waitAndAssertMetrics(

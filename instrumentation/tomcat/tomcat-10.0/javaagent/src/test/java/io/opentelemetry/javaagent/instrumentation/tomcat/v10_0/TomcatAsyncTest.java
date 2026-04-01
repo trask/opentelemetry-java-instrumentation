@@ -124,7 +124,7 @@ class TomcatAsyncTest extends AbstractHttpServerTest<Tomcat> {
       throw new AssertionError("Unexpected endpoint: " + endpoint.name());
     }
     span.hasKind(SpanKind.INTERNAL)
-        .satisfies(spanData -> assertThat(spanData.getName()).endsWith("." + methodName))
+        .satisfies(val -> assertThat(val.getName()).endsWith("." + methodName))
         .hasAttributesSatisfyingExactly(
             SemconvCodeStabilityUtil.codeFunctionSuffixAssertions(methodName));
     return span;

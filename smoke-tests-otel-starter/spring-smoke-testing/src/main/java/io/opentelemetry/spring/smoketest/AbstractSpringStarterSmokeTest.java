@@ -67,8 +67,8 @@ public abstract class AbstractSpringStarterSmokeTest {
         .doesNotContain("is not eligible for getting processed by all BeanPostProcessors")
         // only look for WARN and ERROR log level, e.g. [Test worker] WARN
         .satisfies(
-            s -> {
-              for (String line : s.toString().split("\n")) {
+            val -> {
+              for (String line : val.toString().split("\n")) {
                 if (IGNORED_WARNINGS.stream().noneMatch(line::contains)) {
                   assertThat(line).doesNotContain("] WARN").doesNotContain("] ERROR");
                 }

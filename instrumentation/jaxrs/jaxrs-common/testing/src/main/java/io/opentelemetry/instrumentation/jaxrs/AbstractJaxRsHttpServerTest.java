@@ -230,8 +230,7 @@ public abstract class AbstractJaxRsHttpServerTest<SERVER> extends AbstractHttpSe
               if (asyncCancelHasSendError() && testKind == AsyncResponseTestKind.CANCELED) {
                 assertions.add(
                     span ->
-                        span.satisfies(
-                                spanData -> assertThat(spanData.getName()).endsWith("sendError"))
+                        span.satisfies(val -> assertThat(val.getName()).endsWith("sendError"))
                             .hasKind(SpanKind.INTERNAL)
                             .hasParent(trace.getSpan(1)));
               }

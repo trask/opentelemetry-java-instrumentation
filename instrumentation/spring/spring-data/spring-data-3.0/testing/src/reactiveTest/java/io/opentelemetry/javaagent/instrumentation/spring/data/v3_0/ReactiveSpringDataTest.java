@@ -81,8 +81,8 @@ class ReactiveSpringDataTest {
                         .hasParent(trace.getSpan(1))
                         // assert that this span ends before its parent span
                         .satisfies(
-                            spanData ->
-                                assertThat(spanData.getEndEpochNanos())
+                            val ->
+                                assertThat(val.getEndEpochNanos())
                                     .isLessThanOrEqualTo(trace.getSpan(1).getEndEpochNanos()))
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), maybeStableDbSystemName("h2")),

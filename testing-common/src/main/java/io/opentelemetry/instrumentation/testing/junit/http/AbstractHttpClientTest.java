@@ -1159,8 +1159,8 @@ public abstract class AbstractHttpClientTest<REQUEST> implements HttpClientTypeA
               }
             })
         .satisfies(
-            spanData ->
-                assertThat(spanData.getInstrumentationScopeInfo().getSchemaUrl())
+            val ->
+                assertThat(val.getInstrumentationScopeInfo().getSchemaUrl())
                     .isEqualTo(SchemaUrls.V1_37_0));
   }
 

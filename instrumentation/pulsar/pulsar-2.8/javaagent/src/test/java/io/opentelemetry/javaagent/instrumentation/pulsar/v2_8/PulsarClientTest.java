@@ -676,9 +676,8 @@ class PulsarClientTest extends AbstractPulsarClientTest {
                     .hasLongSumSatisfying(
                         sum -> {
                           sum.satisfies(
-                              pointData -> {
-                                pointData
-                                    .getPoints()
+                              val -> {
+                                val.getPoints()
                                     .forEach(
                                         p -> {
                                           assertThat(p.getValue()).isPositive();

@@ -85,19 +85,23 @@ final class ApiGatewayProxyAttributesExtractor
       str.append(path);
     }
 
-    try {
-      boolean first = true;
-      for (Map.Entry<String, String> entry :
-          emptyIfNull(request.getQueryStringParameters()).entrySet()) {
-        String key = URLEncoder.encode(entry.getKey(), UTF_8.name());
-        String value = URLEncoder.encode(entry.getValue(), UTF_8.name());
-        str.append(first ? '?' : '&').append(key).append('=').append(value);
-        first = false;
-      }
-    } catch (UnsupportedEncodingException ignored) {
-      // Ignore
+    boolean first = true;
+    for (Map.Entry<String, String> entry :
+        emptyIfNull(request.getQueryStringParameters()).entrySet()) {
+      String key = urlEncode(entry.getKey());
+      String value = urlEncode(entry.getValue());
+      str.append(first ? '?' : '&').append(key).append('=').append(value);
+      first = false;
     }
     return str.length() == 0 ? null : str.toString();
+  }
+
+  private static String urlEncode(String value) {
+    try {
+      return URLEncoder.encode(value, UTF_8.name());
+    } catch (UnsupportedEncodingException e) {
+      throw new IllegalStateException("UTF-8 must be supported", e);
+    }
   }
 
   @Override

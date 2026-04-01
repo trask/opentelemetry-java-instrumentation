@@ -47,7 +47,7 @@ import software.amazon.awssdk.services.sqs.SqsClient;
  *     .build();
  * }</pre>
  */
-public class AwsSdkTelemetry {
+public final class AwsSdkTelemetry {
 
   /** Returns a new {@link AwsSdkTelemetry} configured with the given {@link OpenTelemetry}. */
   public static AwsSdkTelemetry create(OpenTelemetry openTelemetry) {

@@ -9,6 +9,7 @@ muzzle {
     group.set("software.amazon.awssdk")
     module.set("aws-core")
     versions.set("[2.2.0,)")
+    assertInverse.set(true)
     // Used by all SDK services, the only case it isn't is an SDK extension such as a custom HTTP
     // client, which is not target of instrumentation anyways.
     extraDependency("software.amazon.awssdk:protocol-core")
@@ -42,6 +43,7 @@ muzzle {
     group.set("software.amazon.awssdk")
     module.set("sqs")
     versions.set("[2.2.0,)")
+    assertInverse.set(true)
     // Used by all SDK services, the only case it isn't is an SDK extension such as a custom HTTP
     // client, which is not target of instrumentation anyways.
     extraDependency("software.amazon.awssdk:protocol-core")
@@ -58,6 +60,7 @@ muzzle {
     group.set("software.amazon.awssdk")
     module.set("sns")
     versions.set("[2.2.0,)")
+    assertInverse.set(true)
     // Used by all SDK services, the only case it isn't is an SDK extension such as a custom HTTP
     // client, which is not target of instrumentation anyways.
     extraDependency("software.amazon.awssdk:protocol-core")
@@ -73,6 +76,7 @@ muzzle {
     group.set("software.amazon.awssdk")
     module.set("lambda")
     versions.set("[2.17.0,)")
+    assertInverse.set(true)
     // Used by all SDK services, the only case it isn't is an SDK extension such as a custom HTTP
     // client, which is not target of instrumentation anyways.
     extraDependency("software.amazon.awssdk:protocol-core")
@@ -88,6 +92,7 @@ muzzle {
     group.set("software.amazon.awssdk")
     module.set("bedrock-runtime")
     versions.set("[2.25.63,)")
+    assertInverse.set(true)
     // Used by all SDK services, the only case it isn't is an SDK extension such as a custom HTTP
     // client, which is not target of instrumentation anyways.
     extraDependency("software.amazon.awssdk:protocol-core")
@@ -115,6 +120,7 @@ dependencies {
   // Make sure these don't add HTTP headers
   testInstrumentation(project(":instrumentation:apache-httpclient:apache-httpclient-4.0:javaagent"))
   testInstrumentation(project(":instrumentation:apache-httpclient:apache-httpclient-5.0:javaagent"))
+  testInstrumentation(project(":instrumentation:aws-sdk:aws-sdk-1.11:javaagent"))
   testInstrumentation(project(":instrumentation:netty:netty-4.1:javaagent"))
 
   testLibrary("software.amazon.awssdk:dynamodb:2.2.0")

@@ -297,18 +297,12 @@ public abstract class AbstractAws2ClientTest extends AbstractAws2ClientCoreTest 
 
     if (service.equals("SNS") && operation.equals("Publish")) {
       String content = request.request().content(Charset.defaultCharset());
-      boolean containsId =
-          content.contains(
-              getTesting().spans().get(0).getTraceId()
-                  + "-"
-                  + getTesting().spans().get(0).getSpanId());
-      boolean containsTp = content.contains("=traceparent");
+      String tracingId =
+          getTesting().spans().get(0).getTraceId() + "-" + getTesting().spans().get(0).getSpanId();
       if (isSqsAttributeInjectionEnabled()) {
-        assertThat(containsId).isTrue();
-        assertThat(containsTp).isTrue();
+        assertThat(content).contains(tracingId).contains("=traceparent");
       } else {
-        assertThat(containsId).isFalse();
-        assertThat(containsTp).isFalse();
+        assertThat(content).doesNotContain(tracingId).doesNotContain("=traceparent");
       }
     }
 

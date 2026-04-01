@@ -66,12 +66,12 @@ public abstract class AbstractAws2ClientRecordHttpErrorTest {
   protected static List<String> httpErrorMessages = new ArrayList<>();
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     server.start();
   }
 
   @AfterAll
-  public static void cleanup() {
+  static void cleanup() {
     server.stop();
   }
 
@@ -132,7 +132,7 @@ public abstract class AbstractAws2ClientRecordHttpErrorTest {
 
   @SuppressWarnings("deprecation") // using deprecated semconv
   @Test
-  public void testSendDynamoDbRequestWithRetries() {
+  void testSendDynamoDbRequestWithRetries() {
     cleanResponses();
     // Setup and configuration
     String service = "DynamoDb";
@@ -215,7 +215,7 @@ public abstract class AbstractAws2ClientRecordHttpErrorTest {
 
     // make sure the response body input stream is still available and check its content to be
     // expected
-    assertThat(httpErrorMessages.size()).isEqualTo(2);
+    assertThat(httpErrorMessages).hasSize(2);
     assertThat(httpErrorMessages.get(0)).isEqualTo("DynamoDB could not process your request");
     assertThat(httpErrorMessages.get(1)).isEqualTo("DynamoDB is currently unavailable");
   }

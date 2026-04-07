@@ -120,8 +120,8 @@ public class PekkoHttpServerTracer
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
-              fail(requestOut, exception);
+            public void onUpstreamFailure(Throwable t) {
+              fail(requestOut, t);
             }
           });
 
@@ -159,7 +159,7 @@ public class PekkoHttpServerTracer
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
+            public void onUpstreamFailure(Throwable t) {
               // End the span for the request that failed
               PekkoTracingRequest tracingRequest = requests.poll();
               if (tracingRequest != null && tracingRequest != PekkoTracingRequest.EMPTY) {
@@ -168,10 +168,10 @@ public class PekkoHttpServerTracer
                         tracingRequest.context,
                         tracingRequest.request,
                         PekkoHttpServerSingletons.errorResponse(),
-                        exception);
+                        t);
               }
 
-              fail(responseOut, exception);
+              fail(responseOut, t);
             }
 
             @Override

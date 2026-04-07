@@ -14,7 +14,7 @@ class RatpackTestUtils {
 
   private RatpackTestUtils() {}
 
-  static Throwable ratpackClientSpanErrorMapper(URI uri, Throwable exception) {
+  static Throwable ratpackClientSpanErrorMapper(URI uri, Throwable t) {
     if (uri.toString().equals("https://192.0.2.1/")
         || (OS.WINDOWS.isCurrentOs() && uri.toString().equals("http://localhost:61/"))) {
       return new ConnectTimeoutException("Connect timeout (PT2S) connecting to " + uri);
@@ -22,6 +22,6 @@ class RatpackTestUtils {
       return new HttpClientReadTimeoutException(
           "Read timeout (PT2S) waiting on HTTP server at " + uri);
     }
-    return exception;
+    return t;
   }
 }

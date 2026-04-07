@@ -52,9 +52,9 @@ class AkkaDispatcherInstrumentation implements TypeInstrumentation {
     public static void exitDispatch(
         @Advice.Argument(1) Envelope envelope,
         @Advice.Enter PropagatedContext propagatedContext,
-        @Advice.Thrown Throwable throwable) {
+        @Advice.Thrown Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, VirtualFields.ENVELOPE_PROPAGATED_CONTEXT, envelope);
+          propagatedContext, t, VirtualFields.ENVELOPE_PROPAGATED_CONTEXT, envelope);
     }
   }
 }

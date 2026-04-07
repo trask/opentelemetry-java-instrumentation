@@ -30,13 +30,13 @@ public final class HttpClientResult {
     complete(() -> status, null);
   }
 
-  public void complete(Throwable throwable) {
-    complete(null, throwable);
+  public void complete(Throwable t) {
+    complete(null, t);
   }
 
-  public void complete(Supplier<Integer> status, Throwable throwable) {
-    if (throwable != null) {
-      this.throwable = throwable;
+  public void complete(Supplier<Integer> status, Throwable t) {
+    if (t != null) {
+      this.throwable = t;
     } else {
       this.status = status.get();
     }

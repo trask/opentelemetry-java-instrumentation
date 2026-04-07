@@ -65,9 +65,9 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable OperationFuture<?> future,
-        @Advice.Thrown @Nullable Throwable thrown,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter AdviceScope<OperationFuture<?>, OperationCompletionListener> adviceScope) {
-      adviceScope.end(future, thrown);
+      adviceScope.end(future, t);
     }
   }
 
@@ -83,9 +83,9 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable GetFuture<?> future,
-        @Advice.Thrown @Nullable Throwable thrown,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter AdviceScope<GetFuture<?>, GetCompletionListener> adviceScope) {
-      adviceScope.end(future, thrown);
+      adviceScope.end(future, t);
     }
   }
 
@@ -101,9 +101,9 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable BulkFuture<?> future,
-        @Advice.Thrown @Nullable Throwable thrown,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter AdviceScope<BulkFuture<?>, BulkGetCompletionListener> adviceScope) {
-      adviceScope.end(future, thrown);
+      adviceScope.end(future, t);
     }
   }
 
@@ -118,9 +118,9 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Thrown @Nullable Throwable thrown,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter AdviceScope<Void, SyncCompletionListener> adviceScope) {
-      adviceScope.end(null, thrown);
+      adviceScope.end(null, t);
     }
   }
 
@@ -150,7 +150,7 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
           handler.create(Context.current(), client.getConnection(), methodName));
     }
 
-    public void end(@Nullable F future, @Nullable Throwable throwable) {
+    public void end(@Nullable F future, @Nullable Throwable t) {
       if (callDepth.decrementAndGet() > 0 || listener == null || scope == null) {
         return;
       }
@@ -159,7 +159,7 @@ class MemcachedClientInstrumentation implements TypeInstrumentation {
       // when throwable is set then future is always null as it is the return value of the
       // instrumented method
       if (future == null) {
-        listener.done(throwable);
+        listener.done(t);
       } else {
         handler.addListener(future, listener);
       }

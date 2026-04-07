@@ -68,12 +68,12 @@ class InvocationInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, request, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return;
         }
         scope.close();
-        instrumenter().end(context, request, null, throwable);
+        instrumenter().end(context, request, null, t);
       }
     }
 
@@ -85,8 +85,8 @@ class InvocationInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopTraceOnResponse(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope actionScope) {
-      actionScope.end(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope actionScope) {
+      actionScope.end(t);
     }
   }
 }

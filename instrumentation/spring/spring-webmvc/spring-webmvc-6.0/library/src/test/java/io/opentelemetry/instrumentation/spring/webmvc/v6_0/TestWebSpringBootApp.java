@@ -138,7 +138,7 @@ class TestWebSpringBootApp {
             // controller method has completed.
             try {
               Thread.sleep(100);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
               Thread.currentThread().interrupt();
             }
             try (Scope ignored = context.makeCurrent()) {
@@ -148,8 +148,8 @@ class TestWebSpringBootApp {
     }
 
     @ExceptionHandler
-    ResponseEntity<String> handleException(Throwable throwable) {
-      return new ResponseEntity<>(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    ResponseEntity<String> handleException(Throwable t) {
+      return new ResponseEntity<>(t.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

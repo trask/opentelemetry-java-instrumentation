@@ -52,7 +52,7 @@ public class JfrExtension implements BeforeEachCallback, AfterEachCallback {
   public void beforeEach(ExtensionContext context) throws InterruptedException {
     try {
       Class.forName("jdk.jfr.FlightRecorder");
-    } catch (ClassNotFoundException exception) {
+    } catch (ClassNotFoundException ignored) {
       Assumptions.abort("JFR not present");
     }
     Assumptions.assumeTrue(FlightRecorder.isAvailable(), "JFR not available");

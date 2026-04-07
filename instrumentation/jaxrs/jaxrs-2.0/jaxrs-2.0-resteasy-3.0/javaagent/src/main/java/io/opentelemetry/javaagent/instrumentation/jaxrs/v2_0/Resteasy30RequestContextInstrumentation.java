@@ -60,9 +60,9 @@ public class Resteasy30RequestContextInstrumentation extends AbstractRequestCont
         return new AdviceScope(handlerData, context);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, handlerData, null, throwable);
+        instrumenter().end(context, handlerData, null, t);
       }
     }
 
@@ -86,10 +86,9 @@ public class Resteasy30RequestContextInstrumentation extends AbstractRequestCont
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

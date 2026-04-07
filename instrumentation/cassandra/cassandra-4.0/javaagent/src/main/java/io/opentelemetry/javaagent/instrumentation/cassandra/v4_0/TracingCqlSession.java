@@ -72,9 +72,9 @@ final class TracingCqlSession {
     ResultSet resultSet;
     try (Scope ignored = context.makeCurrent()) {
       resultSet = session.execute(query);
-    } catch (Throwable exception) {
-      instrumenter().end(context, request, getExecutionInfo(exception), exception);
-      throw exception;
+    } catch (Throwable t) {
+      instrumenter().end(context, request, getExecutionInfo(t), t);
+      throw t;
     }
     instrumenter().end(context, request, resultSet.getExecutionInfo(), null);
     return resultSet;
@@ -88,9 +88,9 @@ final class TracingCqlSession {
     ResultSet resultSet;
     try (Scope ignored = context.makeCurrent()) {
       resultSet = session.execute(statement);
-    } catch (Throwable exception) {
-      instrumenter().end(context, request, getExecutionInfo(exception), exception);
-      throw exception;
+    } catch (Throwable t) {
+      instrumenter().end(context, request, getExecutionInfo(t), t);
+      throw t;
     }
     instrumenter().end(context, request, resultSet.getExecutionInfo(), null);
     return resultSet;
@@ -131,10 +131,10 @@ final class TracingCqlSession {
   private static <T> CompletableFuture<T> wrap(CompletionStage<T> future, Context context) {
     CompletableFuture<T> result = new CompletableFuture<>();
     future.whenComplete(
-        (T value, Throwable throwable) -> {
+        (T value, Throwable t) -> {
           try (Scope ignored = context.makeCurrent()) {
-            if (throwable != null) {
-              result.completeExceptionally(throwable);
+            if (t != null) {
+              result.completeExceptionally(t);
             } else {
               result.complete(value);
             }
@@ -156,20 +156,20 @@ final class TracingCqlSession {
   }
 
   private static ExecutionInfo getExecutionInfo(
-      @Nullable AsyncResultSet asyncResultSet, @Nullable Throwable throwable) {
+      @Nullable AsyncResultSet asyncResultSet, @Nullable Throwable t) {
     if (asyncResultSet != null) {
       return asyncResultSet.getExecutionInfo();
     } else {
-      return getExecutionInfo(throwable);
+      return getExecutionInfo(t);
     }
   }
 
-  private static ExecutionInfo getExecutionInfo(@Nullable Throwable throwable) {
-    if (throwable instanceof DriverException) {
-      return ((DriverException) throwable).getExecutionInfo();
-    } else if (throwable != null && throwable.getCause() instanceof DriverException) {
+  private static ExecutionInfo getExecutionInfo(@Nullable Throwable t) {
+    if (t instanceof DriverException) {
+      return ((DriverException) t).getExecutionInfo();
+    } else if (t != null && t.getCause() instanceof DriverException) {
       // TODO (trask) find out if this is needed and if so add comment explaining
-      return ((DriverException) throwable.getCause()).getExecutionInfo();
+      return ((DriverException) t.getCause()).getExecutionInfo();
     } else {
       return null;
     }

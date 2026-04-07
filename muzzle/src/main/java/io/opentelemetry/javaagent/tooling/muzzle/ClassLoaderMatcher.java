@@ -98,7 +98,7 @@ public class ClassLoaderMatcher {
                 null)
             .transform(null, null, classLoader, null, null);
       }
-    } catch (RuntimeException e) {
+    } catch (RuntimeException ignored) {
       mismatches = ReferenceMatcher.add(mismatches, new Mismatch.HelperClassesInjectionError());
     }
     return mismatches;
@@ -112,9 +112,9 @@ public class ClassLoaderMatcher {
       Field field = matcherClass.getDeclaredField("useCache");
       field.setAccessible(true);
       field.setBoolean(null, false);
-    } catch (Exception exception) {
+    } catch (Exception e) {
       throw new IllegalStateException(
-          "Failed to disable cache for ClassLoaderHasClassesNamedMatcher", exception);
+          "Failed to disable cache for ClassLoaderHasClassesNamedMatcher", e);
     }
   }
 

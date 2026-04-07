@@ -44,8 +44,8 @@ public class IndyBootstrapDispatcher {
     if (bootstrap != null) {
       try {
         callSite = (CallSite) bootstrap.invoke(lookup, adviceMethodName, adviceMethodType, args);
-      } catch (Throwable e) {
-        ExceptionLogger.logSuppressedError("Error bootstrapping indy instruction", e);
+      } catch (Throwable t) {
+        ExceptionLogger.logSuppressedError("Error bootstrapping indy instruction", t);
       }
     }
     if (callSite == null) {

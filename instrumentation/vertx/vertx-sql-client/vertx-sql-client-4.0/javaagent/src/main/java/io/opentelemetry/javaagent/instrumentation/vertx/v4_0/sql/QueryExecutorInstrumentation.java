@@ -127,7 +127,7 @@ class QueryExecutorInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, otelRequest, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -136,8 +136,8 @@ class QueryExecutorInstrumentation implements TypeInstrumentation {
         }
 
         scope.close();
-        if (throwable != null) {
-          instrumenter().end(context, otelRequest, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, otelRequest, null, t);
         }
         // span will be ended in QueryResultBuilderInstrumentation
       }
@@ -151,11 +151,10 @@ class QueryExecutorInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

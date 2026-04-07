@@ -33,12 +33,12 @@ public final class AppServerBridge {
    * add it to server span.
    *
    * @param context server context
-   * @param exception exception that happened during servlet invocation
+   * @param t exception that happened during servlet invocation
    */
-  public static void recordException(Context context, Throwable exception) {
+  public static void recordException(Context context, Throwable t) {
     AppServerBridge appServerBridge = context.get(CONTEXT_KEY);
     if (appServerBridge != null && appServerBridge.servletShouldRecordException) {
-      appServerBridge.exception = exception;
+      appServerBridge.exception = t;
     }
   }
 
@@ -47,13 +47,13 @@ public final class AppServerBridge {
    * it resets the stored exception to null after reading it.
    *
    * @param context server context
-   * @param error exception that happened during server span, may be null. If this parameter is not
+   * @param t exception that happened during server span, may be null. If this parameter is not
    *     null, it will be returned by this method. If it is null, then the exception recorded by
    *     servlet will be returned.
    * @return exception that happened during servlet invocation
    */
   @Nullable
-  public static Throwable getException(Context context, @Nullable Throwable error) {
+  public static Throwable getException(Context context, @Nullable Throwable t) {
     Throwable result = null;
     AppServerBridge appServerBridge = context.get(CONTEXT_KEY);
     if (appServerBridge != null) {
@@ -62,7 +62,7 @@ public final class AppServerBridge {
       // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/16129
       appServerBridge.exception = null;
     }
-    return error != null ? error : result;
+    return t != null ? t : result;
   }
 
   /**

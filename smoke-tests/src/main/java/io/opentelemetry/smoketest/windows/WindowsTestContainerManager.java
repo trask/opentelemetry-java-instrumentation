@@ -214,7 +214,7 @@ public class WindowsTestContainerManager extends AbstractTestContainerManager {
     try {
       client.inspectImageCmd(imageName).exec();
       return true;
-    } catch (RuntimeException e) {
+    } catch (RuntimeException ignored) {
       return false;
     }
   }
@@ -314,7 +314,7 @@ public class WindowsTestContainerManager extends AbstractTestContainerManager {
     if (container != null) {
       try {
         client.killContainerCmd(container.containerId).exec();
-      } catch (NotFoundException e) {
+      } catch (NotFoundException ignored) {
         // The containers are flagged as remove-on-exit, so not finding them can be expected
       }
     }

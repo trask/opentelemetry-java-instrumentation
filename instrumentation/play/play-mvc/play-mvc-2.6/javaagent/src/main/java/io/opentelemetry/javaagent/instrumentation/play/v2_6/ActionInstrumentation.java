@@ -70,21 +70,21 @@ class ActionInstrumentation implements TypeInstrumentation {
       }
 
       public Future<Result> end(
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           Future<Result> responseFuture,
           Action<?> thisAction,
           Request<?> req) {
         scope.close();
         updateSpan(context, req);
 
-        if (throwable == null) {
+        if (t == null) {
           // span is finished when future completes
           // not using responseFuture.onComplete() because that doesn't guarantee this handler span
           // will be completed before the server span completes
           responseFuture =
               ResponseFutureWrapper.wrap(responseFuture, context, thisAction.executionContext());
         } else {
-          instrumenter().end(context, null, null, throwable);
+          instrumenter().end(context, null, null, t);
         }
 
         return responseFuture;
@@ -100,7 +100,7 @@ class ActionInstrumentation implements TypeInstrumentation {
     @Advice.AssignReturned.ToReturned
     public static Future<Result> stopTraceOnResponse(
         @Advice.This Action<?> thisAction,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Argument(0) Request<?> req,
         @Advice.Return Future<Result> responseFuture,
         @Advice.Enter @Nullable AdviceScope actionScope) {
@@ -108,7 +108,7 @@ class ActionInstrumentation implements TypeInstrumentation {
         return responseFuture;
       }
 
-      return actionScope.end(throwable, responseFuture, thisAction, req);
+      return actionScope.end(t, responseFuture, thisAction, req);
     }
   }
 }

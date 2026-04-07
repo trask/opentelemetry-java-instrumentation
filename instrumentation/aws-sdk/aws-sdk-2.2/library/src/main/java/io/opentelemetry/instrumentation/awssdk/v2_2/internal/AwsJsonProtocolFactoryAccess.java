@@ -64,7 +64,7 @@ final class AwsJsonProtocolFactoryAccess {
                   MethodType.methodType(ProtocolMarshaller.class, OperationInfo.class));
       invokeCreateProtocolMarshaller =
           createProtocolMarshaller.bindTo(awsJsonProtocolFactory).bindTo(OPERATION_INFO);
-    } catch (Throwable t) {
+    } catch (Throwable ignored) {
       // Ignore;
     }
     INVOKE_CREATE_PROTOCOL_MARSHALLER = invokeCreateProtocolMarshaller;
@@ -79,7 +79,7 @@ final class AwsJsonProtocolFactoryAccess {
 
     try {
       return (ProtocolMarshaller<SdkHttpFullRequest>) INVOKE_CREATE_PROTOCOL_MARSHALLER.invoke();
-    } catch (Throwable t) {
+    } catch (Throwable ignored) {
       return null;
     }
   }

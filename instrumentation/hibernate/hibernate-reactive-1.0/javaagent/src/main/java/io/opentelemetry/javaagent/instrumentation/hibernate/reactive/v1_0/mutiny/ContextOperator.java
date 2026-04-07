@@ -63,9 +63,9 @@ public class ContextOperator<T> extends UniOperator<T, T> {
     }
 
     @Override
-    public void onFailure(Throwable throwable) {
+    public void onFailure(Throwable t) {
       try (Scope ignore = context.makeCurrent()) {
-        downstream.onFailure(throwable);
+        downstream.onFailure(t);
       }
     }
   }

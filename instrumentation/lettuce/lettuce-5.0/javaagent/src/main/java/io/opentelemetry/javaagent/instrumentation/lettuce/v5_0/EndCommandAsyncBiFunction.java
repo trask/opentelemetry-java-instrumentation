@@ -40,19 +40,19 @@ public class EndCommandAsyncBiFunction<T, U extends Throwable, R>
   }
 
   @Override
-  public R apply(T t, Throwable throwable) {
-    end(context, command, throwable);
+  public R apply(T result, Throwable t) {
+    end(context, command, t);
     return null;
   }
 
-  public static void end(Context context, RedisCommand<?, ?, ?> command, Throwable throwable) {
-    if (throwable instanceof CancellationException) {
+  public static void end(Context context, RedisCommand<?, ?, ?> command, Throwable t) {
+    if (t instanceof CancellationException) {
       if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
         Span.fromContext(context).setAttribute("lettuce.command.cancelled", true);
       }
       // and don't report this as an error
-      throwable = null;
+      t = null;
     }
-    instrumenter().end(context, command, null, throwable);
+    instrumenter().end(context, command, null, t);
   }
 }

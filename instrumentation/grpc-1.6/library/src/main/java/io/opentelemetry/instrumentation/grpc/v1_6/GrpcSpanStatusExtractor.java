@@ -34,12 +34,12 @@ enum GrpcSpanStatusExtractor implements SpanStatusExtractor<GrpcRequest, Status>
       SpanStatusBuilder spanStatusBuilder,
       GrpcRequest request,
       Status status,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     if (status == null) {
-      if (error instanceof StatusRuntimeException) {
-        status = ((StatusRuntimeException) error).getStatus();
-      } else if (error instanceof StatusException) {
-        status = ((StatusException) error).getStatus();
+      if (t instanceof StatusRuntimeException) {
+        status = ((StatusRuntimeException) t).getStatus();
+      } else if (t instanceof StatusException) {
+        status = ((StatusException) t).getStatus();
       }
     }
     if (status != null) {
@@ -47,7 +47,7 @@ enum GrpcSpanStatusExtractor implements SpanStatusExtractor<GrpcRequest, Status>
         spanStatusBuilder.setStatus(StatusCode.ERROR);
       }
     } else {
-      SpanStatusExtractor.getDefault().extract(spanStatusBuilder, request, status, error);
+      SpanStatusExtractor.getDefault().extract(spanStatusBuilder, request, status, t);
     }
   }
 

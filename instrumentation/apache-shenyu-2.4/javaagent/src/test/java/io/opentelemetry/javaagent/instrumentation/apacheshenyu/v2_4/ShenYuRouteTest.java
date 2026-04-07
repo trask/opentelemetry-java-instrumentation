@@ -62,7 +62,7 @@ class ShenYuRouteTest {
     Class<?> metaDataCache;
     try {
       metaDataCache = Class.forName("org.apache.shenyu.plugin.global.cache.MetaDataCache");
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       // in 2.5.0, the MetaDataCache turned to be org.apache.shenyu.plugin.base.cache
       metaDataCache = Class.forName("org.apache.shenyu.plugin.base.cache.MetaDataCache");
     }

@@ -23,8 +23,8 @@ abstract class BaseGuavaWithSpanTest
   }
 
   @Override
-  protected void fail(SettableFuture<String> future, Throwable error) {
-    future.setException(error);
+  protected void fail(SettableFuture<String> future, Throwable t) {
+    future.setException(t);
   }
 
   @Override

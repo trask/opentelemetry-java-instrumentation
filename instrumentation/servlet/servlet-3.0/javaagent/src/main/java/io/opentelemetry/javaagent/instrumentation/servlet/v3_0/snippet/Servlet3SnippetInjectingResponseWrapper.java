@@ -129,7 +129,7 @@ public class Servlet3SnippetInjectingResponseWrapper extends HttpServletResponse
               "setContentLengthLong",
               MethodType.methodType(void.class, long.class),
               SnippetInjectingResponseWrapper.class);
-    } catch (NoSuchMethodException | IllegalAccessException e) {
+    } catch (NoSuchMethodException | IllegalAccessException ignored) {
       return null;
     }
   }

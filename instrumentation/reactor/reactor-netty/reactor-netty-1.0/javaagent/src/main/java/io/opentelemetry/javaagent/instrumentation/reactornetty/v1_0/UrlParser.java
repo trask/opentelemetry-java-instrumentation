@@ -104,7 +104,7 @@ class UrlParser {
   private static Integer safeParse(String port) {
     try {
       return Integer.valueOf(port);
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException ignored) {
       return null;
     }
   }

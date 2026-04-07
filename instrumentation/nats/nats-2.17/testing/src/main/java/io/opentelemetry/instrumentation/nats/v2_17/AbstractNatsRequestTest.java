@@ -353,7 +353,7 @@ public abstract class AbstractNatsRequestTest extends AbstractNatsTest {
             "Future cancelled, response not registered in time, check connection status."));
   }
 
-  private void assertExceptionPublishSpan(Throwable exception) {
+  private void assertExceptionPublishSpan(Throwable t) {
     testing()
         .waitAndAssertTraces(
             trace ->
@@ -363,7 +363,7 @@ public abstract class AbstractNatsRequestTest extends AbstractNatsTest {
                         span.hasName("sub publish")
                             .hasKind(SpanKind.PRODUCER)
                             .hasParent(trace.getSpan(0))
-                            .hasException(exception)
+                            .hasException(t)
                             .hasAttributesSatisfyingExactly(
                                 messagingAttributes("publish", "sub", clientId))));
   }

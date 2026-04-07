@@ -27,7 +27,7 @@ final class BedrockRuntimeAccess {
     } else {
       try {
         Class.forName("software.amazon.awssdk.services.bedrockruntime.model.ConverseRequest");
-      } catch (ClassNotFoundException e) {
+      } catch (ClassNotFoundException ignored) {
         // Application does not include library
         isEnabled = false;
       }

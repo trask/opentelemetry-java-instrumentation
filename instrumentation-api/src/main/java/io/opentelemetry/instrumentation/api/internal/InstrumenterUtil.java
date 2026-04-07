@@ -47,12 +47,12 @@ public final class InstrumenterUtil {
       Context parentContext,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error,
+      @Nullable Throwable t,
       Instant startTime,
       Instant endTime) {
     // instrumenterAccess is guaranteed to be non-null here
     return instrumenterAccess.startAndEnd(
-        instrumenter, parentContext, request, response, error, startTime, endTime);
+        instrumenter, parentContext, request, response, t, startTime, endTime);
   }
 
   public static <REQUEST, RESPONSE> Context suppressSpan(
@@ -147,13 +147,13 @@ public final class InstrumenterUtil {
           Context context,
           REQUESTTO requestTo,
           @Nullable RESPONSETO responseTo,
-          @Nullable Throwable error) {
+          @Nullable Throwable t) {
         extractor.onEnd(
             attributes,
             context,
             requestConverter.apply(requestTo),
             responseConverter.apply(responseTo),
-            error);
+            t);
       }
     };
   }

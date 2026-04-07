@@ -97,10 +97,10 @@ public final class ExecutorAdviceHelper {
    */
   public static <T> void cleanUpAfterSubmit(
       @Nullable PropagatedContext propagatedContext,
-      @Nullable Throwable throwable,
+      @Nullable Throwable t,
       VirtualField<T, PropagatedContext> virtualField,
       T task) {
-    if (propagatedContext != null && throwable != null) {
+    if (propagatedContext != null && t != null) {
       /*
       Note: this may potentially clear somebody else's parent span if we didn't set it
       up in setupState because it was already present before us. This should be safe but

@@ -67,10 +67,10 @@ class RequestHandlerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable, boolean handled) {
+      public void end(@Nullable Throwable t, boolean handled) {
         scope.close();
 
-        helper().endRequestHandlerSpan(context, request, throwable, handled);
+        helper().endRequestHandlerSpan(context, request, t, handled);
       }
     }
 
@@ -84,11 +84,11 @@ class RequestHandlerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Return boolean handled,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, handled);
+        adviceScope.end(t, handled);
       }
     }
   }

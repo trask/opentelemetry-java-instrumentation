@@ -60,7 +60,7 @@ public class ServletHttpAttributesGetter<REQUEST, RESPONSE>
   public Integer getHttpResponseStatusCode(
       ServletRequestContext<REQUEST> requestContext,
       ServletResponseContext<RESPONSE> responseContext,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     RESPONSE response = responseContext.response();
 
     // OpenLiberty might call the AsyncListener with an AsyncEvent that does not contain a response
@@ -69,7 +69,7 @@ public class ServletHttpAttributesGetter<REQUEST, RESPONSE>
       return null;
     }
 
-    if (!accessor.isResponseCommitted(response) && error != null) {
+    if (!accessor.isResponseCommitted(response) && t != null) {
       // if response is not committed and there is a throwable set status to 500 /
       // INTERNAL_SERVER_ERROR, due to servlet spec
       // https://javaee.github.io/servlet-spec/downloads/servlet-4.0/servlet-4_0_FINAL.pdf:

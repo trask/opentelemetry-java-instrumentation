@@ -47,12 +47,12 @@ public class Servlet3ResponseSendAdvice {
       }
     }
 
-    public void exit(@Nullable Throwable throwable) {
+    public void exit(@Nullable Throwable t) {
       if (callDepth.decrementAndGet() > 0) {
         return;
       }
       HttpServletResponseAdviceHelper.stopSpan(
-          responseInstrumenter(), throwable, context, scope, classAndMethod);
+          responseInstrumenter(), t, context, scope, classAndMethod);
     }
   }
 
@@ -64,8 +64,7 @@ public class Servlet3ResponseSendAdvice {
   }
 
   @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
-  public static void stopSpan(
-      @Advice.Thrown Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
-    adviceScope.exit(throwable);
+  public static void stopSpan(@Advice.Thrown Throwable t, @Advice.Enter AdviceScope adviceScope) {
+    adviceScope.exit(t);
   }
 }

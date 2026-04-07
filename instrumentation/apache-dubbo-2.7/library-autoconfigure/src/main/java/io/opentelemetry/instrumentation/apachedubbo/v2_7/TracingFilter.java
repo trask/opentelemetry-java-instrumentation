@@ -59,9 +59,9 @@ final class TracingFilter implements Filter {
               (o, throwable) -> instrumenter.end(context, request, result, throwable));
         }
       }
-    } catch (Throwable e) {
-      instrumenter.end(context, request, null, e);
-      throw e;
+    } catch (Throwable t) {
+      instrumenter.end(context, request, null, t);
+      throw t;
     }
     if (isSynchronous) {
       instrumenter.end(context, request, result, result.getException());

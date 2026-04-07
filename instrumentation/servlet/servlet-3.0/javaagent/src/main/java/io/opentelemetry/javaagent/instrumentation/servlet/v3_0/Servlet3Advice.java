@@ -84,10 +84,10 @@ public class Servlet3Advice {
     }
 
     public void exit(
-        @Nullable Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
+        @Nullable Throwable t, HttpServletRequest request, HttpServletResponse response) {
 
       boolean topLevel = callDepth.decrementAndGet() == 0;
-      helper().end(requestContext, request, response, throwable, topLevel, context, scope);
+      helper().end(requestContext, request, response, t, topLevel, context, scope);
     }
   }
 
@@ -127,7 +127,7 @@ public class Servlet3Advice {
   public static void stopSpan(
       @Advice.Argument(0) ServletRequest request,
       @Advice.Argument(1) ServletResponse response,
-      @Advice.Thrown @Nullable Throwable throwable,
+      @Advice.Thrown @Nullable Throwable t,
       @Advice.Enter Object[] enterResult) {
     AdviceScope adviceScope = (AdviceScope) enterResult[0];
     if (adviceScope == null
@@ -135,6 +135,6 @@ public class Servlet3Advice {
         || !(response instanceof HttpServletResponse)) {
       return;
     }
-    adviceScope.exit(throwable, (HttpServletRequest) request, (HttpServletResponse) response);
+    adviceScope.exit(t, (HttpServletRequest) request, (HttpServletResponse) response);
   }
 }

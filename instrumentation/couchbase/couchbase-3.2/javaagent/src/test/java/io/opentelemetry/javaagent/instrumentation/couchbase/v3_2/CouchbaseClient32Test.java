@@ -67,7 +67,7 @@ class CouchbaseClient32Test {
   void testEmitsSpans() {
     try {
       collection.get("id");
-    } catch (DocumentNotFoundException e) {
+    } catch (DocumentNotFoundException ignored) {
       // Expected
     }
 

@@ -44,11 +44,11 @@ public class HttpServerResponseTracingHandler extends ChannelOutboundHandlerAdap
   }
 
   // make sure to remove the server context on end() call
-  private static void end(Channel channel, HttpResponse response, @Nullable Throwable error) {
+  private static void end(Channel channel, HttpResponse response, @Nullable Throwable t) {
     Context context = channel.attr(AttributeKeys.SERVER_CONTEXT).getAndRemove();
     NettyCommonRequest request = channel.attr(HTTP_SERVER_REQUEST).getAndRemove();
-    error = NettyErrorHolder.getOrDefault(context, error);
-    instrumenter().end(context, request, response, error);
+    t = NettyErrorHolder.getOrDefault(context, t);
+    instrumenter().end(context, request, response, t);
   }
 
   private static void customizeResponse(Context context, HttpResponse response) {

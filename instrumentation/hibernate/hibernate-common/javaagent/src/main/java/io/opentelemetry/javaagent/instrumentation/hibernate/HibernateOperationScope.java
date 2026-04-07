@@ -69,9 +69,9 @@ public class HibernateOperationScope {
    * Ends operation scope.
    *
    * @param scope hibernate operation scope or {@literal null} when there is none
-   * @param throwable thrown exception
+   * @param t thrown exception
    */
-  public static void end(@Nullable HibernateOperationScope scope, @Nullable Throwable throwable) {
+  public static void end(@Nullable HibernateOperationScope scope, @Nullable Throwable t) {
 
     CallDepth callDepth = CallDepth.forClass(HibernateOperation.class);
     if (callDepth.decrementAndGet() > 0) {
@@ -79,12 +79,12 @@ public class HibernateOperationScope {
     }
 
     if (scope != null) {
-      scope.end(throwable);
+      scope.end(t);
     }
   }
 
-  private void end(@Nullable Throwable throwable) {
+  private void end(@Nullable Throwable t) {
     scope.close();
-    instrumenter.end(context, hibernateOperation, null, throwable);
+    instrumenter.end(context, hibernateOperation, null, t);
   }
 }

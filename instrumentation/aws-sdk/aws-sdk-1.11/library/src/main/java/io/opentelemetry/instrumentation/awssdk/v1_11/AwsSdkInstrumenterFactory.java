@@ -154,8 +154,8 @@ final class AwsSdkInstrumenterFactory {
                 Context context,
                 AbstractSqsRequest sqsRequest,
                 @Nullable Response<?> response,
-                @Nullable Throwable error) {
-              extractor.onEnd(attributes, context, sqsRequest.getRequest(), response, error);
+                @Nullable Throwable t) {
+              extractor.onEnd(attributes, context, sqsRequest.getRequest(), response, t);
             }
           });
     }

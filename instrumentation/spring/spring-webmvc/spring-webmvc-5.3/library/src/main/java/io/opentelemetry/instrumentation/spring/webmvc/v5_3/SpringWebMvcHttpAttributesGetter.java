@@ -34,7 +34,7 @@ class SpringWebMvcHttpAttributesGetter
 
   @Override
   public Integer getHttpResponseStatusCode(
-      HttpServletRequest request, HttpServletResponse response, @Nullable Throwable error) {
+      HttpServletRequest request, HttpServletResponse response, @Nullable Throwable t) {
 
     int statusCode;
     // if response is not committed and there is a throwable set status to 500 /
@@ -42,7 +42,7 @@ class SpringWebMvcHttpAttributesGetter
     // https://javaee.github.io/servlet-spec/downloads/servlet-4.0/servlet-4_0_FINAL.pdf:
     // "If a servlet generates an error that is not handled by the error page mechanism as
     // described above, the container must ensure to send a response with status 500."
-    if (!response.isCommitted() && error != null) {
+    if (!response.isCommitted() && t != null) {
       statusCode = 500;
     } else {
       statusCode = response.getStatus();

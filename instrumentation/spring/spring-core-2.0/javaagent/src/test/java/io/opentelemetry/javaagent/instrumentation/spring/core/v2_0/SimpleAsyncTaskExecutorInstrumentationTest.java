@@ -39,7 +39,7 @@ class SimpleAsyncTaskExecutorInstrumentationTest {
   private static Method findMethod(String name, Class<?>... parameterTypes) {
     try {
       return SimpleAsyncTaskExecutor.class.getMethod(name, parameterTypes);
-    } catch (NoSuchMethodException e) {
+    } catch (NoSuchMethodException ignored) {
       return null;
     }
   }
@@ -80,8 +80,8 @@ class SimpleAsyncTaskExecutorInstrumentationTest {
           try {
             task.accept(child1);
             task.accept(child2);
-          } catch (Throwable throwable) {
-            throw new AssertionError(throwable);
+          } catch (Throwable t) {
+            throw new AssertionError(t);
           }
           child1.waitForCompletion();
           child2.waitForCompletion();

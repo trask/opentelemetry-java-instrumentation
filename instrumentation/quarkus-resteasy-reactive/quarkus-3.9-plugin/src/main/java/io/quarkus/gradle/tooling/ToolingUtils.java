@@ -139,7 +139,7 @@ public class ToolingUtils {
       } else {
         return null;
       }
-    } catch (IllegalStateException ise) {
+    } catch (IllegalStateException ignored) {
       // This can happen if the project itself is in an included build, which means that the root-project
       // is not yet known, so `DefaultGradle.getRootProject()` throws an ISE.
       return null;
@@ -168,7 +168,7 @@ public class ToolingUtils {
       final Project rootProject = dib.getTarget().getMutableModel().getRootProject();
 
       return findLocalProject(rootProject, dependency);
-    } catch (IllegalStateException ise) {
+    } catch (IllegalStateException ignored) {
       // This can happen if the project itself is in an included build, which means that the root-project
       // is not yet known, so `DefaultGradle.getRootProject()` throws an ISE.
       return null;

@@ -82,13 +82,13 @@ public class ServerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, request, context, context.makeCurrent());
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return;
         }
         scope.close();
         // scope non-null implies context and request are both non-null (see enter method above)
-        serverInstrumenter().end(requireNonNull(context), requireNonNull(request), null, throwable);
+        serverInstrumenter().end(requireNonNull(context), requireNonNull(request), null, t);
       }
     }
 
@@ -101,10 +101,9 @@ public class ServerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(throwable);
+        adviceScope.exit(t);
       }
     }
   }

@@ -154,8 +154,8 @@ public class DependencyUtils {
         if (Files.exists(descriptorPath)) {
           return createExtensionDependency(project, artifactId, descriptorPath);
         }
-      } catch (IOException x) {
-        throw new GradleException("Failed to read " + artifactFile, x);
+      } catch (IOException e) {
+        throw new GradleException("Failed to read " + artifactFile, e);
       }
     }
 
@@ -212,8 +212,8 @@ public class DependencyUtils {
     Properties descriptor = new Properties();
     try (InputStream inputStream = Files.newInputStream(descriptorPath)) {
       descriptor.load(inputStream);
-    } catch (IOException x) {
-      throw new GradleException("Failed to load extension descriptor at " + descriptorPath, x);
+    } catch (IOException e) {
+      throw new GradleException("Failed to load extension descriptor at " + descriptorPath, e);
     }
 
     return descriptor;

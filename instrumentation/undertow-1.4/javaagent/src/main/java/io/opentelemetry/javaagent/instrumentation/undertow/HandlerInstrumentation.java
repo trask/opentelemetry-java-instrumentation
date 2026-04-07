@@ -80,10 +80,10 @@ class HandlerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, scope);
       }
 
-      public void end(HttpServerExchange exchange, @Nullable Throwable throwable) {
+      public void end(HttpServerExchange exchange, @Nullable Throwable t) {
         scope.close();
 
-        helper().handlerCompleted(context, throwable, exchange);
+        helper().handlerCompleted(context, t, exchange);
       }
     }
 
@@ -96,10 +96,10 @@ class HandlerInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.Argument(0) HttpServerExchange exchange,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(exchange, throwable);
+        adviceScope.end(exchange, t);
       }
     }
   }

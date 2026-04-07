@@ -46,7 +46,7 @@ public class MetroHelper {
     end(packet, null);
   }
 
-  public static void end(Packet packet, Throwable throwable) {
+  public static void end(Packet packet, Throwable t) {
     Scope scope = (Scope) packet.invocationProperties.remove(SCOPE_KEY);
     if (scope == null) {
       return;
@@ -55,13 +55,13 @@ public class MetroHelper {
 
     MetroRequest request = (MetroRequest) packet.invocationProperties.remove(REQUEST_KEY);
     Context context = (Context) packet.invocationProperties.remove(CONTEXT_KEY);
-    if (throwable == null) {
-      throwable = (Throwable) packet.invocationProperties.remove(THROWABLE_KEY);
+    if (t == null) {
+      t = (Throwable) packet.invocationProperties.remove(THROWABLE_KEY);
     }
-    instrumenter().end(context, request, null, throwable);
+    instrumenter().end(context, request, null, t);
   }
 
-  public static void storeThrowable(Packet packet, Throwable throwable) {
-    packet.invocationProperties.put(THROWABLE_KEY, throwable);
+  public static void storeThrowable(Packet packet, Throwable t) {
+    packet.invocationProperties.put(THROWABLE_KEY, t);
   }
 }

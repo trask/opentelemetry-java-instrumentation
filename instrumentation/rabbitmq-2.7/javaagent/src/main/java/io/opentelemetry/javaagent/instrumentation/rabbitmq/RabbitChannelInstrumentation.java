@@ -129,7 +129,7 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
         return new ChannelMethodAdviceScope(callDepth, context, context.makeCurrent(), request);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -140,7 +140,7 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
         scope.close();
 
         CURRENT_RABBIT_CONTEXT.remove();
-        channelInstrumenter(request).end(context, request, null, throwable);
+        channelInstrumenter(request).end(context, request, null, t);
       }
     }
 
@@ -152,9 +152,8 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter ChannelMethodAdviceScope adviceScope) {
-      adviceScope.end(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter ChannelMethodAdviceScope adviceScope) {
+      adviceScope.end(t);
     }
   }
 
@@ -232,10 +231,7 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          Channel channel,
-          String queue,
-          @Nullable GetResponse response,
-          @Nullable Throwable throwable) {
+          Channel channel, String queue, @Nullable GetResponse response, @Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -249,13 +245,7 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
         // can't create span and put into scope in method enter above, because can't add parent
         // after span creation
         InstrumenterUtil.startAndEnd(
-            receiveInstrumenter(),
-            parentContext,
-            request,
-            null,
-            throwable,
-            timer.startTime(),
-            timer.now());
+            receiveInstrumenter(), parentContext, request, null, t, timer.startTime(), timer.now());
       }
     }
 
@@ -269,9 +259,9 @@ class RabbitChannelInstrumentation implements TypeInstrumentation {
         @Advice.This Channel channel,
         @Advice.Argument(0) String queue,
         @Advice.Return @Nullable GetResponse response,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter ChannelGetAdviceScope adviceScope) {
-      adviceScope.end(channel, queue, response, throwable);
+      adviceScope.end(channel, queue, response, t);
     }
   }
 

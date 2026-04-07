@@ -94,7 +94,7 @@ public class JdbcAdviceScope {
     }
   }
 
-  public void end(@Nullable Throwable throwable) {
+  public void end(@Nullable Throwable t) {
     if (callDepth.decrementAndGet() > 0) {
       return;
     }
@@ -102,6 +102,6 @@ public class JdbcAdviceScope {
       return;
     }
     scope.close();
-    statementInstrumenter().end(context, request, null, throwable);
+    statementInstrumenter().end(context, request, null, t);
   }
 }

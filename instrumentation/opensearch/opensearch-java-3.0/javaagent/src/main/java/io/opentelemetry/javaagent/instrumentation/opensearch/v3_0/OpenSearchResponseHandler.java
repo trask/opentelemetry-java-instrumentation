@@ -20,8 +20,8 @@ public class OpenSearchResponseHandler implements BiConsumer<Object, Throwable> 
   }
 
   @Override
-  public void accept(Object response, Throwable error) {
+  public void accept(Object response, Throwable t) {
     // OpenSearch responses don't provide response information, so the span is closed with null.
-    instrumenter().end(context, otelRequest, null, error);
+    instrumenter().end(context, otelRequest, null, t);
   }
 }

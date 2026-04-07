@@ -133,8 +133,8 @@ public class InstrumentationModuleClassLoader extends ClassLoader {
                 MethodHandles.publicLookup()
                     .findStatic(lookupExposer, "getLookup", getLookupType)
                     .invoke();
-      } catch (Throwable e) {
-        throw new IllegalStateException(e);
+      } catch (Throwable t) {
+        throw new IllegalStateException(t);
       }
     }
     return cachedLookup;
@@ -269,7 +269,7 @@ public class InstrumentationModuleClassLoader extends ClassLoader {
   private static Class<?> tryLoad(@Nullable ClassLoader cl, String name) {
     try {
       return Class.forName(name, false, cl);
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return null;
     }
   }
@@ -400,14 +400,14 @@ public class InstrumentationModuleClassLoader extends ClassLoader {
     MethodHandles.Lookup lookup = MethodHandles.lookup();
     try {
       return lookup.findVirtual(ClassLoader.class, "getDefinedPackage", methodType);
-    } catch (NoSuchMethodException | IllegalAccessException e) {
+    } catch (NoSuchMethodException | IllegalAccessException ignored) {
       // In Java 8 getDefinedPackage does not exist (HotSpot) or is not accessible (OpenJ9)
       try {
         return lookup.findVirtual(ClassLoader.class, "getPackage", methodType);
-      } catch (NoSuchMethodException f) {
-        throw new IllegalStateException("expected method to always exist!", f);
-      } catch (IllegalAccessException f) {
-        throw new IllegalStateException("Method should be accessible from here", f);
+      } catch (NoSuchMethodException e) {
+        throw new IllegalStateException("expected method to always exist!", e);
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException("Method should be accessible from here", e);
       }
     }
   }

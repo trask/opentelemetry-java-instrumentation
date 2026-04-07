@@ -29,13 +29,13 @@ final class ApplicationLogger implements InternalLogger {
   }
 
   @Override
-  public void log(Level level, String message, @Nullable Throwable error) {
+  public void log(Level level, String message, @Nullable Throwable t) {
     InternalLogger actual = this.actual;
     if (actual == null) {
-      inMemoryLogStore.write(InMemoryLog.create(name, level, message, error));
+      inMemoryLogStore.write(InMemoryLog.create(name, level, message, t));
       return;
     }
-    actual.log(level, message, error);
+    actual.log(level, message, t);
   }
 
   @Override

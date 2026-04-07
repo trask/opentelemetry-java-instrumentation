@@ -24,7 +24,7 @@ public class TestClass implements Runnable, Serializable {
     try {
       return Class.forName(
           "instrumentation.TestHelperClass", false, TestClass.class.getClassLoader());
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return null;
     }
   }

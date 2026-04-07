@@ -67,12 +67,12 @@ class JaxrsAsyncResponseInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.This AsyncResponse asyncResponse, @Advice.Argument(0) Throwable throwable) {
+        @Advice.This AsyncResponse asyncResponse, @Advice.Argument(0) Throwable t) {
 
       AsyncResponseData data = ASYNC_RESPONSE_DATA.get(asyncResponse);
       if (data != null) {
         ASYNC_RESPONSE_DATA.set(asyncResponse, null);
-        instrumenter().end(data.getContext(), data.getHandlerData(), null, throwable);
+        instrumenter().end(data.getContext(), data.getHandlerData(), null, t);
       }
     }
   }

@@ -43,7 +43,7 @@ class AbstractChannelHandlerContextInstrumentation implements TypeInstrumentatio
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static void onEnter(
-        @Advice.This ChannelHandlerContext ctx, @Advice.Argument(0) Throwable throwable) {
+        @Advice.This ChannelHandlerContext ctx, @Advice.Argument(0) Throwable t) {
 
       // we can't rely on exception handling in HttpClientTracingHandler because it can't catch
       // exceptions from handlers that run after it, for example ratpack has ReadTimeoutHandler
@@ -54,12 +54,12 @@ class AbstractChannelHandlerContextInstrumentation implements TypeInstrumentatio
         ctx.channel().attr(AttributeKeys.CLIENT_PARENT_CONTEXT).remove();
         contextAttr.remove();
         NettyCommonRequest request = ctx.channel().attr(HTTP_CLIENT_REQUEST).getAndRemove();
-        instrumenter().end(clientContext, request, null, throwable);
+        instrumenter().end(clientContext, request, null, t);
         return;
       }
       ServerContext serverContext = ServerContexts.peekFirst(ctx.channel());
       if (serverContext != null) {
-        NettyErrorHolder.set(serverContext.context(), throwable);
+        NettyErrorHolder.set(serverContext.context(), t);
       }
     }
   }

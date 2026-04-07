@@ -44,7 +44,7 @@ class AbstractChannelHandlerContextInstrumentation implements TypeInstrumentatio
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static void onEnter(
-        @Advice.This ChannelHandlerContext ctx, @Advice.Argument(0) Throwable throwable) {
+        @Advice.This ChannelHandlerContext ctx, @Advice.Argument(0) Throwable t) {
 
       Attribute<Context> contextAttr = ctx.channel().attr(AttributeKeys.CLIENT_CONTEXT);
       Context clientContext = contextAttr.get();
@@ -52,13 +52,13 @@ class AbstractChannelHandlerContextInstrumentation implements TypeInstrumentatio
         ctx.channel().attr(AttributeKeys.CLIENT_PARENT_CONTEXT).remove();
         contextAttr.remove();
         NettyCommonRequest request = ctx.channel().attr(HTTP_CLIENT_REQUEST).getAndRemove();
-        instrumenter().end(clientContext, request, null, throwable);
+        instrumenter().end(clientContext, request, null, t);
         return;
       }
 
       Context serverContext = ctx.channel().attr(AttributeKeys.SERVER_CONTEXT).get();
       if (serverContext != null) {
-        NettyErrorHolder.set(serverContext, throwable);
+        NettyErrorHolder.set(serverContext, t);
       }
     }
   }

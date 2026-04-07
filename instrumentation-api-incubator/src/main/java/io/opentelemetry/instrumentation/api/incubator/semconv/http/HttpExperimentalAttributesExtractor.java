@@ -96,7 +96,7 @@ public final class HttpExperimentalAttributesExtractor<REQUEST, RESPONSE>
     }
     try {
       return Long.parseLong(number);
-    } catch (NumberFormatException e) {
+    } catch (NumberFormatException ignored) {
       // not a number
       return null;
     }

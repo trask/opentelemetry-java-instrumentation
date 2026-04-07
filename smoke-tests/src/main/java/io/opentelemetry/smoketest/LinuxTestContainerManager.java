@@ -119,20 +119,20 @@ public class LinuxTestContainerManager extends AbstractTestContainerManager {
 
     try {
       target.start();
-    } catch (ContainerLaunchException launchException) {
+    } catch (ContainerLaunchException e) {
       // when container failed to start try to force a thread dump
       try {
         Container.ExecResult execResult = target.execInContainer("killall", "-3", "java");
         if (execResult.getExitCode() != 0) {
           logger.warn("Command execution failed {}", execResult);
         }
-      } catch (IOException exception) {
-        logger.warn("Command execution failed", exception);
-      } catch (InterruptedException exception) {
+      } catch (IOException f) {
+        logger.warn("Command execution failed", f);
+      } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
       }
 
-      throw launchException;
+      throw e;
     }
 
     return output;

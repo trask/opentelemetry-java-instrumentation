@@ -56,9 +56,9 @@ class TracingSingleObserver<T> implements SingleObserver<T>, Disposable {
   }
 
   @Override
-  public void onError(Throwable throwable) {
+  public void onError(Throwable t) {
     try (Scope ignored = context.makeCurrent()) {
-      actual.onError(throwable);
+      actual.onError(t);
     }
   }
 

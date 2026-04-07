@@ -51,9 +51,8 @@ class OkHttp3DispatcherInstrumentation implements TypeInstrumentation {
     public static void onExit(
         @Advice.Argument(0) Runnable call,
         @Advice.Enter PropagatedContext propagatedContext,
-        @Advice.Thrown Throwable throwable) {
-      ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, PROPAGATED_CONTEXT, call);
+        @Advice.Thrown Throwable t) {
+      ExecutorAdviceHelper.cleanUpAfterSubmit(propagatedContext, t, PROPAGATED_CONTEXT, call);
     }
   }
 }

@@ -22,7 +22,7 @@ public class EndOperationListener<T> implements BiConsumer<T, Throwable> {
   }
 
   @Override
-  public void accept(T t, Throwable error) {
-    instrumenter.end(context, request, null, error);
+  public void accept(T result, Throwable t) {
+    instrumenter.end(context, request, null, t);
   }
 }

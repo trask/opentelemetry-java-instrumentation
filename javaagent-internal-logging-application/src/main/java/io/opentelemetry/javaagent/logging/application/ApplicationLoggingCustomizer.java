@@ -35,9 +35,9 @@ public final class ApplicationLoggingCustomizer implements LoggingCustomizer {
 
   @Override
   @SuppressWarnings("SystemOut")
-  public void onStartupFailure(Throwable throwable) {
+  public void onStartupFailure(Throwable t) {
     // most likely the application bridge wasn't initialized, let's just print
     System.err.println("OpenTelemetry Javaagent failed to start");
-    throwable.printStackTrace();
+    t.printStackTrace();
   }
 }

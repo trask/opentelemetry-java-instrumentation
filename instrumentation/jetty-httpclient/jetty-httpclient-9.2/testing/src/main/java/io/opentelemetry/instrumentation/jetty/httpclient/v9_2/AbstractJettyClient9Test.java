@@ -99,13 +99,13 @@ public abstract class AbstractJettyClient9Test extends AbstractHttpClientTest<Re
     private volatile Throwable failure;
 
     @Override
-    public void onFailure(Request requestF, Throwable failure) {
-      this.failure = failure;
+    public void onFailure(Request requestF, Throwable t) {
+      this.failure = t;
     }
 
     @Override
-    public void onFailure(Response responseF, Throwable failure) {
-      this.failure = failure;
+    public void onFailure(Response responseF, Throwable t) {
+      this.failure = t;
     }
   }
 

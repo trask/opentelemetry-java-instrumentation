@@ -45,7 +45,7 @@ public final class NettySslInstrumentationHandler extends ChannelDuplexHandler {
           MethodHandles.lookup()
               .findVirtual(
                   sslHandshakeCompletionEvent, "cause", MethodType.methodType(Throwable.class));
-    } catch (Throwable t) {
+    } catch (Throwable ignored) {
       // no SSL classes on classpath
     }
     SSL_HANDSHAKE_COMPLETION_EVENT = sslHandshakeCompletionEvent;
@@ -132,7 +132,7 @@ public final class NettySslInstrumentationHandler extends ChannelDuplexHandler {
     }
     try {
       return (Throwable) getCause.invoke(evt);
-    } catch (Throwable e) {
+    } catch (Throwable ignored) {
       // should not ever happen
       return null;
     }

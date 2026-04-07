@@ -76,7 +76,7 @@ public class ResponseInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static Scope onEnter(
-        @Advice.This AsyncCompletionHandler<?> handler, @Advice.Argument(0) Throwable throwable) {
+        @Advice.This AsyncCompletionHandler<?> handler, @Advice.Argument(0) Throwable t) {
 
       AsyncHandlerData data = ASYNC_HANDLER_DATA.get(handler);
       if (data == null) {
@@ -84,7 +84,7 @@ public class ResponseInstrumentation implements TypeInstrumentation {
       }
       ASYNC_HANDLER_DATA.set(handler, null);
 
-      data.end(null, throwable);
+      data.end(null, t);
       return data.getParentContext().makeCurrent();
     }
 

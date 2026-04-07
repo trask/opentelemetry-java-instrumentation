@@ -99,7 +99,7 @@ public class LogEventMapper {
       Category logger,
       Priority level,
       @Nullable Object message,
-      @Nullable Throwable throwable) {
+      @Nullable Throwable t) {
     String instrumentationName = logger.getName();
     if (instrumentationName == null || instrumentationName.isEmpty()) {
       instrumentationName = "ROOT";
@@ -123,8 +123,8 @@ public class LogEventMapper {
     }
 
     // throwable
-    if (throwable != null) {
-      builder.setException(throwable);
+    if (t != null) {
+      builder.setException(t);
     }
 
     captureMdcAttributes(builder);
@@ -161,7 +161,7 @@ public class LogEventMapper {
       if (!lineNumber.equals("?")) {
         try {
           codeLineNo = Integer.parseInt(lineNumber);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ignored) {
           // ignore
         }
       }

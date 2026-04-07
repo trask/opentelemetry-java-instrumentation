@@ -70,11 +70,11 @@ class RedisConnectionInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, scope);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
 
-        if (throwable != null) {
-          instrumenter().end(context, request, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, request, null, t);
         }
         // span ended in EndOperationListener
       }
@@ -89,10 +89,9 @@ class RedisConnectionInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

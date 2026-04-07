@@ -33,7 +33,7 @@ public class CouchbaseQuerySanitizer {
     Class<?> queryClass;
     try {
       queryClass = Class.forName("com.couchbase.client.java.query.Query");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       queryClass = null;
     }
     QUERY_CLASS = queryClass;
@@ -41,7 +41,7 @@ public class CouchbaseQuerySanitizer {
     Class<?> statementClass;
     try {
       statementClass = Class.forName("com.couchbase.client.java.query.Statement");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       statementClass = null;
     }
     STATEMENT_CLASS = statementClass;
@@ -57,7 +57,7 @@ public class CouchbaseQuerySanitizer {
                   "statement",
                   MethodType.methodType(
                       Class.forName("com.couchbase.client.java.query.Statement")));
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       n1qlQueryClass = null;
       n1qlGetStatement = null;
     }
@@ -71,7 +71,7 @@ public class CouchbaseQuerySanitizer {
       analyticsGetStatement =
           MethodHandles.publicLookup()
               .findVirtual(analyticsQueryClass, "statement", MethodType.methodType(String.class));
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       analyticsQueryClass = null;
       analyticsGetStatement = null;
     }
@@ -127,7 +127,7 @@ public class CouchbaseQuerySanitizer {
     }
     try {
       return handle.invoke(query).toString();
-    } catch (Throwable throwable) {
+    } catch (Throwable ignored) {
       return null;
     }
   }

@@ -74,9 +74,9 @@ class GwtRpcInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(Method method, @Nullable Throwable throwable) {
+      public void end(Method method, @Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, method, null, throwable);
+        instrumenter().end(context, method, null, t);
       }
     }
 
@@ -89,10 +89,10 @@ class GwtRpcInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.Argument(1) Method method,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(method, throwable);
+        adviceScope.end(method, t);
       }
     }
   }
@@ -101,8 +101,8 @@ class GwtRpcInstrumentation implements TypeInstrumentation {
   public static class EncodeResponseForFailureAdvice {
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
-    public static void onEnter(@Advice.Argument(1) @Nullable Throwable throwable) {
-      if (throwable == null) {
+    public static void onEnter(@Advice.Argument(1) @Nullable Throwable t) {
+      if (t == null) {
         return;
       }
       Context context = Java8BytecodeBridge.currentContext();
@@ -110,7 +110,7 @@ class GwtRpcInstrumentation implements TypeInstrumentation {
         // not inside rpc invocation
         return;
       }
-      Java8BytecodeBridge.spanFromContext(context).recordException(throwable);
+      Java8BytecodeBridge.spanFromContext(context).recordException(t);
     }
   }
 }

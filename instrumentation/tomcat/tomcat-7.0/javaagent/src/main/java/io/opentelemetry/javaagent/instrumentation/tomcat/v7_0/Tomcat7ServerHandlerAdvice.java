@@ -44,8 +44,8 @@ public class Tomcat7ServerHandlerAdvice {
       return new AdviceScope(context, scope);
     }
 
-    public void end(Request request, Response response, Throwable throwable) {
-      helper().end(request, response, throwable, context, scope);
+    public void end(Request request, Response response, Throwable t) {
+      helper().end(request, response, t, context, scope);
     }
   }
 
@@ -60,10 +60,10 @@ public class Tomcat7ServerHandlerAdvice {
   public static void stopSpan(
       @Advice.Argument(0) Request request,
       @Advice.Argument(1) Response response,
-      @Advice.Thrown @Nullable Throwable throwable,
+      @Advice.Thrown @Nullable Throwable t,
       @Advice.Enter @Nullable AdviceScope adviceScope) {
     if (adviceScope != null) {
-      adviceScope.end(request, response, throwable);
+      adviceScope.end(request, response, t);
     }
   }
 }

@@ -28,9 +28,9 @@ public class DownstreamWrapper<T> implements Downstream<T> {
   }
 
   @Override
-  public void error(Throwable throwable) {
+  public void error(Throwable t) {
     try (Scope ignored = parentContext.makeCurrent()) {
-      delegate.error(throwable);
+      delegate.error(t);
     }
   }
 

@@ -85,9 +85,9 @@ final class InstrumentedKafkaFlux<R extends ConsumerRecord<?, ?>> extends FluxOp
     }
 
     @Override
-    public void onError(Throwable throwable) {
+    public void onError(Throwable t) {
       try (Scope ignored = currentContext.makeCurrent()) {
-        actual.onError(throwable);
+        actual.onError(t);
       }
     }
 

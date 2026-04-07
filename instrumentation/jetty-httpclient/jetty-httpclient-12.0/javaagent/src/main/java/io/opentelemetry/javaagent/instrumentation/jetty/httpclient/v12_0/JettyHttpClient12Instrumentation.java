@@ -72,7 +72,7 @@ class JettyHttpClient12Instrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExitSend(
         @Advice.This HttpRequest request,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter @Nullable AdviceLocals locals) {
 
       if (locals == null) {
@@ -81,8 +81,8 @@ class JettyHttpClient12Instrumentation implements TypeInstrumentation {
 
       // not ending span here unless error, span ended in the interceptor
       locals.scope.close();
-      if (throwable != null) {
-        instrumenter().end(locals.context, request, null, throwable);
+      if (t != null) {
+        instrumenter().end(locals.context, request, null, t);
       }
     }
   }

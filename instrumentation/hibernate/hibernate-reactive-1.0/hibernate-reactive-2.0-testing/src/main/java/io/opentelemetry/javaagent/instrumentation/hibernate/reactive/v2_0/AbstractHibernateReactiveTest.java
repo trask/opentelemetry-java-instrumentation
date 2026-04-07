@@ -283,9 +283,9 @@ public abstract class AbstractHibernateReactiveTest {
   }
 
   private static void complete(
-      CompletableFuture<Object> completableFuture, Object result, Throwable throwable) {
-    if (throwable != null) {
-      completableFuture.completeExceptionally(throwable);
+      CompletableFuture<Object> completableFuture, Object result, Throwable t) {
+    if (t != null) {
+      completableFuture.completeExceptionally(t);
     } else {
       completableFuture.complete(result);
     }

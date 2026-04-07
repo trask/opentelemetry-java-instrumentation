@@ -30,12 +30,12 @@ public class SpanFinisher implements BiConsumer<Message, Throwable> {
   }
 
   @Override
-  public void accept(Message message, Throwable throwable) {
+  public void accept(Message message, Throwable t) {
     if (message != null) {
       NatsRequest response = NatsRequest.create(connection, message);
-      instrumenter.end(context, request, response, throwable);
+      instrumenter.end(context, request, response, t);
     } else {
-      instrumenter.end(context, request, null, throwable);
+      instrumenter.end(context, request, null, t);
     }
   }
 }

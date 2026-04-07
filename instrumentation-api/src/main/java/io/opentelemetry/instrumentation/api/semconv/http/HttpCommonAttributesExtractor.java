@@ -82,11 +82,11 @@ abstract class HttpCommonAttributesExtractor<
       Context context,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
 
     Integer statusCode = null;
     if (response != null) {
-      statusCode = getter.getHttpResponseStatusCode(request, response, error);
+      statusCode = getter.getHttpResponseStatusCode(request, response, t);
       if (statusCode != null && statusCode > 0) {
         attributes.put(HTTP_RESPONSE_STATUS_CODE, (long) statusCode);
       }
@@ -105,10 +105,10 @@ abstract class HttpCommonAttributesExtractor<
         errorType = statusCode.toString();
       }
     } else {
-      errorType = getter.getErrorType(request, response, error);
+      errorType = getter.getErrorType(request, response, t);
       // fall back to exception class name & _OTHER
-      if (errorType == null && error != null) {
-        errorType = error.getClass().getName();
+      if (errorType == null && t != null) {
+        errorType = t.getClass().getName();
       }
       if (errorType == null) {
         errorType = _OTHER;

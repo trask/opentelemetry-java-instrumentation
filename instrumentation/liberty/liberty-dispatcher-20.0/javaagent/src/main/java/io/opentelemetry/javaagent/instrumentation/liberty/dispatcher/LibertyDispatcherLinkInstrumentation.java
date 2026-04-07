@@ -80,14 +80,14 @@ class LibertyDispatcherLinkInstrumentation implements TypeInstrumentation {
 
       public void end(
           HttpDispatcherLink httpDispatcherLink,
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           StatusCodes statusCode,
           @Nullable Exception failure) {
         scope.close();
 
         LibertyResponse response = new LibertyResponse(httpDispatcherLink, statusCode);
-        Throwable t = failure != null ? failure : throwable;
-        instrumenter().end(context, request, response, t);
+        Throwable error = failure != null ? failure : t;
+        instrumenter().end(context, request, response, error);
       }
     }
 
@@ -99,13 +99,13 @@ class LibertyDispatcherLinkInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.This HttpDispatcherLink httpDispatcherLink,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Argument(value = 0) StatusCodes statusCode,
         @Advice.Argument(value = 2) @Nullable Exception failure,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(httpDispatcherLink, throwable, statusCode, failure);
+        adviceScope.end(httpDispatcherLink, t, statusCode, failure);
       }
     }
   }

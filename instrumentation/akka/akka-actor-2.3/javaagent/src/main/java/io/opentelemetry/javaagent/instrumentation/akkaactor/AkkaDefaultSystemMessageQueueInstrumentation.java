@@ -58,12 +58,9 @@ class AkkaDefaultSystemMessageQueueInstrumentation implements TypeInstrumentatio
     public static void exit(
         @Advice.Argument(1) SystemMessage systemMessage,
         @Advice.Enter PropagatedContext propagatedContext,
-        @Advice.Thrown Throwable throwable) {
+        @Advice.Thrown Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext,
-          throwable,
-          VirtualFields.SYSTEM_MESSAGE_PROPAGATED_CONTEXT,
-          systemMessage);
+          propagatedContext, t, VirtualFields.SYSTEM_MESSAGE_PROPAGATED_CONTEXT, systemMessage);
     }
   }
 }

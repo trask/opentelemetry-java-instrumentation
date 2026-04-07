@@ -168,7 +168,7 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     return true;
   }
 
-  private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable exception) {
+  private static Throwable nettyClientSpanErrorMapper(URI uri, Throwable t) {
     if (uri.toString().equals("https://192.0.2.1/")) {
       return new ConnectTimeoutException(
           "connection timed out"
@@ -181,7 +181,7 @@ public abstract class AbstractRatpackHttpClientTest extends AbstractHttpClientTe
     } else if (uri.getPath().equals("/read-timeout")) {
       return ReadTimeoutException.INSTANCE;
     }
-    return exception;
+    return t;
   }
 
   private static String nettyExpectedClientSpanNameMapper(URI uri, String method) {

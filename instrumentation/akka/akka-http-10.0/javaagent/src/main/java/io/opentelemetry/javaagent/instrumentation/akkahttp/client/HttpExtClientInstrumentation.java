@@ -76,16 +76,16 @@ class HttpExtClientInstrumentation implements TypeInstrumentation {
           @Nullable ActorSystem actorSystem,
           HttpRequest request,
           @Nullable Future<HttpResponse> responseFuture,
-          @Nullable Throwable throwable) {
+          @Nullable Throwable t) {
 
         scope.close();
         if (actorSystem != null) {
-          if (throwable == null) {
+          if (t == null) {
             responseFuture.onComplete(
                 new OnCompleteHandler(context, request), actorSystem.dispatcher());
             return FutureWrapper.wrap(responseFuture, actorSystem.dispatcher(), Context.current());
           } else {
-            instrumenter().end(context, request, null, throwable);
+            instrumenter().end(context, request, null, t);
           }
         }
         return responseFuture;
@@ -113,7 +113,7 @@ class HttpExtClientInstrumentation implements TypeInstrumentation {
     public static Future<HttpResponse> methodExit(
         @Advice.This HttpExt thiz,
         @Advice.Return @Nullable Future<HttpResponse> responseFuture,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
 
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
@@ -121,7 +121,7 @@ class HttpExtClientInstrumentation implements TypeInstrumentation {
         return responseFuture;
       }
       ActorSystem actorSystem = AkkaHttpClientUtil.getActorSystem(thiz);
-      return adviceScope.end(actorSystem, (HttpRequest) enterResult[1], responseFuture, throwable);
+      return adviceScope.end(actorSystem, (HttpRequest) enterResult[1], responseFuture, t);
     }
   }
 }

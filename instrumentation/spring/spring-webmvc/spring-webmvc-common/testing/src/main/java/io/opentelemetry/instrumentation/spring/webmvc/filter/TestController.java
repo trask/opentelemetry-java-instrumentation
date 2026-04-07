@@ -68,7 +68,7 @@ public class TestController {
   }
 
   @ExceptionHandler
-  ResponseEntity<String> handleException(Throwable throwable) {
-    return new ResponseEntity<>(throwable.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+  ResponseEntity<String> handleException(Throwable t) {
+    return new ResponseEntity<>(t.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

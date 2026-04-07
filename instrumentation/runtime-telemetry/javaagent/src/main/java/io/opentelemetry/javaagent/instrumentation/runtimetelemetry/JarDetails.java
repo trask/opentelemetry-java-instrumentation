@@ -197,7 +197,7 @@ class JarDetails {
   protected Manifest getManifest() {
     try {
       return jarFile.getManifest();
-    } catch (IOException e) {
+    } catch (IOException ignored) {
       return null;
     }
   }
@@ -245,7 +245,7 @@ class JarDetails {
     protected Manifest getManifest() {
       try (JarInputStream jarFile = new JarInputStream(getInputStream())) {
         return jarFile.getManifest();
-      } catch (IOException e) {
+      } catch (IOException ignored) {
         return null;
       }
     }

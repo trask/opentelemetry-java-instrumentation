@@ -24,7 +24,7 @@ public class JmsReceiveSpanUtil {
       Instrumenter<MessageWithDestination, Void> receiveInstrumenter,
       MessageWithDestination request,
       Timer timer,
-      @Nullable Throwable throwable) {
+      @Nullable Throwable t) {
     Context parentContext = Context.current();
     // if receive instrumentation is not enabled we'll use the producer as parent
     if (!receiveInstrumentationEnabled) {
@@ -37,13 +37,7 @@ public class JmsReceiveSpanUtil {
     if (receiveInstrumenter.shouldStart(parentContext, request)) {
       Context receiveContext =
           InstrumenterUtil.startAndEnd(
-              receiveInstrumenter,
-              parentContext,
-              request,
-              null,
-              throwable,
-              timer.startTime(),
-              timer.now());
+              receiveInstrumenter, parentContext, request, null, t, timer.startTime(), timer.now());
       JmsReceiveContextHolder.set(receiveContext);
     }
   }

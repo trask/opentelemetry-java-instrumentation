@@ -30,7 +30,7 @@ public class ResponseConsumer implements BiConsumer<HttpResponse<?>, Throwable> 
   }
 
   @Override
-  public void accept(HttpResponse<?> httpResponse, Throwable throwable) {
-    instrumenter.end(context, httpRequest, httpResponse, throwable);
+  public void accept(HttpResponse<?> httpResponse, Throwable t) {
+    instrumenter.end(context, httpRequest, httpResponse, t);
   }
 }

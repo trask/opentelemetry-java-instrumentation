@@ -156,7 +156,7 @@ public class GarbageCollector {
           false,
           GarbageCollectorMXBean.class.getClassLoader());
       return true;
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return false;
     }
   }

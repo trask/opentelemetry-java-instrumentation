@@ -56,9 +56,9 @@ class JspCompilationContextInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable, JspCompilationContext jspCompilationContext) {
+      public void end(@Nullable Throwable t, JspCompilationContext jspCompilationContext) {
         scope.close();
-        instrumenter().end(context, jspCompilationContext, null, throwable);
+        instrumenter().end(context, jspCompilationContext, null, t);
       }
     }
 
@@ -71,10 +71,10 @@ class JspCompilationContextInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.This JspCompilationContext jspCompilationContext,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, jspCompilationContext);
+        adviceScope.end(t, jspCompilationContext);
       }
     }
   }

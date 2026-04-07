@@ -59,7 +59,7 @@ class KafkaConsumerInstrumentation implements TypeInstrumentation {
         @Advice.Enter Timer timer,
         @Advice.This Consumer<?, ?> consumer,
         @Advice.Return ConsumerRecords<?, ?> records,
-        @Advice.Thrown Throwable error) {
+        @Advice.Thrown Throwable t) {
 
       // don't create spans when no records were received
       if (records == null || records.isEmpty()) {
@@ -80,7 +80,7 @@ class KafkaConsumerInstrumentation implements TypeInstrumentation {
                   parentContext,
                   request,
                   null,
-                  error,
+                  t,
                   timer.startTime(),
                   timer.now());
         }

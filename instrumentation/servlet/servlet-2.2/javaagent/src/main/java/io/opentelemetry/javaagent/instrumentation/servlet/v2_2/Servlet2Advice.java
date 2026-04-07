@@ -71,7 +71,7 @@ public class Servlet2Advice {
     }
 
     public void exit(
-        @Nullable Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
+        @Nullable Throwable t, HttpServletRequest request, HttpServletResponse response) {
 
       if (scope != null) {
         scope.close();
@@ -82,8 +82,8 @@ public class Servlet2Advice {
         Context currentContext = Context.current();
         // Something else is managing the context, we're in the outermost level of Servlet
         // instrumentation and we have an uncaught throwable. Let's add it to the current span.
-        if (throwable != null) {
-          helper().recordException(currentContext, throwable);
+        if (t != null) {
+          helper().recordException(currentContext, t);
         }
         // also capture request parameters as servlet attributes
         helper().captureServletAttributes(currentContext, request);
@@ -99,7 +99,7 @@ public class Servlet2Advice {
         responseStatusCode = responseStatus;
       }
 
-      helper().end(context, requestContext, response, responseStatusCode, throwable);
+      helper().end(context, requestContext, response, responseStatusCode, t);
     }
   }
 
@@ -121,13 +121,13 @@ public class Servlet2Advice {
   public static void stopSpan(
       @Advice.Argument(0) ServletRequest request,
       @Advice.Argument(1) ServletResponse response,
-      @Advice.Thrown @Nullable Throwable throwable,
+      @Advice.Thrown @Nullable Throwable t,
       @Advice.Enter @Nullable AdviceScope adviceScope) {
     if (adviceScope == null
         || !(request instanceof HttpServletRequest)
         || !(response instanceof HttpServletResponse)) {
       return;
     }
-    adviceScope.exit(throwable, (HttpServletRequest) request, (HttpServletResponse) response);
+    adviceScope.exit(t, (HttpServletRequest) request, (HttpServletResponse) response);
   }
 }

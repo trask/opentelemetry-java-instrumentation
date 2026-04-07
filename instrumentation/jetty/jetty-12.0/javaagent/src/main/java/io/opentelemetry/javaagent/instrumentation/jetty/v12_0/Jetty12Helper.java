@@ -40,19 +40,19 @@ public class Jetty12Helper {
               }
 
               @Override
-              public void failed(Throwable throwable) {
-                end(context, request, response, throwable);
-                super.failed(throwable);
+              public void failed(Throwable t) {
+                end(context, request, response, t);
+                super.failed(t);
               }
             });
 
     return context;
   }
 
-  public void end(Context context, Request request, Response response, @Nullable Throwable error) {
-    error = AppServerBridge.getException(context, error);
-    error = ServletAsyncContext.getAsyncException(context, error);
+  public void end(Context context, Request request, Response response, @Nullable Throwable t) {
+    t = AppServerBridge.getException(context, t);
+    t = ServletAsyncContext.getAsyncException(context, t);
 
-    instrumenter.end(context, request, response, error);
+    instrumenter.end(context, request, response, t);
   }
 }

@@ -77,12 +77,12 @@ class WebServiceProviderInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, request, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return;
         }
         scope.close();
-        instrumenter().end(context, request, null, throwable);
+        instrumenter().end(context, request, null, t);
       }
     }
 
@@ -95,8 +95,8 @@ class WebServiceProviderInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.end(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
+      adviceScope.end(t);
     }
   }
 }

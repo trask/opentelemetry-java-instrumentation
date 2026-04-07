@@ -69,9 +69,9 @@ class DropwizardRendererInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(View view, @Nullable Throwable throwable) {
+      public void end(View view, @Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, view, null, throwable);
+        instrumenter().end(context, view, null, t);
       }
     }
 
@@ -84,10 +84,10 @@ class DropwizardRendererInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(0) View view,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(view, throwable);
+        adviceScope.end(view, t);
       }
     }
   }

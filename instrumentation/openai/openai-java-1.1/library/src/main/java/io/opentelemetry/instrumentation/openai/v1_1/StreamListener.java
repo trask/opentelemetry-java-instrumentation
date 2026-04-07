@@ -78,7 +78,7 @@ final class StreamListener {
     }
   }
 
-  void endSpan(@Nullable Throwable error) {
+  void endSpan(@Nullable Throwable t) {
     // Use an atomic operation since close() type of methods are exposed to the user
     // and can come from any thread.
     if (!hasEnded.compareAndSet(false, true)) {
@@ -88,7 +88,7 @@ final class StreamListener {
     if (model == null || responseId == null) {
       // Only happens if we got no chunks, so we have no response.
       if (newSpan) {
-        instrumenter.end(context, request, null, error);
+        instrumenter.end(context, request, null, t);
       }
       return;
     }
@@ -109,7 +109,7 @@ final class StreamListener {
     }
 
     if (newSpan) {
-      instrumenter.end(context, request, result.build(), error);
+      instrumenter.end(context, request, result.build(), t);
     }
   }
 }

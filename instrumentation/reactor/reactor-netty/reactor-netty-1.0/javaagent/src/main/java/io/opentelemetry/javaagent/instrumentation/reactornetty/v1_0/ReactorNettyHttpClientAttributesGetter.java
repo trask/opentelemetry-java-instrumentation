@@ -34,7 +34,7 @@ final class ReactorNettyHttpClientAttributesGetter
   public List<String> getHttpRequestHeader(HttpClientRequest request, String name) {
     try {
       return request.requestHeaders().getAll(name);
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException ignored) {
       // response not available
       return emptyList();
     }
@@ -46,7 +46,7 @@ final class ReactorNettyHttpClientAttributesGetter
       HttpClientRequest request, HttpClientResponse response, @Nullable Throwable error) {
     try {
       return response.status().code();
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException ignored) {
       // response not available
       return null;
     }
@@ -57,7 +57,7 @@ final class ReactorNettyHttpClientAttributesGetter
       HttpClientRequest request, HttpClientResponse response, String name) {
     try {
       return response.responseHeaders().getAll(name);
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException ignored) {
       // response not available
       return emptyList();
     }
@@ -134,10 +134,10 @@ final class ReactorNettyHttpClientAttributesGetter
   @Nullable
   @Override
   public String getErrorType(
-      HttpClientRequest request, @Nullable HttpClientResponse response, @Nullable Throwable error) {
+      HttpClientRequest request, @Nullable HttpClientResponse response, @Nullable Throwable t) {
     // if both response and error are null it means the request has been cancelled -- see the
     // ConnectionWrapper class
-    if (response == null && error == null) {
+    if (response == null && t == null) {
       return "cancelled";
     }
     return null;

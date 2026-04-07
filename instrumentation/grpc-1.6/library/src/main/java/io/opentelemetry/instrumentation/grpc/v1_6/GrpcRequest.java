@@ -45,7 +45,7 @@ public final class GrpcRequest {
       logicalHost = authority.substring(0, index);
       try {
         logicalPort = Integer.parseInt(authority.substring(index + 1));
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException ignored) {
         // ignore
       }
     }

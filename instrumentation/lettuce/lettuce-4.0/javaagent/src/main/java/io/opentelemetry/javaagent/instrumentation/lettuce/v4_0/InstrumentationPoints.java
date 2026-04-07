@@ -33,10 +33,10 @@ public class InstrumentationPoints {
   public static void afterCommand(
       RedisCommand<?, ?, ?> command,
       Context context,
-      Throwable throwable,
+      Throwable t,
       AsyncCommand<?, ?, ?> asyncCommand) {
-    if (throwable != null) {
-      instrumenter().end(context, command, null, throwable);
+    if (t != null) {
+      instrumenter().end(context, command, null, t);
     } else if (expectsResponse(command)) {
       asyncCommand.handleAsync(
           (value, ex) -> {

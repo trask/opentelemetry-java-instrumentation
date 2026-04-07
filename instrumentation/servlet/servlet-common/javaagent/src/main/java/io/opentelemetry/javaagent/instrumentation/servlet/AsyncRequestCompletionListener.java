@@ -57,10 +57,10 @@ public class AsyncRequestCompletionListener<REQUEST, RESPONSE>
   }
 
   @Override
-  public void onError(Throwable throwable, RESPONSE response) {
+  public void onError(Throwable t, RESPONSE response) {
     if (responseHandled.compareAndSet(false, true)) {
       ServletResponseContext<RESPONSE> responseContext = new ServletResponseContext<>(response);
-      instrumenter.end(context, requestContext, responseContext, throwable);
+      instrumenter.end(context, requestContext, responseContext, t);
     }
   }
 }

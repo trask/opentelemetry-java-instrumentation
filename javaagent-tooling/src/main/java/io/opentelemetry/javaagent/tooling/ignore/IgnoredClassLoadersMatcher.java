@@ -74,7 +74,7 @@ public class IgnoredClassLoadersMatcher extends ElementMatcher.Junction.Abstract
   private static boolean loadsExpectedClass(ClassLoader loader, Class<?> expectedClass) {
     try {
       return loader.loadClass(expectedClass.getName()) == expectedClass;
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return false;
     }
   }

@@ -85,9 +85,9 @@ class TwilioSyncInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent(), spanName);
       }
 
-      public void end(Throwable throwable, Object response) {
+      public void end(Throwable t, Object response) {
         scope.close();
-        instrumenter().end(context, spanName, response, throwable);
+        instrumenter().end(context, spanName, response, t);
       }
     }
 
@@ -102,11 +102,11 @@ class TwilioSyncInstrumentation implements TypeInstrumentation {
     /** Method exit instrumentation. */
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope,
         @Advice.Return Object response) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, response);
+        adviceScope.end(t, response);
       }
     }
   }

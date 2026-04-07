@@ -28,8 +28,8 @@ class Jetty12HttpAttributesGetter implements HttpServerAttributesGetter<Request,
 
   @Override
   public Integer getHttpResponseStatusCode(
-      Request request, Response response, @Nullable Throwable error) {
-    if (!response.isCommitted() && error != null) {
+      Request request, Response response, @Nullable Throwable t) {
+    if (!response.isCommitted() && t != null) {
       return 500;
     }
     return response.getStatus();

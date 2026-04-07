@@ -80,8 +80,7 @@ class ApiClientInstrumentation implements TypeInstrumentation {
   public static class ExecuteAdvice {
 
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
-    public static void onExit(
-        @Advice.Return ApiResponse<?> response, @Advice.Thrown Throwable throwable) {
+    public static void onExit(@Advice.Return ApiResponse<?> response, @Advice.Thrown Throwable t) {
       CurrentState currentState = CurrentState.remove();
       if (currentState == null) {
         return;
@@ -90,11 +89,11 @@ class ApiClientInstrumentation implements TypeInstrumentation {
       currentState.getScope().close();
       Context context = currentState.getContext();
       ApiResponse<?> endResponse = response;
-      if (response == null && throwable instanceof ApiException) {
-        ApiException apiException = (ApiException) throwable;
+      if (response == null && t instanceof ApiException) {
+        ApiException apiException = (ApiException) t;
         endResponse = new ApiResponse<>(apiException.getCode(), apiException.getResponseHeaders());
       }
-      instrumenter().end(context, currentState.getRequest(), endResponse, throwable);
+      instrumenter().end(context, currentState.getRequest(), endResponse, t);
     }
   }
 
@@ -120,12 +119,12 @@ class ApiClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
       CurrentState current = (CurrentState) enterResult[0];
       if (current != null) {
         current.getScope().close();
-        if (throwable != null) {
-          instrumenter().end(current.getContext(), current.getRequest(), null, throwable);
+        if (t != null) {
+          instrumenter().end(current.getContext(), current.getRequest(), null, t);
         }
         // else span will be ended in the TracingApiCallback
       }

@@ -40,7 +40,7 @@ public final class SerializationUtil {
         return LambdaEventSerializers.serializerFor(clazz, clazz.getClassLoader());
       }
       return JacksonFactory.getInstance().getSerializer(clazz);
-    } catch (NoClassDefFoundError e) {
+    } catch (NoClassDefFoundError ignored) {
       // For "java8" runtime, "aws-lambda-java-serialization" library
       // is not available in the classpath by default.
       // So fall back to object mapper based legacy serialization.

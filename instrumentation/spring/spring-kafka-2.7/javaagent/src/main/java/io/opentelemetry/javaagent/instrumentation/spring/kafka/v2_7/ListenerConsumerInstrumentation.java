@@ -104,9 +104,9 @@ class ListenerConsumerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         scope.close();
-        batchProcessInstrumenter().end(context, request, null, throwable);
+        batchProcessInstrumenter().end(context, request, null, t);
       }
     }
 
@@ -120,10 +120,9 @@ class ListenerConsumerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(throwable);
+        adviceScope.exit(t);
       }
     }
   }

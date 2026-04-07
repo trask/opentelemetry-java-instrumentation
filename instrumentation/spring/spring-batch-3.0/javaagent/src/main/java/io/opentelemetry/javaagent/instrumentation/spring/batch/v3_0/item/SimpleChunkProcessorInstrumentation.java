@@ -49,10 +49,9 @@ public class SimpleChunkProcessorInstrumentation implements TypeInstrumentation 
 
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable thrown,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(thrown);
+        adviceScope.exit(t);
       }
     }
   }
@@ -68,11 +67,10 @@ public class SimpleChunkProcessorInstrumentation implements TypeInstrumentation 
 
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable thrown,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.exit(thrown);
+        adviceScope.exit(t);
       }
     }
   }

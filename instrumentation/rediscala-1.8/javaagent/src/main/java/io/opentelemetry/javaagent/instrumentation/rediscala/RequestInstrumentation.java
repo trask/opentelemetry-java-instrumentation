@@ -80,10 +80,7 @@ class RequestInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          Object action,
-          RedisCommand<?, ?> cmd,
-          Future<Object> responseFuture,
-          Throwable throwable) {
+          Object action, RedisCommand<?, ?> cmd, Future<Object> responseFuture, Throwable t) {
         scope.close();
 
         ExecutionContext ctx = null;
@@ -97,8 +94,8 @@ class RequestInstrumentation implements TypeInstrumentation {
           ctx = ((RoundRobinPoolRequest) action).executionContext();
         }
 
-        if (throwable != null) {
-          instrumenter().end(context, cmd, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, cmd, null, t);
         } else {
           responseFuture.onComplete(new OnCompleteHandler(context, cmd), ctx);
         }
@@ -116,10 +113,10 @@ class RequestInstrumentation implements TypeInstrumentation {
         @Advice.This Object action,
         @Advice.Argument(0) RedisCommand<?, ?> cmd,
         @Advice.Enter @Nullable AdviceScope adviceScope,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable Future<Object> responseFuture) {
       if (adviceScope != null) {
-        adviceScope.end(action, cmd, responseFuture, throwable);
+        adviceScope.end(action, cmd, responseFuture, t);
       }
     }
   }

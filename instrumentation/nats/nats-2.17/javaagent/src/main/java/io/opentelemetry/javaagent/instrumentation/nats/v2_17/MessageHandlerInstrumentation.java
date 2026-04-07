@@ -65,9 +65,9 @@ class MessageHandlerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        getConsumerProcessInstrumenter().end(context, request, null, throwable);
+        getConsumerProcessInstrumenter().end(context, request, null, t);
       }
     }
 
@@ -78,9 +78,9 @@ class MessageHandlerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

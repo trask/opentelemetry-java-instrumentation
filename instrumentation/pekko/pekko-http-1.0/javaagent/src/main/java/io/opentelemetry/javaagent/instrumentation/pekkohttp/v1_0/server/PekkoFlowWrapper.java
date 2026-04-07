@@ -125,8 +125,8 @@ public class PekkoFlowWrapper
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
-              fail(requestOut, exception);
+            public void onUpstreamFailure(Throwable t) {
+              fail(requestOut, t);
             }
           });
 
@@ -141,8 +141,8 @@ public class PekkoFlowWrapper
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
-              fail(responseOut, exception);
+            public void onUpstreamFailure(Throwable t) {
+              fail(responseOut, t);
             }
 
             @Override

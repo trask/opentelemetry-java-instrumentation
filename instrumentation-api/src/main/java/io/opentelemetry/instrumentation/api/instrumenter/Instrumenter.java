@@ -153,8 +153,8 @@ public class Instrumenter<REQUEST, RESPONSE> {
    * thrown by the operation or {@code null} if no error occurred.
    */
   public void end(
-      Context context, REQUEST request, @Nullable RESPONSE response, @Nullable Throwable error) {
-    doEnd(context, request, response, error, null);
+      Context context, REQUEST request, @Nullable RESPONSE response, @Nullable Throwable t) {
+    doEnd(context, request, response, t, null);
   }
 
   /** Internal method for creating spans with given start/end timestamps. */
@@ -162,11 +162,11 @@ public class Instrumenter<REQUEST, RESPONSE> {
       Context parentContext,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error,
+      @Nullable Throwable t,
       Instant startTime,
       Instant endTime) {
     Context context = doStart(parentContext, request, startTime);
-    doEnd(context, request, response, error, endTime);
+    doEnd(context, request, response, t, endTime);
     return context;
   }
 
@@ -254,18 +254,18 @@ public class Instrumenter<REQUEST, RESPONSE> {
       Context context,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error,
+      @Nullable Throwable t,
       @Nullable Instant endTime) {
     Span span = Span.fromContext(context);
 
-    if (error != null) {
-      error = errorCauseExtractor.extract(error);
-      span.recordException(error);
+    if (t != null) {
+      t = errorCauseExtractor.extract(t);
+      span.recordException(t);
     }
 
     UnsafeAttributes attributes = new UnsafeAttributes();
     for (AttributesExtractor<? super REQUEST, ? super RESPONSE> extractor : attributesExtractors) {
-      extractor.onEnd(attributes, context, request, response, error);
+      extractor.onEnd(attributes, context, request, response, t);
     }
     span.setAllAttributes(attributes);
 
@@ -275,7 +275,7 @@ public class Instrumenter<REQUEST, RESPONSE> {
     }
 
     SpanStatusBuilder spanStatusBuilder = new SpanStatusBuilderImpl(span);
-    spanStatusExtractor.extract(spanStatusBuilder, request, response, error);
+    spanStatusExtractor.extract(spanStatusBuilder, request, response, t);
 
     if (operationListeners.length != 0) {
       if (operationListenerAttributesExtractors.length != 0) {
@@ -283,7 +283,7 @@ public class Instrumenter<REQUEST, RESPONSE> {
         operationAttributes.putAll(attributes.asMap());
         for (AttributesExtractor<? super REQUEST, ? super RESPONSE> extractor :
             operationListenerAttributesExtractors) {
-          extractor.onEnd(operationAttributes, context, request, response, error);
+          extractor.onEnd(operationAttributes, context, request, response, t);
         }
         attributes = operationAttributes;
       }
@@ -317,11 +317,11 @@ public class Instrumenter<REQUEST, RESPONSE> {
               Context parentContext,
               RQ request,
               @Nullable RS response,
-              @Nullable Throwable error,
+              @Nullable Throwable t,
               Instant startTime,
               Instant endTime) {
             return instrumenter.startAndEnd(
-                parentContext, request, response, error, startTime, endTime);
+                parentContext, request, response, t, startTime, endTime);
           }
 
           @Override

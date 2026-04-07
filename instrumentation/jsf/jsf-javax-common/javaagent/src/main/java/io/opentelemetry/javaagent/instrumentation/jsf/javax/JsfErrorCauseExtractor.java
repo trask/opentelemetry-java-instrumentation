@@ -11,10 +11,10 @@ import javax.faces.FacesException;
 public class JsfErrorCauseExtractor implements ErrorCauseExtractor {
 
   @Override
-  public Throwable extract(Throwable error) {
-    while (error.getCause() != null && error instanceof FacesException) {
-      error = error.getCause();
+  public Throwable extract(Throwable t) {
+    while (t.getCause() != null && t instanceof FacesException) {
+      t = t.getCause();
     }
-    return ErrorCauseExtractor.getDefault().extract(error);
+    return ErrorCauseExtractor.getDefault().extract(t);
   }
 }

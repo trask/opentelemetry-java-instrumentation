@@ -11,11 +11,11 @@ import jakarta.el.ELException;
 public class MyFacesErrorCauseExtractor extends JsfErrorCauseExtractor {
 
   @Override
-  public Throwable extract(Throwable error) {
-    error = super.extract(error);
-    while (error.getCause() != null && error instanceof ELException) {
-      error = error.getCause();
+  public Throwable extract(Throwable t) {
+    t = super.extract(t);
+    while (t.getCause() != null && t instanceof ELException) {
+      t = t.getCause();
     }
-    return error;
+    return t;
   }
 }

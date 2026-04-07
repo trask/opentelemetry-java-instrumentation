@@ -79,7 +79,7 @@ class SnsCamelTest {
 
     try {
       awsConnector.purgeQueue(metaData.queueUrl);
-    } catch (PurgeQueueInProgressException e) {
+    } catch (PurgeQueueInProgressException ignored) {
       logger.warn("Throttled by AWS trying to purge queue, try doing it manually.");
     }
     camelApp.stop();
@@ -129,7 +129,7 @@ class SnsCamelTest {
 
     try {
       awsConnector.purgeQueue(queueUrl);
-    } catch (PurgeQueueInProgressException e) {
+    } catch (PurgeQueueInProgressException ignored) {
       logger.warn("Throttled by AWS trying to purge queue, try doing it manually.");
     }
     camelApp.stop();

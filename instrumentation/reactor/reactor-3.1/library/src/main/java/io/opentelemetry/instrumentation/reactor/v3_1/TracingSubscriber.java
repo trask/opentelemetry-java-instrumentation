@@ -74,7 +74,7 @@ public class TracingSubscriber<T> implements CoreSubscriber<T> {
   }
 
   @Override
-  public void onError(Throwable throwable) {
+  public void onError(Throwable t) {
     Supplier<Scope> scopeSupplier;
     if (!hasContextToPropagate
         && (fluxRetrySubscriberClass == subscriber.getClass()
@@ -86,7 +86,7 @@ public class TracingSubscriber<T> implements CoreSubscriber<T> {
       scopeSupplier = () -> openScope();
     }
     try (Scope ignore = scopeSupplier.get()) {
-      subscriber.onError(throwable);
+      subscriber.onError(t);
     }
   }
 

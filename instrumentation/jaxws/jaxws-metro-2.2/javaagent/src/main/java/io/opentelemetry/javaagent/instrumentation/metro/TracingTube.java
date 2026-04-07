@@ -48,7 +48,7 @@ public class TracingTube extends AbstractFilterTubeImpl {
 
   // this is not used for handling exceptions thrown from webservice invocation
   @Override
-  public NextAction processException(Throwable throwable) {
+  public NextAction processException(Throwable t) {
     Packet request = null;
     // we expect this to be called with attached fiber
     // if fiber is not attached current() throws IllegalStateException
@@ -58,9 +58,9 @@ public class TracingTube extends AbstractFilterTubeImpl {
       // fiber not available
     }
     if (request != null) {
-      MetroHelper.end(request, throwable);
+      MetroHelper.end(request, t);
     }
 
-    return super.processException(throwable);
+    return super.processException(t);
   }
 }

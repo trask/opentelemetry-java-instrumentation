@@ -153,8 +153,8 @@ public class PatchLogger {
     }
   }
 
-  public void log(Level level, String msg, Throwable thrown) {
-    internalLogger.log(toInternalLevel(level), msg, thrown);
+  public void log(Level level, String msg, Throwable t) {
+    internalLogger.log(toInternalLevel(level), msg, t);
   }
 
   public void log(Level level, Supplier<String> msgSupplier) {
@@ -164,10 +164,10 @@ public class PatchLogger {
     }
   }
 
-  public void log(Level level, Throwable thrown, Supplier<String> msgSupplier) {
+  public void log(Level level, Throwable t, Supplier<String> msgSupplier) {
     InternalLogger.Level internalLevel = toInternalLevel(level);
     if (internalLogger.isLoggable(internalLevel)) {
-      internalLogger.log(internalLevel, msgSupplier.get(), thrown);
+      internalLogger.log(internalLevel, msgSupplier.get(), t);
     }
   }
 
@@ -219,9 +219,8 @@ public class PatchLogger {
     log(level, msg, params);
   }
 
-  public void logp(
-      Level level, String sourceClass, String sourceMethod, String msg, Throwable thrown) {
-    log(level, msg, thrown);
+  public void logp(Level level, String sourceClass, String sourceMethod, String msg, Throwable t) {
+    log(level, msg, t);
   }
 
   public void logp(
@@ -233,9 +232,9 @@ public class PatchLogger {
       Level level,
       String sourceClass,
       String sourceMethod,
-      Throwable thrown,
+      Throwable t,
       Supplier<String> msgSupplier) {
-    log(level, thrown, msgSupplier);
+    log(level, t, msgSupplier);
   }
 
   public void logrb(
@@ -283,8 +282,8 @@ public class PatchLogger {
       String sourceMethod,
       String bundleName,
       String msg,
-      Throwable thrown) {
-    log(level, msg, thrown);
+      Throwable t) {
+    log(level, msg, t);
   }
 
   public void logrb(
@@ -293,12 +292,12 @@ public class PatchLogger {
       String sourceMethod,
       ResourceBundle bundle,
       String msg,
-      Throwable thrown) {
-    log(level, msg, thrown);
+      Throwable t) {
+    log(level, msg, t);
   }
 
-  public void logrb(Level level, ResourceBundle bundle, String msg, Throwable thrown) {
-    log(level, msg, thrown);
+  public void logrb(Level level, ResourceBundle bundle, String msg, Throwable t) {
+    log(level, msg, t);
   }
 
   public void entering(String sourceClass, String sourceMethod) {}

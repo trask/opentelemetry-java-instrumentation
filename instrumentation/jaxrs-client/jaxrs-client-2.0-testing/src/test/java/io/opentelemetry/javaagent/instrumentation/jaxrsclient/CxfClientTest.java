@@ -20,22 +20,22 @@ class CxfClientTest extends AbstractJaxRsClientTest {
         .property("org.apache.cxf.transport.http.forceVersion", "1.1");
   }
 
-  private static Throwable clientSpanError(URI uri, Throwable exception) {
+  private static Throwable clientSpanError(URI uri, Throwable t) {
     switch (uri.toString()) {
       case "http://localhost:61/": // unopened port
-        if (exception.getCause() instanceof ConnectException) {
-          exception = exception.getCause();
+        if (t.getCause() instanceof ConnectException) {
+          t = t.getCause();
         }
         break;
       case "https://192.0.2.1/": // non routable address
-        if (exception.getCause() != null) {
-          exception = exception.getCause();
+        if (t.getCause() != null) {
+          t = t.getCause();
         }
         break;
       default:
         break;
     }
-    return exception;
+    return t;
   }
 
   @Override

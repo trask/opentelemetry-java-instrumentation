@@ -94,7 +94,7 @@ public class JdbcSingletons {
           return true;
         }
       }
-    } catch (SQLException | AbstractMethodError e) {
+    } catch (SQLException | AbstractMethodError ignored) {
       // ignore
     }
     return false;
@@ -111,7 +111,7 @@ public class JdbcSingletons {
     Connection connection;
     try {
       connection = statement.getConnection();
-    } catch (SQLException exception) {
+    } catch (SQLException ignored) {
       // connection was already closed
       return sql;
     }

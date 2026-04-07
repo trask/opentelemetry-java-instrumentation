@@ -35,13 +35,13 @@ class AttributesExtractorTest {
         Context context,
         Map<String, String> request,
         @Nullable Map<String, String> response,
-        @Nullable Throwable error) {
+        @Nullable Throwable t) {
       if (response != null) {
         attributes.put(stringKey("food"), response.get("food"));
         attributes.put(stringKey("number"), request.get("number"));
       }
-      if (error != null) {
-        attributes.put(stringKey("full_error_class"), error.getClass().getName());
+      if (t != null) {
+        attributes.put(stringKey("full_error_class"), t.getClass().getName());
       }
     }
   }

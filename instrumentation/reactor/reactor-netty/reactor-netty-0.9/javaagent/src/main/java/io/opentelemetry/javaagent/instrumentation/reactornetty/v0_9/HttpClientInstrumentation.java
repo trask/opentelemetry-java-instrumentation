@@ -85,11 +85,11 @@ class HttpClientInstrumentation implements TypeInstrumentation {
     @AssignReturned.ToReturned
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static HttpClient stopSpan(
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Return HttpClient client,
         @Advice.Enter CallDepth callDepth) {
 
-      if (callDepth.decrementAndGet() == 0 && throwable == null) {
+      if (callDepth.decrementAndGet() == 0 && t == null) {
         return client.doOnRequest(new OnRequest()).mapConnect(new MapConnect());
       }
       return client;

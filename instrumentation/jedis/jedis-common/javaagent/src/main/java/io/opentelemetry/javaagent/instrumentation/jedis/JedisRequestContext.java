@@ -42,19 +42,16 @@ public class JedisRequestContext<T> {
    * Schedule ending of instrumented operation when current {@link JedisRequestContext} is closed.
    */
   public static <T> void endIfNotAttached(
-      Instrumenter<T, Void> instrumenter,
-      Context context,
-      T request,
-      @Nullable Throwable throwable) {
+      Instrumenter<T, Void> instrumenter, Context context, T request, @Nullable Throwable t) {
     JedisRequestContext<T> requestContext = current();
     if (requestContext == null || requestContext.request != null) {
       // end the span immediately if we are already tracking a request
-      endSpan(instrumenter, context, request, throwable);
+      endSpan(instrumenter, context, request, t);
     } else {
       requestContext.instrumenter = instrumenter;
       requestContext.context = context;
       requestContext.request = request;
-      requestContext.throwable = throwable;
+      requestContext.throwable = t;
     }
   }
 
@@ -65,10 +62,7 @@ public class JedisRequestContext<T> {
   }
 
   private static <T> void endSpan(
-      Instrumenter<T, Void> instrumenter,
-      Context context,
-      T request,
-      @Nullable Throwable throwable) {
-    instrumenter.end(context, request, null, throwable);
+      Instrumenter<T, Void> instrumenter, Context context, T request, @Nullable Throwable t) {
+    instrumenter.end(context, request, null, t);
   }
 }

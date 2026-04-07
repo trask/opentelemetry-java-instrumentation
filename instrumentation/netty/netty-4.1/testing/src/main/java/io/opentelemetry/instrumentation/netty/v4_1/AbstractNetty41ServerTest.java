@@ -164,8 +164,8 @@ public abstract class AbstractNetty41ServerTest extends AbstractHttpServerTest<E
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-      ByteBuf content = Unpooled.copiedBuffer(cause.getMessage(), CharsetUtil.UTF_8);
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
+      ByteBuf content = Unpooled.copiedBuffer(t.getMessage(), CharsetUtil.UTF_8);
       FullHttpResponse response =
           new DefaultFullHttpResponse(HTTP_1_1, INTERNAL_SERVER_ERROR, content);
       response.headers().set(CONTENT_TYPE, "text/plain");

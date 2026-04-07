@@ -58,7 +58,7 @@ public class HttpClientTracingHandler
   }
 
   @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) throws Exception {
     // javaagent inserts exception handling in AbstractChannelHandlerContextInstrumentation that
     // runs before this code
     Context context = ctx.channel().attr(AttributeKeys.CLIENT_CONTEXT).getAndSet(null);
@@ -66,15 +66,15 @@ public class HttpClientTracingHandler
     HttpResponse response = ctx.channel().attr(HTTP_CLIENT_RESPONSE).getAndSet(null);
     Context parentContext = ctx.channel().attr(AttributeKeys.CLIENT_PARENT_CONTEXT).getAndSet(null);
     if (context != null && request != null) {
-      instrumenter.end(context, request, response, cause);
+      instrumenter.end(context, request, response, t);
     }
 
     if (parentContext != null) {
       try (Scope ignored = parentContext.makeCurrent()) {
-        super.exceptionCaught(ctx, cause);
+        super.exceptionCaught(ctx, t);
       }
     } else {
-      super.exceptionCaught(ctx, cause);
+      super.exceptionCaught(ctx, t);
     }
   }
 }

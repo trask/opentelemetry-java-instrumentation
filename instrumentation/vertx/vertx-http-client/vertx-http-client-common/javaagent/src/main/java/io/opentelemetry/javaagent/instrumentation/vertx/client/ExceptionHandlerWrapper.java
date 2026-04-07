@@ -42,21 +42,21 @@ public class ExceptionHandlerWrapper implements Handler<Throwable> {
   }
 
   @Override
-  public void handle(Throwable throwable) {
+  public void handle(Throwable t) {
     Contexts contexts = virtualField.get(request);
     if (contexts == null) {
-      callHandler(throwable);
+      callHandler(t);
       return;
     }
 
-    instrumenter.end(contexts.context, request, null, throwable);
+    instrumenter.end(contexts.context, request, null, t);
 
     try (Scope ignored = contexts.parentContext.makeCurrent()) {
-      callHandler(throwable);
+      callHandler(t);
     }
   }
 
-  private void callHandler(Throwable throwable) {
-    handler.handle(throwable);
+  private void callHandler(Throwable t) {
+    handler.handle(t);
   }
 }

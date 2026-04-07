@@ -38,7 +38,7 @@ public class AnnotationInstrumentationHelper {
     if (spanKindString != null) {
       try {
         spanKind = SpanKind.valueOf(spanKindString);
-      } catch (IllegalArgumentException exception) {
+      } catch (IllegalArgumentException ignored) {
         // ignore
       }
     }
@@ -78,7 +78,7 @@ public class AnnotationInstrumentationHelper {
   }
 
   public static void exitCoroutine(
-      @Nullable Throwable error,
+      @Nullable Throwable t,
       @Nullable Object result,
       @Nullable Object request,
       @Nullable Continuation<?> continuation,
@@ -92,7 +92,7 @@ public class AnnotationInstrumentationHelper {
     // end the span when this method can not be resumed (coroutine is null) or if it has reached
     // final state (returns anything else besides COROUTINE_SUSPENDED)
     if (continuation == null || result != IntrinsicsKt.getCOROUTINE_SUSPENDED()) {
-      instrumenter().end(context, (MethodRequest) request, null, error);
+      instrumenter().end(context, (MethodRequest) request, null, t);
     }
   }
 

@@ -25,10 +25,10 @@ public class CompletionStageWrapper {
   private static <T> CompletionStage<T> wrap(CompletionStage<T> completionStage, Context context) {
     CompletableFuture<T> result = new CompletableFuture<>();
     completionStage.whenComplete(
-        (T value, Throwable throwable) -> {
+        (T value, Throwable t) -> {
           try (Scope ignored = context.makeCurrent()) {
-            if (throwable != null) {
-              result.completeExceptionally(throwable);
+            if (t != null) {
+              result.completeExceptionally(t);
             } else {
               result.complete(value);
             }

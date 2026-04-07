@@ -87,9 +87,9 @@ class TracingHttpRequest extends HttpRequest {
   }
 
   @Override
-  public void notifyFailure(Throwable failure) {
+  public void notifyFailure(Throwable t) {
     try (Scope scope = openScope()) {
-      super.notifyFailure(failure);
+      super.notifyFailure(t);
     }
   }
 }

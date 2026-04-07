@@ -108,10 +108,9 @@ public final class JdbcAttributesGetter implements SqlClientAttributesGetter<DbR
 
   @Nullable
   @Override
-  public String getErrorType(
-      DbRequest request, @Nullable Void response, @Nullable Throwable error) {
-    if (error instanceof SQLException) {
-      return Integer.toString(((SQLException) error).getErrorCode());
+  public String getErrorType(DbRequest request, @Nullable Void response, @Nullable Throwable t) {
+    if (t instanceof SQLException) {
+      return Integer.toString(((SQLException) t).getErrorCode());
     }
     return null;
   }

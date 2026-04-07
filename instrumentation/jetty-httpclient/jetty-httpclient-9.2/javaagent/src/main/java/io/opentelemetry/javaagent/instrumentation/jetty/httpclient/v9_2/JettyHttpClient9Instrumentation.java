@@ -73,7 +73,7 @@ class JettyHttpClient9Instrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void exitTracingInterceptor(
         @Advice.Argument(value = 0) HttpRequest httpRequest,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter Object[] enterResult) {
       AdviceLocals locals = (AdviceLocals) enterResult[0];
 
@@ -83,8 +83,8 @@ class JettyHttpClient9Instrumentation implements TypeInstrumentation {
 
       // not ending span here unless error, span ended in the interceptor
       locals.scope.close();
-      if (throwable != null) {
-        instrumenter().end(locals.context, httpRequest, null, throwable);
+      if (t != null) {
+        instrumenter().end(locals.context, httpRequest, null, t);
       }
     }
   }

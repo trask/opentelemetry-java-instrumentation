@@ -41,9 +41,9 @@ class MessagingMessageListenerAdapterInstrumentation implements TypeInstrumentat
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Enter SpringAwsUtil.MessageScope scope, @Advice.Thrown Throwable throwable) {
+        @Advice.Enter SpringAwsUtil.MessageScope scope, @Advice.Thrown Throwable t) {
       if (scope != null) {
-        scope.close(throwable);
+        scope.close(t);
       }
     }
   }

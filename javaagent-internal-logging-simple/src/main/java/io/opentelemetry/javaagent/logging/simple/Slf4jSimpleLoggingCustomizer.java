@@ -51,10 +51,10 @@ public final class Slf4jSimpleLoggingCustomizer implements LoggingCustomizer {
 
   @Override
   @SuppressWarnings("SystemOut")
-  public void onStartupFailure(Throwable throwable) {
+  public void onStartupFailure(Throwable t) {
     // not sure if we have a log manager here, so just print
     System.err.println("OpenTelemetry Javaagent failed to start");
-    throwable.printStackTrace();
+    t.printStackTrace();
   }
 
   @Override

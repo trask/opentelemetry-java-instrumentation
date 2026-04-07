@@ -40,11 +40,8 @@ public class AwsLambdaFunctionInstrumenter {
   }
 
   public void end(
-      Context context,
-      AwsLambdaRequest input,
-      @Nullable Object response,
-      @Nullable Throwable error) {
-    instrumenter.end(context, input, response, error);
+      Context context, AwsLambdaRequest input, @Nullable Object response, @Nullable Throwable t) {
+    instrumenter.end(context, input, response, t);
   }
 
   public Context extract(AwsLambdaRequest input) {

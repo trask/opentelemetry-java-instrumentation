@@ -55,7 +55,7 @@ class JaxMultithreadedClientTest {
     try {
       Client client = builder.build();
       client.target(uri).request().get();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return true;
     }
     return false;

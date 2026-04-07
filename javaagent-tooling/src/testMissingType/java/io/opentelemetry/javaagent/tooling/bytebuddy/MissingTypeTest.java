@@ -50,8 +50,8 @@ class MissingTypeTest {
                       ClassLoader classLoader,
                       JavaModule module,
                       boolean loaded,
-                      Throwable throwable) {
-                    logger.error("Transformation error", throwable);
+                      Throwable t) {
+                    logger.error("Transformation error", t);
                     hasErrors.set(true);
                   }
                 })
@@ -79,7 +79,7 @@ class MissingTypeTest {
     try {
       Class.forName("com.google.common.base.Joiner");
       fail("guava should not be available during runtime");
-    } catch (ClassNotFoundException exception) {
+    } catch (ClassNotFoundException ignored) {
       // ignore
     }
   }

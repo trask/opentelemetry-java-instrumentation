@@ -70,7 +70,7 @@ class HttpExtClientInstrumentation implements TypeInstrumentation {
         @Advice.Argument(0) HttpRequest request,
         @Advice.This HttpExt thiz,
         @Advice.Return Future<HttpResponse> responseFuture,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter Object[] enter) {
 
       if (!(enter[1] instanceof Context) || !(enter[2] instanceof Scope)) {
@@ -79,8 +79,8 @@ class HttpExtClientInstrumentation implements TypeInstrumentation {
       ((Scope) enter[2]).close();
       Context context = (Context) enter[1];
 
-      if (throwable != null) {
-        instrumenter().end(context, request, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, request, null, t);
         return responseFuture;
       }
       if (responseFuture == null) {

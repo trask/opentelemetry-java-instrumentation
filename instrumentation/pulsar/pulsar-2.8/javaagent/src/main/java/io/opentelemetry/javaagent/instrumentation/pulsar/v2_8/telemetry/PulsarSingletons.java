@@ -154,7 +154,7 @@ public class PulsarSingletons {
 
   @Nullable
   public static Context startAndEndConsumerReceive(
-      Context parent, Message<?> message, Timer timer, Consumer<?> consumer, Throwable throwable) {
+      Context parent, Message<?> message, Timer timer, Consumer<?> consumer, Throwable t) {
     if (message == null) {
       return null;
     }
@@ -177,7 +177,7 @@ public class PulsarSingletons {
             parent,
             request,
             null,
-            throwable,
+            t,
             timer.startTime(),
             timer.now());
     // injected context is used in MessageListenerInstrumentation and also in the spring-pulsar
@@ -188,11 +188,7 @@ public class PulsarSingletons {
 
   @Nullable
   private static Context startAndEndConsumerReceive(
-      Context parent,
-      Messages<?> messages,
-      Timer timer,
-      Consumer<?> consumer,
-      Throwable throwable) {
+      Context parent, Messages<?> messages, Timer timer, Consumer<?> consumer, Throwable t) {
     if (messages == null || messages.size() == 0) {
       return null;
     }
@@ -207,7 +203,7 @@ public class PulsarSingletons {
             parent,
             request,
             null,
-            throwable,
+            t,
             timer.startTime(),
             timer.now());
     // injected context is used in MessageListenerInstrumentation and also in the spring-pulsar

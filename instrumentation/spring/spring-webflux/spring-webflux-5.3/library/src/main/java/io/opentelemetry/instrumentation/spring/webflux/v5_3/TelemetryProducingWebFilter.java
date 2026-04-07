@@ -103,9 +103,9 @@ final class TelemetryProducingWebFilter implements WebFilter, Ordered {
     }
 
     @Override
-    protected void hookOnError(Throwable throwable) {
-      onTerminal(currentOtelContext, throwable);
-      actual.onError(throwable);
+    protected void hookOnError(Throwable t) {
+      onTerminal(currentOtelContext, t);
+      actual.onError(t);
     }
 
     @Override

@@ -17,11 +17,11 @@ public class ErrorHandlerWrapper implements ErrorHandler {
   }
 
   @Override
-  public void handleError(Throwable throwable) {
+  public void handleError(Throwable t) {
     Context taskContext = TaskContextHolder.getTaskContext(Context.current());
     // run the error handler with the same context as task execution
     try (Scope ignore = taskContext != null ? taskContext.makeCurrent() : null) {
-      errorHandler.handleError(throwable);
+      errorHandler.handleError(t);
     }
   }
 }

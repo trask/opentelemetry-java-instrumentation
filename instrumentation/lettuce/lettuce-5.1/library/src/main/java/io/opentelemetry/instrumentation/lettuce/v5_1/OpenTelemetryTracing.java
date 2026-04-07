@@ -293,8 +293,8 @@ final class OpenTelemetryTracing implements Tracing {
 
     @Override
     @CanIgnoreReturnValue
-    public synchronized Tracer.Span error(Throwable throwable) {
-      this.error = throwable;
+    public synchronized Tracer.Span error(Throwable t) {
+      this.error = t;
       return this;
     }
 

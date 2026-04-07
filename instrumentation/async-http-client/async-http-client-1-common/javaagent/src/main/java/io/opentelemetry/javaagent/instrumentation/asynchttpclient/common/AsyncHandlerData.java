@@ -31,8 +31,8 @@ public abstract class AsyncHandlerData {
 
   public abstract Instrumenter<Request, Response> getInstrumenter();
 
-  public void end(@Nullable Response response, @Nullable Throwable throwable) {
+  public void end(@Nullable Response response, @Nullable Throwable t) {
     Instrumenter<Request, Response> instrumenter = getInstrumenter();
-    instrumenter.end(getContext(), getRequest(), response, throwable);
+    instrumenter.end(getContext(), getRequest(), response, t);
   }
 }

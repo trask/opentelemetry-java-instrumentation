@@ -103,13 +103,13 @@ class SafeHasSuperTypeMatcher extends ElementMatcher.Junction.AbstractBase<TypeD
   static TypeDefinition safeGetSuperClass(TypeDefinition typeDefinition) {
     try {
       return typeDefinition.getSuperClass();
-    } catch (Throwable e) {
+    } catch (Throwable t) {
       if (logger.isLoggable(FINE)) {
         logger.log(
             FINE,
             "{0} trying to get super class for target {1}: {2}",
             new Object[] {
-              e.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), e.getMessage()
+              t.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), t.getMessage()
             });
       }
       return null;
@@ -164,8 +164,8 @@ class SafeHasSuperTypeMatcher extends ElementMatcher.Junction.AbstractBase<TypeD
       Iterator<TypeDescription.Generic> it = null;
       try {
         it = typeDefinition.getInterfaces().iterator();
-      } catch (Throwable e) {
-        logException(typeDefinition, e);
+      } catch (Throwable t) {
+        logException(typeDefinition, t);
       }
       this.it = it;
     }
@@ -176,8 +176,8 @@ class SafeHasSuperTypeMatcher extends ElementMatcher.Junction.AbstractBase<TypeD
         try {
           next = it.next();
           return true;
-        } catch (Throwable e) {
-          logException(typeDefinition, e);
+        } catch (Throwable t) {
+          logException(typeDefinition, t);
           return false;
         }
       }
@@ -199,13 +199,13 @@ class SafeHasSuperTypeMatcher extends ElementMatcher.Junction.AbstractBase<TypeD
       return this;
     }
 
-    private static void logException(TypeDefinition typeDefinition, Throwable e) {
+    private static void logException(TypeDefinition typeDefinition, Throwable t) {
       if (logger.isLoggable(FINE)) {
         logger.log(
             FINE,
             "{0} trying to get interfaces for target {1}: {2}",
             new Object[] {
-              e.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), e.getMessage()
+              t.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), t.getMessage()
             });
       }
     }

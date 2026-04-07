@@ -81,9 +81,9 @@ class SpringJmsMessageListenerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         scope.close();
-        listenerInstrumenter().end(context, request, null, throwable);
+        listenerInstrumenter().end(context, request, null, t);
       }
     }
 
@@ -95,10 +95,9 @@ class SpringJmsMessageListenerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(throwable);
+        adviceScope.exit(t);
       }
     }
   }

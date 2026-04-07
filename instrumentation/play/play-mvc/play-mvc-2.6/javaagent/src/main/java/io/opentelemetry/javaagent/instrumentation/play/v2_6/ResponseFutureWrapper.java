@@ -31,9 +31,9 @@ public class ResponseFutureWrapper {
         new AbstractFunction1<Throwable, Throwable>() {
           @Override
           @CanIgnoreReturnValue
-          public Throwable apply(Throwable throwable) {
-            instrumenter().end(context, null, null, throwable);
-            return throwable;
+          public Throwable apply(Throwable t) {
+            instrumenter().end(context, null, null, t);
+            return t;
           }
         },
         executionContext);

@@ -74,7 +74,7 @@ class QueryInstrumentation implements TypeInstrumentation {
       if (query instanceof SqmQuery) {
         try {
           queryString = ((SqmQuery) query).getSqmStatement().toHqlString();
-        } catch (RuntimeException exception) {
+        } catch (RuntimeException ignored) {
           // ignore
         }
       }
@@ -90,9 +90,9 @@ class QueryInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endMethod(
-        @Advice.Thrown Throwable throwable, @Advice.Enter HibernateOperationScope scope) {
+        @Advice.Thrown Throwable t, @Advice.Enter HibernateOperationScope scope) {
 
-      HibernateOperationScope.end(scope, throwable);
+      HibernateOperationScope.end(scope, t);
     }
   }
 }

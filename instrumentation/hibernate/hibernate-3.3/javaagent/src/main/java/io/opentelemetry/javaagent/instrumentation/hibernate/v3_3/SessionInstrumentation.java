@@ -113,9 +113,9 @@ class SessionInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endMethod(
-        @Advice.Thrown Throwable throwable, @Advice.Enter HibernateOperationScope enterScope) {
+        @Advice.Thrown Throwable t, @Advice.Enter HibernateOperationScope enterScope) {
 
-      HibernateOperationScope.end(enterScope, throwable);
+      HibernateOperationScope.end(enterScope, t);
     }
   }
 

@@ -54,7 +54,7 @@ public class TracingChunkExecutionListener implements ChunkListener, Ordered {
     end(chunkContext, throwable);
   }
 
-  private void end(ChunkContext chunkContext, @Nullable Throwable throwable) {
+  private void end(ChunkContext chunkContext, @Nullable Throwable t) {
     ContextAndScope contextAndScope = CONTEXT_AND_SCOPE.get(chunkContext);
     if (contextAndScope == null) {
       return;
@@ -64,7 +64,7 @@ public class TracingChunkExecutionListener implements ChunkListener, Ordered {
     contextAndScope.closeScope();
     // chunkContextAndBuilder is set in beforeChunk
     chunkInstrumenter()
-        .end(contextAndScope.getContext(), requireNonNull(chunkContextAndBuilder), null, throwable);
+        .end(contextAndScope.getContext(), requireNonNull(chunkContextAndBuilder), null, t);
   }
 
   @Override

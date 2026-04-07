@@ -263,7 +263,7 @@ public final class OtelUnnecessarilyFullyQualified extends BugChecker
           Class<?> clazz = Class.forName(symbol.getQualifiedName().toString());
           Deprecated deprecated = clazz.getAnnotation(Deprecated.class);
           return deprecated != null && deprecated.forRemoval();
-        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+        } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
           return false;
         }
       }

@@ -42,8 +42,8 @@ public class AdviceScope {
     return new AdviceScope(context, context.makeCurrent(), item);
   }
 
-  public void exit(@Nullable Throwable thrown) {
+  public void exit(@Nullable Throwable t) {
     scope.close();
-    itemInstrumenter().end(context, item, null, thrown);
+    itemInstrumenter().end(context, item, null, t);
   }
 }

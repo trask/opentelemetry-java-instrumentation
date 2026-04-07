@@ -68,7 +68,7 @@ class Serializer {
             csp -> {
               try (InputStream cspIs = csp.newStream()) {
                 return IoUtils.toUtf8String(cspIs);
-              } catch (IOException e) {
+              } catch (IOException ignored) {
                 return null;
               }
             })

@@ -139,16 +139,16 @@ public class ApplicationSpan implements application.io.opentelemetry.api.trace.S
 
   @Override
   @CanIgnoreReturnValue
-  public application.io.opentelemetry.api.trace.Span recordException(Throwable throwable) {
-    agentSpan.recordException(throwable);
+  public application.io.opentelemetry.api.trace.Span recordException(Throwable t) {
+    agentSpan.recordException(t);
     return this;
   }
 
   @Override
   @CanIgnoreReturnValue
   public application.io.opentelemetry.api.trace.Span recordException(
-      Throwable throwable, application.io.opentelemetry.api.common.Attributes attributes) {
-    agentSpan.recordException(throwable, Bridging.toAgent(attributes));
+      Throwable t, application.io.opentelemetry.api.common.Attributes attributes) {
+    agentSpan.recordException(t, Bridging.toAgent(attributes));
     return this;
   }
 

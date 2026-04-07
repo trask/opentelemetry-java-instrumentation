@@ -34,10 +34,10 @@ public class AdviceUtils {
         .doOnCancel(() -> end(exchange, null));
   }
 
-  private static void end(ServerWebExchange exchange, @Nullable Throwable throwable) {
+  private static void end(ServerWebExchange exchange, @Nullable Throwable t) {
     OnSpanEnd onSpanEnd = (OnSpanEnd) exchange.getAttributes().get(AdviceUtils.ON_SPAN_END);
     if (onSpanEnd != null) {
-      onSpanEnd.end(throwable);
+      onSpanEnd.end(t);
     }
   }
 

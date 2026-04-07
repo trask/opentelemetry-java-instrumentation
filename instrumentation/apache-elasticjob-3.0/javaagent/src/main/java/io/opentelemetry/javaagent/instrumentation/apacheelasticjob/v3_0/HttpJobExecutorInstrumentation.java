@@ -52,8 +52,8 @@ class HttpJobExecutorInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.Enter @Nullable ElasticJobHelper.ElasticJobScope scope,
-        @Advice.Thrown @Nullable Throwable throwable) {
-      helper().endSpan(scope, throwable);
+        @Advice.Thrown @Nullable Throwable t) {
+      helper().endSpan(scope, t);
     }
   }
 }

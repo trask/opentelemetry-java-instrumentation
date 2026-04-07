@@ -101,14 +101,13 @@ class InfluxDbImplInstrumentation implements TypeInstrumentation {
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
-    public static void onExit(
-        @Advice.Thrown Throwable throwable, @Advice.Enter Object[] enterArgs) {
+    public static void onExit(@Advice.Thrown Throwable t, @Advice.Enter Object[] enterArgs) {
       CallDepth callDepth = CallDepth.forClass(InfluxDBImpl.class);
       if (callDepth.decrementAndGet() > 0 || enterArgs == null) {
         return;
       }
 
-      ((InfluxDbScope) enterArgs[1]).end(throwable);
+      ((InfluxDbScope) enterArgs[1]).end(t);
     }
   }
 
@@ -158,14 +157,13 @@ class InfluxDbImplInstrumentation implements TypeInstrumentation {
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
-    public static void onExit(
-        @Advice.Thrown Throwable throwable, @Advice.Enter InfluxDbScope scope) {
+    public static void onExit(@Advice.Thrown Throwable t, @Advice.Enter InfluxDbScope scope) {
       CallDepth callDepth = CallDepth.forClass(InfluxDBImpl.class);
       if (callDepth.decrementAndGet() > 0 || scope == null) {
         return;
       }
 
-      scope.end(throwable);
+      scope.end(t);
     }
   }
 }

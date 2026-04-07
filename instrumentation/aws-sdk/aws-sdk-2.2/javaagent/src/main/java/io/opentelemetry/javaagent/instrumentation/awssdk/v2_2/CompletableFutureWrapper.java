@@ -20,10 +20,10 @@ public class CompletableFutureWrapper {
   public static <T> CompletableFuture<T> wrap(CompletableFuture<T> future, Context context) {
     CompletableFuture<T> result = new CompletableFuture<>();
     future.whenComplete(
-        (T value, Throwable throwable) -> {
+        (T value, Throwable t) -> {
           try (Scope ignored = context.makeCurrent()) {
-            if (throwable != null) {
-              result.completeExceptionally(throwable);
+            if (t != null) {
+              result.completeExceptionally(t);
             } else {
               result.complete(value);
             }

@@ -132,7 +132,7 @@ final class TracingRequestHandler extends RequestHandler2 {
     finish(request, response, e);
   }
 
-  private void finish(Request<?> request, Response<?> response, @Nullable Throwable error) {
+  private void finish(Request<?> request, Response<?> response, @Nullable Throwable t) {
     // close outstanding "client" span
     Context context = request.getHandlerContext(CONTEXT);
     if (context == null) {
@@ -148,16 +148,16 @@ final class TracingRequestHandler extends RequestHandler2 {
       Context parentContext = context.get(PARENT_CONTEXT_KEY);
       Timer timer = context.get(REQUEST_TIMER_KEY);
       // create request span if there was an error
-      if (error != null
+      if (t != null
           && parentContext != null
           && timer != null
           && requestInstrumenter.shouldStart(parentContext, request)) {
         InstrumenterUtil.startAndEnd(
-            instrumenter, parentContext, request, response, error, timer.startTime(), timer.now());
+            instrumenter, parentContext, request, response, t, timer.startTime(), timer.now());
       }
       return;
     }
-    instrumenter.end(context, request, response, error);
+    instrumenter.end(context, request, response, t);
   }
 
   private Instrumenter<Request<?>, Response<?>> getInstrumenter(Request<?> request) {

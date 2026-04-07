@@ -110,9 +110,9 @@ public class SpringAwsUtil {
       this.scope = context.makeCurrent();
     }
 
-    public void close(Throwable throwable) {
+    public void close(Throwable t) {
       scope.close();
-      instrumenter.end(context, request, response, throwable);
+      instrumenter.end(context, request, response, t);
     }
   }
 

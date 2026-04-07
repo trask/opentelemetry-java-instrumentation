@@ -60,7 +60,7 @@ public class HandlerCodeAttributesGetter implements CodeAttributesGetter<Object>
   private static Class<?> loadOrNull(String className) {
     try {
       return Class.forName(className);
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return null;
     }
   }

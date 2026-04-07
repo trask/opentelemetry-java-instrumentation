@@ -78,11 +78,11 @@ public final class CpuMethods {
       return () -> {
         try {
           return returnType.cast(method.invoke(osBean));
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException ignored) {
           return null;
         }
       };
-    } catch (ClassNotFoundException | ClassCastException | NoSuchMethodException e) {
+    } catch (ClassNotFoundException | ClassCastException | NoSuchMethodException ignored) {
       return null;
     }
   }

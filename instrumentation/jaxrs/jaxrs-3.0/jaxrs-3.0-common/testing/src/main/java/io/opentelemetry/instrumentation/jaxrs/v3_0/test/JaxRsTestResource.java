@@ -121,10 +121,10 @@ public class JaxRsTestResource {
           // await for the test method to verify that there are no spans yet
           try {
             BARRIER.await(10, SECONDS);
-          } catch (InterruptedException e) {
+          } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
-          } catch (BrokenBarrierException | TimeoutException exception) {
-            throw new IllegalStateException(exception);
+          } catch (BrokenBarrierException | TimeoutException e) {
+            throw new IllegalStateException(e);
           }
 
           switch (action) {
@@ -153,10 +153,10 @@ public class JaxRsTestResource {
           // await for the test method to verify that there are no spans yet
           try {
             BARRIER.await(10, SECONDS);
-          } catch (InterruptedException e) {
+          } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
-          } catch (BrokenBarrierException | TimeoutException exception) {
-            throw new IllegalStateException(exception);
+          } catch (BrokenBarrierException | TimeoutException e) {
+            throw new IllegalStateException(e);
           }
 
           switch (action) {

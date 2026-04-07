@@ -108,15 +108,14 @@ class AwsLambdaRequestHandlerInstrumentation implements TypeInstrumentation {
             lambdaRequest, functionContext, functionScope, messageContext, messageScope);
       }
 
-      public void end(Object arg, @Nullable Object result, @Nullable Throwable throwable) {
+      public void end(Object arg, @Nullable Object result, @Nullable Throwable t) {
         if (messageScope != null) {
           messageScope.close();
-          AwsLambdaSingletons.messageInstrumenter()
-              .end(messageContext, (SQSEvent) arg, null, throwable);
+          AwsLambdaSingletons.messageInstrumenter().end(messageContext, (SQSEvent) arg, null, t);
         }
         if (functionScope != null) {
           functionScope.close();
-          functionInstrumenter().end(functionContext, lambdaRequest, result, throwable);
+          functionInstrumenter().end(functionContext, lambdaRequest, result, t);
         }
         OpenTelemetrySdkAccess.forceFlush(flushTimeout().toNanos(), NANOSECONDS);
       }
@@ -134,10 +133,10 @@ class AwsLambdaRequestHandlerInstrumentation implements TypeInstrumentation {
     public static void stopSpan(
         @Advice.Argument(value = 0, typing = Typing.DYNAMIC) Object arg,
         @Advice.Return @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(arg, result, throwable);
+        adviceScope.end(arg, result, t);
       }
     }
   }

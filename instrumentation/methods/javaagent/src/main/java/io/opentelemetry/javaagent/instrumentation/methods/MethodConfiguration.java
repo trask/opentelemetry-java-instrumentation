@@ -81,7 +81,7 @@ class MethodConfiguration {
             .computeIfAbsent(
                 SpanKind.valueOf(spanKind.toUpperCase(Locale.ROOT)), unused -> new ArrayList<>())
             .add(methodName);
-      } catch (IllegalArgumentException e) {
+      } catch (IllegalArgumentException ignored) {
         logger.log(
             WARNING,
             "Invalid methods configuration - unknown span_kind: {0} for method: {1}",

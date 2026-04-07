@@ -34,7 +34,7 @@ class ChannelPipelineTest {
   private static Class<?> getDefaultChannelPipelineClass() {
     try {
       return Class.forName("io.netty.channel.DefaultChannelPipeline");
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return null;
     }
   }

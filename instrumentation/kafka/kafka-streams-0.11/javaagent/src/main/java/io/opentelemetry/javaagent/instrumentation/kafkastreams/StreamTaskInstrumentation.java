@@ -43,14 +43,13 @@ class StreamTaskInstrumentation implements TypeInstrumentation {
     }
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
-    public static void stopSpan(
-        @Advice.Enter StateHolder holder, @Advice.Thrown Throwable throwable) {
+    public static void stopSpan(@Advice.Enter StateHolder holder, @Advice.Thrown Throwable t) {
       HOLDER.remove();
 
       Context context = holder.getContext();
       if (context != null) {
         holder.closeScope();
-        instrumenter().end(context, holder.getRequest(), null, throwable);
+        instrumenter().end(context, holder.getRequest(), null, t);
       }
     }
   }

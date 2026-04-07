@@ -114,9 +114,9 @@ public class DemoInstrumenterCustomizerProvider implements InstrumenterCustomize
         Context context,
         Object request,
         Object response,
-        Throwable error) {
-      if (error != null) {
-        attributes.put(ERROR_ATTR, error.getClass().getSimpleName());
+        Throwable t) {
+      if (t != null) {
+        attributes.put(ERROR_ATTR, t.getClass().getSimpleName());
       }
     }
   }

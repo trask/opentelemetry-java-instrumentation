@@ -53,9 +53,9 @@ class PekkoDispatcherInstrumentation implements TypeInstrumentation {
     public static void exitDispatch(
         @Advice.Argument(1) Envelope envelope,
         @Advice.Enter PropagatedContext propagatedContext,
-        @Advice.Thrown Throwable throwable) {
+        @Advice.Thrown Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, ENVELOPE_PROPAGATED_CONTEXT, envelope);
+          propagatedContext, t, ENVELOPE_PROPAGATED_CONTEXT, envelope);
     }
   }
 }

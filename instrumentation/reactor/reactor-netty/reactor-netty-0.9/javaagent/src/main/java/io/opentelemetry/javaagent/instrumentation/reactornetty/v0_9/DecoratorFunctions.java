@@ -88,13 +88,13 @@ public class DecoratorFunctions {
     }
 
     @Override
-    public final void accept(M message, Throwable throwable) {
+    public final void accept(M message, Throwable t) {
       Context context = getChannelContext(currentContext(message), null);
       if (context == null) {
-        delegate.accept(message, throwable);
+        delegate.accept(message, t);
       } else {
         try (Scope ignored = context.makeCurrent()) {
-          delegate.accept(message, throwable);
+          delegate.accept(message, t);
         }
       }
     }

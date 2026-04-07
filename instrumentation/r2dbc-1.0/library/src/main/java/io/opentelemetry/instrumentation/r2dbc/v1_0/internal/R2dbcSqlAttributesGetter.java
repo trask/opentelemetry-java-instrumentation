@@ -70,10 +70,9 @@ public final class R2dbcSqlAttributesGetter
 
   @Nullable
   @Override
-  public String getErrorType(
-      DbExecution request, @Nullable Void response, @Nullable Throwable error) {
-    if (error instanceof R2dbcException) {
-      return ((R2dbcException) error).getSqlState();
+  public String getErrorType(DbExecution request, @Nullable Void response, @Nullable Throwable t) {
+    if (t instanceof R2dbcException) {
+      return ((R2dbcException) t).getSqlState();
     }
     return null;
   }

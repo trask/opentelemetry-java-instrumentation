@@ -67,9 +67,9 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent(), httpMethod);
       }
 
-      public void end(Throwable throwable) {
+      public void end(Throwable t) {
         scope.close();
-        instrumenter().end(context, httpMethod, httpMethod, throwable);
+        instrumenter().end(context, httpMethod, httpMethod, t);
       }
     }
 
@@ -80,11 +80,10 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

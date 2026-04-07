@@ -28,8 +28,8 @@ final class Slf4jSimpleLogger implements InternalLogger {
   }
 
   @Override
-  public void log(Level level, String message, @Nullable Throwable error) {
-    logger.makeLoggingEventBuilder(toSlf4jLevel(level)).setCause(error).log(message);
+  public void log(Level level, String message, @Nullable Throwable t) {
+    logger.makeLoggingEventBuilder(toSlf4jLevel(level)).setCause(t).log(message);
   }
 
   @Override

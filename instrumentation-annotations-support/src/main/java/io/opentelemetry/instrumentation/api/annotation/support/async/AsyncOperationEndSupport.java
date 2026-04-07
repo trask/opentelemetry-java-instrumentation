@@ -65,10 +65,10 @@ public final class AsyncOperationEndSupport<REQUEST, RESPONSE> {
   @SuppressWarnings("unchecked")
   @Nullable
   public <ASYNC> ASYNC asyncEnd(
-      Context context, REQUEST request, @Nullable ASYNC asyncValue, @Nullable Throwable throwable) {
+      Context context, REQUEST request, @Nullable ASYNC asyncValue, @Nullable Throwable t) {
     // we can end early if an exception was thrown
-    if (throwable != null) {
-      instrumenter.end(context, request, null, throwable);
+    if (t != null) {
+      instrumenter.end(context, request, null, t);
       return asyncValue;
     }
 

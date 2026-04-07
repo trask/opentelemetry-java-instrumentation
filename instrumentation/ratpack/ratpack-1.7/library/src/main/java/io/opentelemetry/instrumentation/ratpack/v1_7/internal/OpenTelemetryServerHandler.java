@@ -72,8 +72,8 @@ public final class OpenTelemetryServerHandler implements Handler {
   static final class ErrorHolder {
     private final Throwable throwable;
 
-    ErrorHolder(Throwable throwable) {
-      this.throwable = throwable;
+    ErrorHolder(Throwable t) {
+      this.throwable = t;
     }
 
     Throwable get() {

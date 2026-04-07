@@ -78,10 +78,10 @@ class RedisStandaloneConnectionInstrumentation implements TypeInstrumentation {
 
       @Nullable
       public Future<Response> end(
-          @Nullable Future<Response> responseFuture, @Nullable Throwable throwable) {
+          @Nullable Future<Response> responseFuture, @Nullable Throwable t) {
         scope.close();
-        if (throwable != null) {
-          instrumenter().end(context, otelRequest, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, otelRequest, null, t);
         } else {
           responseFuture =
               VertxRedisClientSingletons.wrapEndSpan(responseFuture, context, otelRequest);
@@ -104,12 +104,12 @@ class RedisStandaloneConnectionInstrumentation implements TypeInstrumentation {
     @AssignReturned.ToReturned
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static Future<Response> onExit(
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Return @Nullable Future<Response> responseFuture,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        return adviceScope.end(responseFuture, throwable);
+        return adviceScope.end(responseFuture, t);
       }
 
       return responseFuture;

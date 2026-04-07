@@ -38,7 +38,7 @@ public class AsyncGreetingServlet extends HttpServlet {
                 System.err.println("got async request from queue");
                 executor.submit(() -> handleRequest(ac));
               }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
               Thread.currentThread().interrupt();
             }
           }
@@ -72,7 +72,7 @@ public class AsyncGreetingServlet extends HttpServlet {
       try {
         latch.await(30, SECONDS);
         System.err.println("latch released");
-      } catch (InterruptedException e) {
+      } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
       }
     }
@@ -83,10 +83,10 @@ public class AsyncGreetingServlet extends HttpServlet {
     try {
       ac.dispatch("/greeting");
       System.err.println("async request dispatched");
-    } catch (Throwable throwable) {
+    } catch (Throwable t) {
       System.err.println("dispatching async request failed");
-      throwable.printStackTrace();
-      throw throwable;
+      t.printStackTrace();
+      throw t;
     }
     CountDownLatch latch = (CountDownLatch) ac.getRequest().getAttribute(LATCH_KEY);
     if (latch != null) {

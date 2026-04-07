@@ -71,9 +71,9 @@ class CriteriaInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endMethod(
-        @Advice.Thrown Throwable throwable, @Advice.Enter HibernateOperationScope scope) {
+        @Advice.Thrown Throwable t, @Advice.Enter HibernateOperationScope scope) {
 
-      HibernateOperationScope.end(scope, throwable);
+      HibernateOperationScope.end(scope, t);
     }
   }
 }

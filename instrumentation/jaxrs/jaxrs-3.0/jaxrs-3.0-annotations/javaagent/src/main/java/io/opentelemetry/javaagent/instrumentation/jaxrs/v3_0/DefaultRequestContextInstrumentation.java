@@ -66,9 +66,9 @@ public class DefaultRequestContextInstrumentation extends AbstractRequestContext
         return new AdviceScope(context, context.makeCurrent(), handlerData);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, handlerData, null, throwable);
+        instrumenter().end(context, handlerData, null, t);
       }
     }
 
@@ -88,7 +88,7 @@ public class DefaultRequestContextInstrumentation extends AbstractRequestContext
       Method method = null;
       try {
         method = filterClass.getMethod("filter", ContainerRequestContext.class);
-      } catch (NoSuchMethodException e) {
+      } catch (NoSuchMethodException ignored) {
         // Unable to find the filter method.  This should not be reachable because the context
         // can only be aborted inside the filter method
       }
@@ -101,11 +101,10 @@ public class DefaultRequestContextInstrumentation extends AbstractRequestContext
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

@@ -103,8 +103,8 @@ public final class HttpServerTestOptions {
   }
 
   @CanIgnoreReturnValue
-  public HttpServerTestOptions setExpectedException(Throwable expectedException) {
-    this.expectedException = expectedException;
+  public HttpServerTestOptions setExpectedException(Throwable t) {
+    this.expectedException = t;
     return this;
   }
 

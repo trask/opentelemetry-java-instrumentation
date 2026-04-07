@@ -72,12 +72,12 @@ final class TracedSubscriber<T, REQUEST> extends Subscriber<T> {
   }
 
   @Override
-  public void onError(Throwable e) {
+  public void onError(Throwable t) {
     Context context = contextRef.getAndSet(null);
     if (context != null) {
-      instrumenter.end(context, request, null, e);
+      instrumenter.end(context, request, null, t);
     }
     // TODO (trask) should this be wrapped in parent of context(?)
-    delegate.onError(e);
+    delegate.onError(t);
   }
 }

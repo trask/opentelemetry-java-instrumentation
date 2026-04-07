@@ -67,9 +67,9 @@ final class ConfigurationFile {
     try (InputStreamReader reader =
         new InputStreamReader(new FileInputStream(configurationFile), UTF_8)) {
       properties.load(reader);
-    } catch (FileNotFoundException fnf) {
+    } catch (FileNotFoundException ignored) {
       fileLoadErrorMessage = "Configuration file \"" + configurationFilePath + "\" not found.";
-    } catch (IOException ioe) {
+    } catch (IOException ignored) {
       fileLoadErrorMessage =
           "Configuration file \""
               + configurationFilePath

@@ -142,9 +142,9 @@ class ConnectionPublishInstrumentation implements TypeInstrumentation {
         return new AdviceScope(natsRequest, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        getProducerInstrumenter().end(context, request, null, throwable);
+        getProducerInstrumenter().end(context, request, null, t);
       }
     }
 
@@ -164,10 +164,10 @@ class ConnectionPublishInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

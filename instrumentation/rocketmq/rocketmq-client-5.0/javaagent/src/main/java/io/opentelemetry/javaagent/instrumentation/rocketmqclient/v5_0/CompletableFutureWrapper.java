@@ -17,10 +17,10 @@ public class CompletableFutureWrapper {
     CompletableFuture<T> result = new CompletableFuture<>();
     Context context = Context.current();
     future.whenComplete(
-        (T value, Throwable throwable) -> {
+        (T value, Throwable t) -> {
           try (Scope ignored = context.makeCurrent()) {
-            if (throwable != null) {
-              result.completeExceptionally(throwable);
+            if (t != null) {
+              result.completeExceptionally(t);
             } else {
               result.complete(value);
             }

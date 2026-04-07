@@ -70,19 +70,19 @@ class ActionInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           Future<Result> responseFuture,
           Action<?> thisAction,
           Request<?> req) {
         scope.close();
         updateSpan(context, req);
 
-        if (throwable == null) {
+        if (t == null) {
           // span finished in RequestCompleteCallback
           responseFuture.onComplete(
               new RequestCompleteCallback(context), thisAction.executionContext());
         } else {
-          instrumenter().end(context, null, null, throwable);
+          instrumenter().end(context, null, null, t);
         }
       }
     }
@@ -95,7 +95,7 @@ class ActionInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopTraceOnResponse(
         @Advice.This Action<?> thisAction,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Argument(0) Request<?> req,
         @Advice.Return Future<Result> responseFuture,
         @Advice.Enter @Nullable AdviceScope actionScope) {
@@ -103,7 +103,7 @@ class ActionInstrumentation implements TypeInstrumentation {
         return;
       }
 
-      actionScope.end(throwable, responseFuture, thisAction, req);
+      actionScope.end(t, responseFuture, thisAction, req);
     }
   }
 }

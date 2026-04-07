@@ -46,11 +46,11 @@ class ServerErrorHandlerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static void captureThrowable(
-        @Advice.Argument(0) Context ctx, @Advice.Argument(1) Throwable throwable) {
+        @Advice.Argument(0) Context ctx, @Advice.Argument(1) Throwable t) {
       Optional<io.opentelemetry.context.Context> otelContext =
           ctx.maybeGet(io.opentelemetry.context.Context.class);
       if (otelContext.isPresent()) {
-        RatpackSingletons.onError(otelContext.get(), throwable);
+        RatpackSingletons.onError(otelContext.get(), t);
       }
     }
   }

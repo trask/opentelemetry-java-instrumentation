@@ -26,8 +26,8 @@ public class CompletionStageFinishCallback<T> implements BiFunction<T, Throwable
   @Override
   @CanIgnoreReturnValue
   @Nullable
-  public T apply(@Nullable T result, @Nullable Throwable throwable) {
-    instrumenter.end(context, handlerData, null, throwable);
+  public T apply(@Nullable T result, @Nullable Throwable t) {
+    instrumenter.end(context, handlerData, null, t);
     return result;
   }
 }

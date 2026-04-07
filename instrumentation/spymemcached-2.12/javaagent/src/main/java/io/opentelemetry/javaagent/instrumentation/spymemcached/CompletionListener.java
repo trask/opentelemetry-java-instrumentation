@@ -42,7 +42,7 @@ public abstract class CompletionListener<T> {
     Throwable error = null;
     try {
       processResult(span, future);
-    } catch (CancellationException e) {
+    } catch (CancellationException ignored) {
       if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
         span.setAttribute(DB_COMMAND_CANCELLED, true);
       }
@@ -68,8 +68,8 @@ public abstract class CompletionListener<T> {
     }
   }
 
-  protected void closeSyncSpan(Throwable thrown) {
-    instrumenter().end(context, request, null, thrown);
+  protected void closeSyncSpan(Throwable t) {
+    instrumenter().end(context, request, null, t);
   }
 
   protected abstract void processResult(Span span, T future)
@@ -81,7 +81,7 @@ public abstract class CompletionListener<T> {
     }
   }
 
-  public void done(Throwable thrown) {
-    closeSyncSpan(thrown);
+  public void done(Throwable t) {
+    closeSyncSpan(t);
   }
 }

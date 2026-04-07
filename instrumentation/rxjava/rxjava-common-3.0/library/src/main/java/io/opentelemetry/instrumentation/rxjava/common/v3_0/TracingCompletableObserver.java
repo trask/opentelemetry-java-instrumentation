@@ -56,9 +56,9 @@ public class TracingCompletableObserver implements CompletableObserver, Disposab
   }
 
   @Override
-  public void onError(Throwable e) {
+  public void onError(Throwable t) {
     try (Scope ignored = context.makeCurrent()) {
-      actual.onError(e);
+      actual.onError(t);
     }
   }
 

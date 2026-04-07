@@ -66,9 +66,9 @@ class HttpJspPageInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(HttpServletRequest req, Throwable throwable) {
+      public void end(HttpServletRequest req, Throwable t) {
         scope.close();
-        instrumenter().end(context, req, null, throwable);
+        instrumenter().end(context, req, null, t);
       }
     }
 
@@ -80,10 +80,10 @@ class HttpJspPageInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(0) HttpServletRequest req,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(req, throwable);
+        adviceScope.end(req, t);
       }
     }
   }

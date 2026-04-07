@@ -20,10 +20,10 @@ public final class NoopLoggingCustomizer implements LoggingCustomizer {
 
   @Override
   @SuppressWarnings("SystemOut")
-  public void onStartupFailure(Throwable throwable) {
+  public void onStartupFailure(Throwable t) {
     // there's no logging implementation installed, just print out the exception
     System.err.println("OpenTelemetry Javaagent failed to start");
-    throwable.printStackTrace();
+    t.printStackTrace();
   }
 
   @Override

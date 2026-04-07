@@ -172,10 +172,10 @@ public class JfrConfig {
 
       try {
         recordingStream.start();
-      } catch (IllegalStateException exception) {
+      } catch (IllegalStateException e) {
         // Can happen when close is called at the same time as start
         if (!closed) {
-          throw exception;
+          throw e;
         }
       }
     }
@@ -214,7 +214,7 @@ public class JfrConfig {
     private static boolean isJfrAvailable() {
       try {
         return FlightRecorder.isAvailable();
-      } catch (Throwable e) {
+      } catch (Throwable ignored) {
         // NoClassDefFoundError, UnsatisfiedLinkError (native images), or other issues
         return false;
       }

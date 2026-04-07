@@ -43,7 +43,7 @@ public final class KafkaPropagation {
       // missing in kafka 4.x
       ApiVersions.class.getMethod("maxUsableProduceMagic");
       return true;
-    } catch (NoSuchMethodException e) {
+    } catch (NoSuchMethodException ignored) {
       return false;
     }
   }
@@ -52,7 +52,7 @@ public final class KafkaPropagation {
       Context context, ProducerRecord<K, V> record) {
     try {
       inject(context, record);
-    } catch (IllegalStateException e) {
+    } catch (IllegalStateException ignored) {
       // headers must be read-only from reused record. try again with new one.
       record =
           new ProducerRecord<>(

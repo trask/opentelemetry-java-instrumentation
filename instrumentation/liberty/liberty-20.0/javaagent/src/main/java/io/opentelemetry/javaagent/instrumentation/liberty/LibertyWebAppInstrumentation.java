@@ -77,7 +77,7 @@ class LibertyWebAppInstrumentation implements TypeInstrumentation {
     public static void stopSpan(
         @Advice.Argument(0) ServletRequest servletRequest,
         @Advice.Argument(1) ServletResponse servletResponse,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter boolean handled) {
       if (!handled) {
         return;
@@ -95,7 +95,7 @@ class LibertyWebAppInstrumentation implements TypeInstrumentation {
               requestInfo.getRequestContext(),
               request,
               response,
-              throwable,
+              t,
               requestInfo.getContext(),
               requestInfo.getScope());
     }

@@ -135,7 +135,7 @@ class JaxrsAnnotationsInstrumentation implements TypeInstrumentation {
 
       @Nullable
       @CanIgnoreReturnValue
-      public Object exit(@Nullable Throwable throwable, @Nullable Object returnValue) {
+      public Object exit(@Nullable Throwable t, @Nullable Object returnValue) {
 
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return returnValue;
@@ -143,8 +143,8 @@ class JaxrsAnnotationsInstrumentation implements TypeInstrumentation {
 
         scope.close();
 
-        if (throwable != null) {
-          instrumenter().end(context, handlerData, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, handlerData, null, t);
           return returnValue;
         }
 
@@ -176,10 +176,10 @@ class JaxrsAnnotationsInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static Object stopSpan(
         @Advice.Return(typing = Typing.DYNAMIC) Object returnValue,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter AdviceScope adviceScope) {
 
-      return adviceScope.exit(throwable, returnValue);
+      return adviceScope.exit(t, returnValue);
     }
   }
 }

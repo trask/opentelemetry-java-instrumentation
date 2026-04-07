@@ -34,9 +34,9 @@ class DefaultChannelPipelineInstrumentation implements TypeInstrumentation {
   public static class NotifyHandlerExceptionAdvice {
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
-    public static void onEnter(@Advice.Argument(1) Throwable throwable) {
-      if (throwable != null) {
-        NettyErrorHolder.set(Java8BytecodeBridge.currentContext(), throwable);
+    public static void onEnter(@Advice.Argument(1) Throwable t) {
+      if (t != null) {
+        NettyErrorHolder.set(Java8BytecodeBridge.currentContext(), t);
       }
     }
   }

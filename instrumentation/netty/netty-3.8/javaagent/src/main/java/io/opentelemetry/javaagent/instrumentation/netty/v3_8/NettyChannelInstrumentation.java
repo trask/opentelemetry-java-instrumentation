@@ -79,14 +79,14 @@ class NettyChannelInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
         @Advice.Return ChannelFuture channelFuture,
-        @Advice.Thrown Throwable error,
+        @Advice.Thrown Throwable t,
         @Advice.Enter NettyScope nettyScope) {
 
       if (nettyScope == null) {
         return;
       }
 
-      if (error != null) {
+      if (t != null) {
         if (connectionInstrumenter()
             .shouldStart(nettyScope.getParentContext(), nettyScope.getRequest())) {
           InstrumenterUtil.startAndEnd(
@@ -94,7 +94,7 @@ class NettyChannelInstrumentation implements TypeInstrumentation {
               nettyScope.getParentContext(),
               nettyScope.getRequest(),
               null,
-              error,
+              t,
               nettyScope.getTimer().startTime(),
               nettyScope.getTimer().now());
         }

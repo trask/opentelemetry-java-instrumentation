@@ -141,21 +141,17 @@ public class TestAgentListener implements AgentBuilder.Listener {
 
   @Override
   public void onError(
-      String typeName,
-      ClassLoader classLoader,
-      JavaModule module,
-      boolean loaded,
-      Throwable throwable) {
+      String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable t) {
     for (BiFunction<String, Throwable, Boolean> condition : skipErrorConditions) {
-      if (condition.apply(typeName, throwable)) {
+      if (condition.apply(typeName, t)) {
         return;
       }
     }
-    if (!(throwable instanceof AbortTransformationException)) {
+    if (!(t instanceof AbortTransformationException)) {
       logger.log(
           SEVERE,
           "Unexpected instrumentation error when instrumenting " + typeName + " on " + classLoader,
-          throwable);
+          t);
       instrumentationErrorCount.incrementAndGet();
     }
   }

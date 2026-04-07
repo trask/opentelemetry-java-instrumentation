@@ -118,9 +118,9 @@ final class TracingClientInterceptor implements ClientInterceptor {
         super.start(
             new TracingClientCallListener(responseListener, parentContext, context, request),
             headers);
-      } catch (Throwable e) {
-        instrumenter.end(context, request, Status.UNKNOWN, e);
-        throw e;
+      } catch (Throwable t) {
+        instrumenter.end(context, request, Status.UNKNOWN, t);
+        throw t;
       }
     }
 
@@ -129,9 +129,9 @@ final class TracingClientInterceptor implements ClientInterceptor {
       request.setRequestSize(BodySizeUtil.getBodySize(message));
       try (Scope ignored = context.makeCurrent()) {
         super.sendMessage(message);
-      } catch (Throwable e) {
-        instrumenter.end(context, request, Status.UNKNOWN, e);
-        throw e;
+      } catch (Throwable t) {
+        instrumenter.end(context, request, Status.UNKNOWN, t);
+        throw t;
       }
       long messageId = SENT_MESSAGE_ID_UPDATER.incrementAndGet(this);
       if (emitMessageEvents) {

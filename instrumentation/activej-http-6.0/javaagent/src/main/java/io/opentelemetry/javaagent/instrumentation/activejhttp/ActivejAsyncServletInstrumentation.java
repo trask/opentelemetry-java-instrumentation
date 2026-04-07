@@ -73,10 +73,10 @@ class ActivejAsyncServletInstrumentation implements TypeInstrumentation {
       }
 
       public Promise<HttpResponse> end(
-          Promise<HttpResponse> responsePromise, @Nullable Throwable throwable) {
+          Promise<HttpResponse> responsePromise, @Nullable Throwable t) {
         scope.close();
-        if (throwable != null) {
-          instrumenter().end(context, httpRequest, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, httpRequest, null, t);
           return responsePromise;
         } else {
           return PromiseWrapper.wrap(responsePromise, httpRequest, context);
@@ -94,14 +94,14 @@ class ActivejAsyncServletInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static Promise<HttpResponse> methodExit(
         @Advice.Return Promise<HttpResponse> responsePromise,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope == null) {
         return responsePromise;
       }
 
-      return adviceScope.end(responsePromise, throwable);
+      return adviceScope.end(responsePromise, t);
     }
   }
 }

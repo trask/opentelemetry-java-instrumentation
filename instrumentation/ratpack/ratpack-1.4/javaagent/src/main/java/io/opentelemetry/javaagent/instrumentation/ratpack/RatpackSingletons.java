@@ -50,10 +50,10 @@ public class RatpackSingletons {
   }
 
   // copied from BaseTracer#onException()
-  public static void onError(io.opentelemetry.context.Context context, Throwable error) {
+  public static void onError(io.opentelemetry.context.Context context, Throwable t) {
     Span span = Span.fromContext(context);
     span.setStatus(StatusCode.ERROR);
-    span.recordException(ErrorCauseExtractor.getDefault().extract(error));
+    span.recordException(ErrorCauseExtractor.getDefault().extract(t));
   }
 
   private RatpackSingletons() {}

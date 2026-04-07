@@ -34,10 +34,10 @@ public class UndertowHelper {
     return context;
   }
 
-  public void end(Context context, HttpServerExchange exchange, @Nullable Throwable error) {
-    error = AppServerBridge.getException(context, error);
+  public void end(Context context, HttpServerExchange exchange, @Nullable Throwable t) {
+    t = AppServerBridge.getException(context, t);
 
-    instrumenter.end(context, exchange, exchange, error);
+    instrumenter.end(context, exchange, exchange, t);
   }
 
   public void handlerStarted(Context context) {
@@ -48,11 +48,11 @@ public class UndertowHelper {
   }
 
   public void handlerCompleted(
-      Context context, @Nullable Throwable throwable, HttpServerExchange exchange) {
+      Context context, @Nullable Throwable t, HttpServerExchange exchange) {
     // end the span when this is the last handler to complete and exchange has
     // been completed
     if (UndertowActiveHandlers.decrementAndGet(context) == 0) {
-      end(context, exchange, throwable);
+      end(context, exchange, t);
     }
   }
 

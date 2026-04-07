@@ -1023,11 +1023,11 @@ public abstract class AbstractHttpServerTest<SERVER> extends AbstractHttpServerU
   }
 
   @CanIgnoreReturnValue
-  protected SpanDataAssert assertControllerSpan(SpanDataAssert span, Throwable expectedException) {
+  protected SpanDataAssert assertControllerSpan(SpanDataAssert span, Throwable t) {
     span.hasName("controller").hasKind(SpanKind.INTERNAL);
-    if (expectedException != null) {
+    if (t != null) {
       span.hasStatus(StatusData.error());
-      span.hasException(expectedException);
+      span.hasException(t);
     }
     return span;
   }

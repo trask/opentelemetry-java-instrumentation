@@ -28,7 +28,7 @@ final class NettySslInstrumenterImpl implements NettySslInstrumenter {
   }
 
   @Override
-  public void end(Context context, NettySslRequest request, @Nullable Throwable error) {
-    instrumenter.end(context, request, null, error);
+  public void end(Context context, NettySslRequest request, @Nullable Throwable t) {
+    instrumenter.end(context, request, null, t);
   }
 }

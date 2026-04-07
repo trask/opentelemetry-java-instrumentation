@@ -158,7 +158,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
     String result = null;
     try (InputStream in = system.openFile("application.properties")) {
       result = getAppNamePropertyFromStream(in);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       // expected to fail sometimes
     }
     logger.log(FINER, "Checking application.properties in current dir: {0}", result);
@@ -209,7 +209,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
     String result = null;
     try (InputStream in = system.openFile(fileName)) {
       result = parseNameFromYaml(in);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       // expected to fail sometimes
     }
     if (logger.isLoggable(FINER)) {
@@ -236,7 +236,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
           }
         }
       }
-    } catch (RuntimeException e) {
+    } catch (RuntimeException ignored) {
       // expected to fail sometimes
     }
     return null;
@@ -258,7 +258,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
     try {
       String[] args = system.attemptGetCommandLineArgsViaReflection();
       return parseNameFromProcessArgs(args);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return null;
     }
   }
@@ -304,7 +304,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
       // Note: load() uses ISO 8859-1 encoding, same as spring uses by default for property files
       properties.load(in);
       return properties.getProperty("spring.application.name");
-    } catch (IOException e) {
+    } catch (IOException ignored) {
       return null;
     }
   }
@@ -313,7 +313,7 @@ public class SpringBootServiceNameDetector implements ConditionalResourceProvide
   private String loadFromClasspath(String filename, Function<InputStream, String> parser) {
     try (InputStream in = system.openClasspathResource(filename)) {
       return in != null ? parser.apply(in) : null;
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return null;
     }
   }

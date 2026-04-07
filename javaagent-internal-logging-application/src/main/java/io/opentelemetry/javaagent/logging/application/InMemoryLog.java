@@ -14,8 +14,8 @@ import javax.annotation.Nullable;
 abstract class InMemoryLog {
 
   static InMemoryLog create(
-      String name, InternalLogger.Level level, String message, @Nullable Throwable error) {
-    return new AutoValue_InMemoryLog(name, level, message, error);
+      String name, InternalLogger.Level level, String message, @Nullable Throwable t) {
+    return new AutoValue_InMemoryLog(name, level, message, t);
   }
 
   abstract String name();

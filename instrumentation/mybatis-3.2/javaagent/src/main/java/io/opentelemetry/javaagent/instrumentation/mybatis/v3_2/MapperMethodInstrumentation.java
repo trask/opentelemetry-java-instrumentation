@@ -62,9 +62,9 @@ class MapperMethodInstrumentation implements TypeInstrumentation {
         return new AdviceScope(classAndMethod, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, classAndMethod, null, throwable);
+        instrumenter().end(context, classAndMethod, null, t);
       }
     }
 
@@ -76,10 +76,9 @@ class MapperMethodInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

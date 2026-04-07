@@ -85,9 +85,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
 
     try (Scope ignored = context.makeCurrent()) {
       return new TracingServerCall<>(call, context, request).start(headers, next);
-    } catch (Throwable e) {
-      instrumenter.end(context, request, Status.UNKNOWN, e);
-      throw e;
+    } catch (Throwable t) {
+      instrumenter.end(context, request, Status.UNKNOWN, t);
+      throw t;
     }
   }
 
@@ -135,9 +135,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
       this.status = status;
       try {
         delegate().close(status, trailers);
-      } catch (Throwable e) {
-        instrumenter.end(context, request, status, e);
-        throw e;
+      } catch (Throwable t) {
+        instrumenter.end(context, request, status, t);
+        throw t;
       }
     }
 
@@ -152,7 +152,7 @@ final class TracingServerInterceptor implements ServerInterceptor {
         this.request = request;
       }
 
-      private void end(Context context, GrpcRequest request, Status response, Throwable error) {
+      private void end(Context context, GrpcRequest request, Status response, Throwable t) {
         if (captureExperimentalSpanAttributes) {
           Span span = Span.fromContext(context);
           span.setAttribute(
@@ -163,7 +163,7 @@ final class TracingServerInterceptor implements ServerInterceptor {
             span.setAttribute(GRPC_CANCELED, true);
           }
         }
-        instrumenter.end(context, request, response, error);
+        instrumenter.end(context, request, response, t);
       }
 
       @Override
@@ -181,9 +181,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
       public void onHalfClose() {
         try {
           delegate().onHalfClose();
-        } catch (Throwable e) {
-          instrumenter.end(context, request, Status.UNKNOWN, e);
-          throw e;
+        } catch (Throwable t) {
+          instrumenter.end(context, request, Status.UNKNOWN, t);
+          throw t;
         }
       }
 
@@ -191,9 +191,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
       public void onCancel() {
         try {
           delegate().onCancel();
-        } catch (Throwable e) {
-          end(context, request, Status.UNKNOWN, e);
-          throw e;
+        } catch (Throwable t) {
+          end(context, request, Status.UNKNOWN, t);
+          throw t;
         }
         end(context, request, Status.CANCELLED, null);
       }
@@ -202,9 +202,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
       public void onComplete() {
         try {
           delegate().onComplete();
-        } catch (Throwable e) {
-          end(context, request, Status.UNKNOWN, e);
-          throw e;
+        } catch (Throwable t) {
+          end(context, request, Status.UNKNOWN, t);
+          throw t;
         }
         if (status == null) {
           status = Status.UNKNOWN;
@@ -216,9 +216,9 @@ final class TracingServerInterceptor implements ServerInterceptor {
       public void onReady() {
         try {
           delegate().onReady();
-        } catch (Throwable e) {
-          end(context, request, Status.UNKNOWN, e);
-          throw e;
+        } catch (Throwable t) {
+          end(context, request, Status.UNKNOWN, t);
+          throw t;
         }
       }
     }

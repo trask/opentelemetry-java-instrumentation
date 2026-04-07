@@ -67,7 +67,7 @@ public interface RecordedEventHandler
         observable -> {
           try {
             observable.close();
-          } catch (Exception e) {
+          } catch (Exception ignored) {
             // Ignore
           }
         });

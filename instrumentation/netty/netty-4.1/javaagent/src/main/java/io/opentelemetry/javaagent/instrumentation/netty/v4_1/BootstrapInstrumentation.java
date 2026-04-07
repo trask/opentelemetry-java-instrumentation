@@ -88,11 +88,11 @@ class BootstrapInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endConnect(
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Argument(2) ChannelPromise channelPromise,
         @Advice.Enter NettyScope enterScope) {
 
-      NettyScope.end(enterScope, connectionInstrumenter(), channelPromise, throwable);
+      NettyScope.end(enterScope, connectionInstrumenter(), channelPromise, t);
     }
   }
 }

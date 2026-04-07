@@ -40,12 +40,12 @@ public class RoutingContextHandlerWrapper implements Handler<RoutingContext> {
 
     try (Scope ignore = RouteHolder.init(otelContext, route).makeCurrent()) {
       handler.handle(context);
-    } catch (Throwable throwable) {
+    } catch (Throwable t) {
       Span serverSpan = LocalRootSpan.fromContextOrNull(otelContext);
       if (serverSpan != null) {
-        serverSpan.recordException(unwrapThrowable(throwable));
+        serverSpan.recordException(unwrapThrowable(t));
       }
-      throw throwable;
+      throw t;
     }
   }
 
@@ -55,14 +55,14 @@ public class RoutingContextHandlerWrapper implements Handler<RoutingContext> {
     return existingRoute != null ? existingRoute + route : route;
   }
 
-  private static Throwable unwrapThrowable(Throwable throwable) {
-    if (throwable.getCause() != null
-        && (throwable instanceof ExecutionException
-            || throwable instanceof CompletionException
-            || throwable instanceof InvocationTargetException
-            || throwable instanceof UndeclaredThrowableException)) {
-      return unwrapThrowable(throwable.getCause());
+  private static Throwable unwrapThrowable(Throwable t) {
+    if (t.getCause() != null
+        && (t instanceof ExecutionException
+            || t instanceof CompletionException
+            || t instanceof InvocationTargetException
+            || t instanceof UndeclaredThrowableException)) {
+      return unwrapThrowable(t.getCause());
     }
-    return throwable;
+    return t;
   }
 }

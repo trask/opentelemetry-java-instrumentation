@@ -125,17 +125,17 @@ abstract class AbstractElasticsearchClientTest {
       latch.countDown();
     }
 
-    void setFailure(Throwable failure) {
-      this.failure = failure;
+    void setFailure(Throwable t) {
+      this.failure = t;
       latch.countDown();
     }
 
     RESPONSE get() {
       try {
         assertThat(latch.await(1, MINUTES)).isTrue();
-      } catch (InterruptedException exception) {
+      } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
-        throw new IllegalStateException("Interrupted while waiting for response", exception);
+        throw new IllegalStateException("Interrupted while waiting for response", e);
       }
       if (response != null) {
         return response;

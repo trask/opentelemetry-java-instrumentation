@@ -93,10 +93,10 @@ class ConsumerImplInstrumentation implements TypeInstrumentation {
         @Advice.Enter Timer timer,
         @Advice.This Consumer<?> consumer,
         @Advice.Return Message<?> message,
-        @Advice.Thrown Throwable throwable) {
+        @Advice.Thrown Throwable t) {
       Context parent = Context.current();
-      Context current = startAndEndConsumerReceive(parent, message, timer, consumer, throwable);
-      if (current != null && throwable == null) {
+      Context current = startAndEndConsumerReceive(parent, message, timer, consumer, t);
+      if (current != null && t == null) {
         // ConsumerBase#internalReceive(long,TimeUnit) will be called before
         // ConsumerListener#receive(Consumer,Message), so, need to inject Context into Message.
         VirtualFieldStore.inject(message, current);
@@ -117,9 +117,9 @@ class ConsumerImplInstrumentation implements TypeInstrumentation {
         @Advice.Enter Timer timer,
         @Advice.This Consumer<?> consumer,
         @Advice.Return Message<?> message,
-        @Advice.Thrown Throwable throwable) {
+        @Advice.Thrown Throwable t) {
       Context parent = Context.current();
-      startAndEndConsumerReceive(parent, message, timer, consumer, throwable);
+      startAndEndConsumerReceive(parent, message, timer, consumer, t);
       // No need to inject context to message.
     }
   }

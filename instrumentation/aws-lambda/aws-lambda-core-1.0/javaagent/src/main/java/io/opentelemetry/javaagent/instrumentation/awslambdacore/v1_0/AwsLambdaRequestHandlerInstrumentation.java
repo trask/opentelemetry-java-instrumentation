@@ -87,9 +87,9 @@ class AwsLambdaRequestHandlerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(lambdaRequest, otelContext, otelContext.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        functionInstrumenter().end(context, lambdaRequest, null, throwable);
+        functionInstrumenter().end(context, lambdaRequest, null, t);
         OpenTelemetrySdkAccess.forceFlush(flushTimeout().toNanos(), NANOSECONDS);
       }
     }
@@ -104,10 +104,9 @@ class AwsLambdaRequestHandlerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

@@ -939,8 +939,8 @@ abstract class BaseRxJava2WithSpanTest {
       this.subscriber.onComplete();
     }
 
-    void onError(Throwable exception) {
-      this.subscriber.onError(exception);
+    void onError(Throwable t) {
+      this.subscriber.onError(t);
     }
 
     @Override

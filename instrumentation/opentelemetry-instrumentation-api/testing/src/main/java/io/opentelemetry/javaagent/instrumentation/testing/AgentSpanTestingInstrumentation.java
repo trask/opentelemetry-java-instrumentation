@@ -60,9 +60,9 @@ class AgentSpanTestingInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
       adviceScope.end();
-      AgentSpanTestingInstrumenter.endHttpServer(adviceScope.getContext(), throwable);
+      AgentSpanTestingInstrumenter.endHttpServer(adviceScope.getContext(), t);
     }
   }
 
@@ -77,9 +77,9 @@ class AgentSpanTestingInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
       adviceScope.end();
-      AgentSpanTestingInstrumenter.end(adviceScope.getContext(), throwable);
+      AgentSpanTestingInstrumenter.end(adviceScope.getContext(), t);
     }
   }
 }

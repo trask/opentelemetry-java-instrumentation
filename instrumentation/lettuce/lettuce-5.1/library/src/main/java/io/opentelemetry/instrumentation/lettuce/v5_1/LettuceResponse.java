@@ -12,9 +12,9 @@ final class LettuceResponse {
   @Nullable private final String errorMessage;
   @Nullable private final Throwable throwable;
 
-  LettuceResponse(@Nullable String errorMessage, @Nullable Throwable throwable) {
+  LettuceResponse(@Nullable String errorMessage, @Nullable Throwable t) {
     this.errorMessage = errorMessage;
-    this.throwable = throwable;
+    this.throwable = t;
   }
 
   @Nullable

@@ -113,8 +113,7 @@ public class TestController {
   }
 
   @ExceptionHandler
-  ResponseEntity<String> handleException(Throwable throwable) {
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-        .body(throwable.getMessage());
+  ResponseEntity<String> handleException(Throwable t) {
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR.value()).body(t.getMessage());
   }
 }

@@ -47,8 +47,8 @@ public class LoggingFailSafeMatcher<T> extends ElementMatcher.Junction.AbstractB
   public boolean matches(T target) {
     try {
       return matcher.matches(target);
-    } catch (Throwable e) {
-      logger.log(FINE, description, e);
+    } catch (Throwable t) {
+      logger.log(FINE, description, t);
       return false;
     }
   }

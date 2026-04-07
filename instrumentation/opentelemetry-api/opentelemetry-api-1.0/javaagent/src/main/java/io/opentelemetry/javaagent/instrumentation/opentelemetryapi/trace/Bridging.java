@@ -87,7 +87,7 @@ public class Bridging {
       application.io.opentelemetry.api.trace.SpanKind applicationSpanKind) {
     try {
       return SpanKind.valueOf(applicationSpanKind.name());
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException ignored) {
       logger.log(FINE, "unexpected span kind: {0}", applicationSpanKind.name());
       return null;
     }
@@ -173,7 +173,7 @@ public class Bridging {
     StatusCode agentCanonicalCode;
     try {
       agentCanonicalCode = StatusCode.valueOf(applicationStatus.name());
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException ignored) {
       logger.log(FINE, "unexpected status canonical code: {0}", applicationStatus.name());
       return StatusCode.UNSET;
     }

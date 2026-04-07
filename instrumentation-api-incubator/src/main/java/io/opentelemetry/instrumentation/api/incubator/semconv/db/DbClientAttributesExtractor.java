@@ -134,9 +134,9 @@ public final class DbClientAttributesExtractor<REQUEST, RESPONSE>
       Context context,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     internalNetworkExtractor.onEnd(attributes, request, response);
-    onEndCommon(attributes, getter, request, response, error);
+    onEndCommon(attributes, getter, request, response, t);
   }
 
   static <REQUEST, RESPONSE> void onEndCommon(
@@ -144,12 +144,12 @@ public final class DbClientAttributesExtractor<REQUEST, RESPONSE>
       DbClientAttributesGetter<REQUEST, RESPONSE> getter,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     if (emitStableDatabaseSemconv()) {
-      String errorType = getter.getErrorType(request, response, error);
+      String errorType = getter.getErrorType(request, response, t);
       // fall back to exception class name
-      if (errorType == null && error != null) {
-        errorType = error.getClass().getName();
+      if (errorType == null && t != null) {
+        errorType = t.getClass().getName();
       }
       attributes.put(ERROR_TYPE, errorType);
     }

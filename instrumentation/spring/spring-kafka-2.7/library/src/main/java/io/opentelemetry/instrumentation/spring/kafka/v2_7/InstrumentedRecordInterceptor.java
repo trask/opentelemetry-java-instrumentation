@@ -99,13 +99,13 @@ final class InstrumentedRecordInterceptor<K, V> implements RecordInterceptor<K, 
     }
   }
 
-  private void end(ConsumerRecord<K, V> record, @Nullable Throwable error) {
+  private void end(ConsumerRecord<K, V> record, @Nullable Throwable t) {
     State<KafkaProcessRequest> state = stateField.get(record);
     stateField.set(record, null);
     if (state != null) {
       KafkaProcessRequest request = state.request();
       state.scope().close();
-      processInstrumenter.end(state.context(), request, null, error);
+      processInstrumenter.end(state.context(), request, null, t);
     }
   }
 

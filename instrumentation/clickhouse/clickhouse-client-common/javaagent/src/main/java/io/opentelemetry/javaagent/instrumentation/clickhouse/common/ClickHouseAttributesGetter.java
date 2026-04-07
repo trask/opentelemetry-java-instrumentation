@@ -55,8 +55,8 @@ final class ClickHouseAttributesGetter
   @Nullable
   @Override
   public String getErrorType(
-      ClickHouseDbRequest request, @Nullable Void response, @Nullable Throwable error) {
-    return errorCodeExtractor.apply(error);
+      ClickHouseDbRequest request, @Nullable Void response, @Nullable Throwable t) {
+    return errorCodeExtractor.apply(t);
   }
 
   @Override

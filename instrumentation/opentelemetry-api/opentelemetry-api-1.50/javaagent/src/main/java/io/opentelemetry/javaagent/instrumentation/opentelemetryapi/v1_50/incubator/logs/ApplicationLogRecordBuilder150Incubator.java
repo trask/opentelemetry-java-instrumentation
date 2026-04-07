@@ -145,8 +145,8 @@ public class ApplicationLogRecordBuilder150Incubator extends ApplicationLogRecor
 
   @Override
   public application.io.opentelemetry.api.incubator.logs.ExtendedLogRecordBuilder setException(
-      Throwable throwable) {
-    agentLogRecordBuilder.setException(throwable);
+      Throwable t) {
+    agentLogRecordBuilder.setException(t);
     return this;
   }
 

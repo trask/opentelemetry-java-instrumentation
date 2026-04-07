@@ -183,7 +183,7 @@ final class SpringDeclarativeConfigProperties implements DeclarativeConfigProper
     if (value instanceof String) {
       try {
         return Integer.parseInt((String) value);
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException ignored) {
         return null;
       }
     }
@@ -281,7 +281,7 @@ final class SpringDeclarativeConfigProperties implements DeclarativeConfigProper
     if (value instanceof String) {
       try {
         return Long.parseLong((String) value);
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException ignored) {
         return null;
       }
     }
@@ -302,7 +302,7 @@ final class SpringDeclarativeConfigProperties implements DeclarativeConfigProper
     if (value instanceof String) {
       try {
         return Double.parseDouble((String) value);
-      } catch (NumberFormatException e) {
+      } catch (NumberFormatException ignored) {
         return null;
       }
     }

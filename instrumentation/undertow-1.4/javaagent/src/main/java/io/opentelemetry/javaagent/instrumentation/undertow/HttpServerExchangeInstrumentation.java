@@ -52,9 +52,8 @@ class HttpServerExchangeInstrumentation implements TypeInstrumentation {
     public static void exitJobSubmit(
         @Advice.Argument(1) Runnable task,
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
-        @Advice.Thrown @Nullable Throwable throwable) {
-      ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, PROPAGATED_CONTEXT, task);
+        @Advice.Thrown @Nullable Throwable t) {
+      ExecutorAdviceHelper.cleanUpAfterSubmit(propagatedContext, t, PROPAGATED_CONTEXT, task);
     }
   }
 }

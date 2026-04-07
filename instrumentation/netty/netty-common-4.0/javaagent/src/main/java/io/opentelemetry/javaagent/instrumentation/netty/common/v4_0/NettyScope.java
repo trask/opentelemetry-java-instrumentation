@@ -37,7 +37,7 @@ public class NettyScope {
       NettyScope nettyScope,
       NettyConnectionInstrumenter instrumenter,
       ChannelPromise channelPromise,
-      Throwable throwable) {
+      Throwable t) {
 
     if (nettyScope == null) {
       return;
@@ -45,8 +45,8 @@ public class NettyScope {
 
     nettyScope.scope.close();
 
-    if (throwable != null) {
-      instrumenter.end(nettyScope.context, nettyScope.request, null, throwable);
+    if (t != null) {
+      instrumenter.end(nettyScope.context, nettyScope.request, null, t);
     } else {
       channelPromise.addListener(
           new ConnectionCompleteListener(instrumenter, nettyScope.context, nettyScope.request));

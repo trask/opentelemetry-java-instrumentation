@@ -54,8 +54,8 @@ public class Jetty8HandlerAdvice {
     }
 
     public void end(
-        @Nullable Throwable throwable, HttpServletRequest request, HttpServletResponse response) {
-      helper().end(requestContext, request, response, throwable, context, scope);
+        @Nullable Throwable t, HttpServletRequest request, HttpServletResponse response) {
+      helper().end(requestContext, request, response, t, context, scope);
     }
   }
 
@@ -71,10 +71,10 @@ public class Jetty8HandlerAdvice {
   public static void stopSpan(
       @Advice.Argument(2) HttpServletRequest request,
       @Advice.Argument(3) HttpServletResponse response,
-      @Advice.Thrown @Nullable Throwable throwable,
+      @Advice.Thrown @Nullable Throwable t,
       @Advice.Enter @Nullable AdviceScope adviceScope) {
     if (adviceScope != null) {
-      adviceScope.end(throwable, request, response);
+      adviceScope.end(t, request, response);
     }
   }
 }

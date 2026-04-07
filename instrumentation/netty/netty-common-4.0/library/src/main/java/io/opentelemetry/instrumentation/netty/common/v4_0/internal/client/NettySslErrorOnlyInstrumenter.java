@@ -31,11 +31,11 @@ final class NettySslErrorOnlyInstrumenter implements NettySslInstrumenter {
   }
 
   @Override
-  public void end(Context context, NettySslRequest request, @Nullable Throwable error) {
-    if (error != null && instrumenter.shouldStart(context, request)) {
+  public void end(Context context, NettySslRequest request, @Nullable Throwable t) {
+    if (t != null && instrumenter.shouldStart(context, request)) {
       Timer timer = Timer.get(context);
       InstrumenterUtil.startAndEnd(
-          instrumenter, context, request, null, error, timer.startTime(), timer.now());
+          instrumenter, context, request, null, t, timer.startTime(), timer.now());
     }
   }
 }

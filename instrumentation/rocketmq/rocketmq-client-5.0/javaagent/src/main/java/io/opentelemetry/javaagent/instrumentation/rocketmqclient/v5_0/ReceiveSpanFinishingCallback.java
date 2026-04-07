@@ -56,19 +56,13 @@ public class ReceiveSpanFinishingCallback implements FutureCallback<ReceiveMessa
   }
 
   @Override
-  public void onFailure(Throwable throwable) {
+  public void onFailure(Throwable t) {
     Instrumenter<ReceiveMessageRequest, List<MessageView>> receiveInstrumenter =
         RocketMqSingletons.consumerReceiveInstrumenter();
     Context parentContext = Context.current();
     if (receiveInstrumenter.shouldStart(parentContext, request)) {
       InstrumenterUtil.startAndEnd(
-          receiveInstrumenter,
-          parentContext,
-          request,
-          null,
-          throwable,
-          timer.startTime(),
-          timer.now());
+          receiveInstrumenter, parentContext, request, null, t, timer.startTime(), timer.now());
     }
   }
 }

@@ -58,9 +58,9 @@ class ActionListenerImplInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, scope);
       }
 
-      public void end(Throwable throwable) {
+      public void end(Throwable t) {
         scope.close();
-        instrumenter().end(context, request, null, throwable);
+        instrumenter().end(context, request, null, t);
       }
     }
 
@@ -72,10 +72,9 @@ class ActionListenerImplInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

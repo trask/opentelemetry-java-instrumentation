@@ -64,7 +64,7 @@ class ServerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable exception, Request request, Response response) {
+      public void end(@Nullable Throwable t, Request request, Response response) {
         scope.close();
 
         if (Status.CLIENT_ERROR_NOT_FOUND.equals(response.getStatus())) {
@@ -74,8 +74,8 @@ class ServerInstrumentation implements TypeInstrumentation {
         HttpServerResponseCustomizerHolder.getCustomizer()
             .customize(context, response, RestletResponseMutator.INSTANCE);
 
-        if (exception != null) {
-          instrumenter().end(context, request, response, exception);
+        if (t != null) {
+          instrumenter().end(context, request, response, t);
           return;
         }
 
@@ -96,10 +96,10 @@ class ServerInstrumentation implements TypeInstrumentation {
     public static void finishRequest(
         @Advice.Argument(0) Request request,
         @Advice.Argument(1) Response response,
-        @Advice.Thrown @Nullable Throwable exception,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(exception, request, response);
+        adviceScope.end(t, request, response);
       }
     }
   }

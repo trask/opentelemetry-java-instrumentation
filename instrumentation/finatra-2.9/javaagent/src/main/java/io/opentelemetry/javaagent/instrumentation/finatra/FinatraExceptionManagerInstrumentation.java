@@ -37,13 +37,13 @@ class FinatraExceptionManagerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(suppress = Throwable.class)
     public static void handleException(
-        @Advice.Return Response response, @Advice.Argument(1) Throwable throwable) {
+        @Advice.Return Response response, @Advice.Argument(1) Throwable t) {
 
-      if (throwable == null) {
+      if (t == null) {
         return;
       }
 
-      THROWABLE.set(response, throwable);
+      THROWABLE.set(response, t);
     }
   }
 }

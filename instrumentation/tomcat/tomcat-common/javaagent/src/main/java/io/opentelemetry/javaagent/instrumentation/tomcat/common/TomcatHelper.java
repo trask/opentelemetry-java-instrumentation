@@ -40,16 +40,12 @@ public class TomcatHelper<REQUEST, RESPONSE> {
   }
 
   public void end(
-      Request request,
-      Response response,
-      @Nullable Throwable throwable,
-      Context context,
-      Scope scope) {
+      Request request, Response response, @Nullable Throwable t, Context context, Scope scope) {
     scope.close();
 
-    throwable = AppServerBridge.getException(context, throwable);
-    if (throwable != null || servletHelper.mustEndOnHandlerMethodExit(context)) {
-      instrumenter.end(context, request, response, throwable);
+    t = AppServerBridge.getException(context, t);
+    if (t != null || servletHelper.mustEndOnHandlerMethodExit(context)) {
+      instrumenter.end(context, request, response, t);
     }
   }
 

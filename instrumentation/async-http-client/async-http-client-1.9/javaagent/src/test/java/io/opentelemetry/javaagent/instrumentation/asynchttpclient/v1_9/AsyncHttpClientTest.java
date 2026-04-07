@@ -87,8 +87,8 @@ class AsyncHttpClientTest extends AbstractHttpClientTest<Request> {
               }
 
               @Override
-              public void onThrowable(Throwable throwable) {
-                requestResult.complete(throwable);
+              public void onThrowable(Throwable t) {
+                requestResult.complete(t);
               }
             });
   }

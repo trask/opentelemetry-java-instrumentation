@@ -92,9 +92,9 @@ class HandlerAdapterInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void exit(Object handler, @Nullable Throwable throwable) {
+      public void exit(Object handler, @Nullable Throwable t) {
         scope.close();
-        handlerInstrumenter().end(context, handler, null, throwable);
+        handlerInstrumenter().end(context, handler, null, t);
       }
     }
 
@@ -108,11 +108,11 @@ class HandlerAdapterInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(2) Object handler,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.exit(handler, throwable);
+        adviceScope.exit(handler, t);
       }
     }
   }

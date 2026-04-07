@@ -78,11 +78,11 @@ public final class TransformSafeLogger {
     }
   }
 
-  public void log(Level level, String message, Object[] args, Throwable error) {
+  public void log(Level level, String message, Object[] args, Throwable t) {
     if (logMessageQueue != null) {
-      logMessageQueue.offer(new LogMessage(level, logger, message, error, args));
+      logMessageQueue.offer(new LogMessage(level, logger, message, t, args));
     } else {
-      logger.log(level, formatMessage(message, args), error);
+      logger.log(level, formatMessage(message, args), t);
     }
   }
 
@@ -97,7 +97,7 @@ public final class TransformSafeLogger {
               formatMessage(logMessage.format, logMessage.arguments),
               logMessage.error);
         }
-      } catch (InterruptedException e) {
+      } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
       }
     }
@@ -110,12 +110,11 @@ public final class TransformSafeLogger {
     private final Throwable error;
     private final Object[] arguments;
 
-    private LogMessage(
-        Level level, Logger logger, String format, Throwable error, Object[] arguments) {
+    private LogMessage(Level level, Logger logger, String format, Throwable t, Object[] arguments) {
       this.level = level;
       this.logger = logger;
       this.format = format;
-      this.error = error;
+      this.error = t;
       this.arguments = arguments;
     }
   }

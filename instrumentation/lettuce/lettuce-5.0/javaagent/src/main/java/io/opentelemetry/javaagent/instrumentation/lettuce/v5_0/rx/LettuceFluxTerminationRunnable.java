@@ -37,7 +37,7 @@ public class LettuceFluxTerminationRunnable implements Consumer<Signal<?>>, Runn
     return onSubscribeConsumer;
   }
 
-  private void finishSpan(boolean isCommandCancelled, Throwable throwable) {
+  private void finishSpan(boolean isCommandCancelled, Throwable t) {
     if (context != null) {
       if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
         Span span = Span.fromContext(context);
@@ -46,7 +46,7 @@ public class LettuceFluxTerminationRunnable implements Consumer<Signal<?>>, Runn
           span.setAttribute("lettuce.command.cancelled", true);
         }
       }
-      instrumenter().end(context, onSubscribeConsumer.command, null, throwable);
+      instrumenter().end(context, onSubscribeConsumer.command, null, t);
     } else {
       Logger.getLogger(Flux.class.getName())
           .severe(

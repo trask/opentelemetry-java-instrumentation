@@ -90,12 +90,12 @@ public class VertxSqlClientUtil {
   public static Scope endQuerySpan(
       Instrumenter<VertxSqlClientRequest, Void> instrumenter,
       Promise<?> promise,
-      @Nullable Throwable throwable) {
+      @Nullable Throwable t) {
     RequestData requestData = requestDataField.get(promise);
     if (requestData == null) {
       return null;
     }
-    instrumenter.end(requestData.context, requestData.request, null, throwable);
+    instrumenter.end(requestData.context, requestData.request, null, t);
     return requestData.parentContext.makeCurrent();
   }
 

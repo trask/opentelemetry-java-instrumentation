@@ -122,7 +122,7 @@ class HttpSpanDecorator extends BaseSpanDecorator {
     try {
       URL url = new URL(httpUrl);
       return url.getPath();
-    } catch (MalformedURLException e) {
+    } catch (MalformedURLException ignored) {
       return null;
     }
   }

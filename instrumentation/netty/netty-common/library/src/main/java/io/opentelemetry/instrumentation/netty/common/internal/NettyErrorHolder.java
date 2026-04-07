@@ -31,15 +31,15 @@ public final class NettyErrorHolder implements ImplicitContextKeyed {
     return context.with(new NettyErrorHolder());
   }
 
-  public static void set(Context context, Throwable error) {
+  public static void set(Context context, Throwable t) {
     NettyErrorHolder holder = context.get(KEY);
     if (holder != null) {
-      holder.error = error;
+      holder.error = t;
     }
   }
 
   @Nullable
-  public static Throwable getOrDefault(Context context, @Nullable Throwable error) {
+  public static Throwable getOrDefault(Context context, @Nullable Throwable t) {
     Throwable result = null;
     NettyErrorHolder holder = context.get(KEY);
     if (holder != null) {
@@ -47,7 +47,7 @@ public final class NettyErrorHolder implements ImplicitContextKeyed {
       // clear the stored exception after reading it
       holder.error = null;
     }
-    return result == null ? error : result;
+    return result == null ? t : result;
   }
 
   @Override

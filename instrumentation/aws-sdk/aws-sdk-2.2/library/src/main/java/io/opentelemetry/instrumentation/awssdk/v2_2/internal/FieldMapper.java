@@ -137,7 +137,7 @@ class FieldMapper {
   private Object next(Object current, String fieldName) {
     try {
       return methodHandleFactory.forField(current.getClass(), fieldName).invoke(current);
-    } catch (Throwable t) {
+    } catch (Throwable ignored) {
       // ignore
     }
     return null;

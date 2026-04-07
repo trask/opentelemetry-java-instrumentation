@@ -57,14 +57,14 @@ public class HttpServletResponseAdviceHelper {
 
   public static void stopSpan(
       Instrumenter<ClassAndMethod, Void> instrumenter,
-      Throwable throwable,
+      Throwable t,
       @Nullable Context context,
       @Nullable Scope scope,
       @Nullable ClassAndMethod request) {
     if (scope != null) {
       scope.close();
 
-      instrumenter.end(context, request, null, throwable);
+      instrumenter.end(context, request, null, t);
     }
   }
 

@@ -38,8 +38,7 @@ public class XxlJobHelper {
     return new XxlJobScope(request, context, context.makeCurrent());
   }
 
-  public void endSpan(
-      @Nullable XxlJobScope scope, @Nullable Object result, @Nullable Throwable throwable) {
+  public void endSpan(@Nullable XxlJobScope scope, @Nullable Object result, @Nullable Throwable t) {
     if (scope == null) {
       return;
     }
@@ -47,7 +46,7 @@ public class XxlJobHelper {
       scope.request.setFailed();
     }
     scope.scope.close();
-    instrumenter.end(scope.context, scope.request, null, throwable);
+    instrumenter.end(scope.context, scope.request, null, t);
   }
 
   public static class XxlJobScope {

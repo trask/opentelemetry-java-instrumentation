@@ -56,9 +56,9 @@ class StructuredTaskScopeInstrumentation implements TypeInstrumentation {
     public static void exitCallableFork(
         @Advice.Argument(0) Callable<?> task,
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
-        @Advice.Thrown @Nullable Throwable throwable) {
+        @Advice.Thrown @Nullable Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, CALLABLE_PROPAGATED_CONTEXT, task);
+          propagatedContext, t, CALLABLE_PROPAGATED_CONTEXT, task);
     }
   }
 }

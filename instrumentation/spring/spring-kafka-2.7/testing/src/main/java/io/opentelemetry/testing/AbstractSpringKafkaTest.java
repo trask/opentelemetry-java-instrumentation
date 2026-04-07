@@ -106,7 +106,7 @@ public abstract class AbstractSpringKafkaTest {
                   "send",
                   MethodType.methodType(
                       listenableFutureClass, String.class, Object.class, Object.class));
-    } catch (ClassNotFoundException | NoSuchMethodException e) {
+    } catch (ClassNotFoundException | NoSuchMethodException ignored) {
       // spring-kafka 3.0 changed the return type
       try {
         sendMethod =
@@ -116,8 +116,8 @@ public abstract class AbstractSpringKafkaTest {
                     "send",
                     MethodType.methodType(
                         CompletableFuture.class, String.class, Object.class, Object.class));
-      } catch (NoSuchMethodException | IllegalAccessException f) {
-        failure = f;
+      } catch (NoSuchMethodException | IllegalAccessException e) {
+        failure = e;
       }
     } catch (IllegalAccessException e) {
       failure = e;
@@ -131,8 +131,8 @@ public abstract class AbstractSpringKafkaTest {
   protected void send(String topic, String key, String data) {
     try {
       send.invoke(kafkaTemplate, topic, key, data);
-    } catch (Throwable e) {
-      throw new AssertionError(e);
+    } catch (Throwable t) {
+      throw new AssertionError(t);
     }
   }
 

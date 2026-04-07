@@ -56,12 +56,12 @@ class LettuceClientInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          @Nullable Throwable throwable, RedisURI redisUri, ConnectionFuture<?> connectionFuture) {
+          @Nullable Throwable t, RedisURI redisUri, ConnectionFuture<?> connectionFuture) {
 
         scope.close();
 
-        if (throwable != null) {
-          connectInstrumenter().end(context, redisUri, null, throwable);
+        if (t != null) {
+          connectInstrumenter().end(context, redisUri, null, t);
           return;
         }
         connectionFuture.handleAsync(new EndConnectAsyncBiFunction<>(context, redisUri));
@@ -82,11 +82,11 @@ class LettuceClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(1) RedisURI redisUri,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable ConnectionFuture<?> connectionFuture,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, redisUri, connectionFuture);
+        adviceScope.end(t, redisUri, connectionFuture);
       }
     }
   }

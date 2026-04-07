@@ -115,14 +115,14 @@ public class HttpResponseReceiverInstrumenter {
     }
 
     @Override
-    public void accept(HttpClientRequest request, Throwable error) {
-      instrumentationContexts.endClientSpan(null, error);
+    public void accept(HttpClientRequest request, Throwable t) {
+      instrumentationContexts.endClientSpan(null, t);
 
       if (HttpClientRequestResendCount.get(instrumentationContexts.getParentContext()) == 0) {
         // request is an instance of FailedHttpClientRequest, which does not implement a correct
         // resourceUrl() method -- we have to work around that
         request = FailedRequestWithUrlMaker.create(config, request);
-        instrumentationContexts.startAndEndConnectionErrorSpan(request, error);
+        instrumentationContexts.startAndEndConnectionErrorSpan(request, t);
       }
     }
   }
@@ -137,8 +137,8 @@ public class HttpResponseReceiverInstrumenter {
     }
 
     @Override
-    public void accept(HttpClientResponse response, Throwable error) {
-      instrumentationContexts.endClientSpan(response, error);
+    public void accept(HttpClientResponse response, Throwable t) {
+      instrumentationContexts.endClientSpan(response, t);
     }
   }
 

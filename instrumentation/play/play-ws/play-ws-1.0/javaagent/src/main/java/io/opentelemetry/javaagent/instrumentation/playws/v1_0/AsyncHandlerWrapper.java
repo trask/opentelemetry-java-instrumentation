@@ -65,11 +65,11 @@ public class AsyncHandlerWrapper<T> implements AsyncHandler<T> {
   }
 
   @Override
-  public void onThrowable(Throwable throwable) {
-    instrumenter().end(context, request, null, throwable);
+  public void onThrowable(Throwable t) {
+    instrumenter().end(context, request, null, t);
 
     try (Scope ignored = parentContext.makeCurrent()) {
-      delegate.onThrowable(throwable);
+      delegate.onThrowable(t);
     }
   }
 }

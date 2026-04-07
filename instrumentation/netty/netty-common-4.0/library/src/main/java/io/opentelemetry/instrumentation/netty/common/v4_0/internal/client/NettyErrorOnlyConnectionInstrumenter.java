@@ -37,11 +37,11 @@ final class NettyErrorOnlyConnectionInstrumenter implements NettyConnectionInstr
       Context context,
       NettyConnectionRequest request,
       @Nullable Channel channel,
-      @Nullable Throwable error) {
-    if (error != null && instrumenter.shouldStart(context, request)) {
+      @Nullable Throwable t) {
+    if (t != null && instrumenter.shouldStart(context, request)) {
       Timer timer = Timer.get(context);
       InstrumenterUtil.startAndEnd(
-          instrumenter, context, request, channel, error, timer.startTime(), timer.now());
+          instrumenter, context, request, channel, t, timer.startTime(), timer.now());
     }
   }
 }

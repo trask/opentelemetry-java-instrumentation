@@ -77,11 +77,11 @@ public class PlayWsInstrumentationModule extends InstrumentationModule
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Argument(0) Request request,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
       Context context = (Context) enterResult[0];
-      if (context != null && throwable != null) {
-        instrumenter().end(context, request, null, throwable);
+      if (context != null && t != null) {
+        instrumenter().end(context, request, null, t);
       }
     }
   }

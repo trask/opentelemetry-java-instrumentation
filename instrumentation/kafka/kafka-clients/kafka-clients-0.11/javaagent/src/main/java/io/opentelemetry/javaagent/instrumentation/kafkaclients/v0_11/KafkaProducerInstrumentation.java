@@ -84,10 +84,10 @@ class KafkaProducerInstrumentation implements TypeInstrumentation {
         return record;
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        if (throwable != null) {
-          producerInstrumenter().end(context, request, null, throwable);
+        if (t != null) {
+          producerInstrumenter().end(context, request, null, t);
         }
         // span finished by ProducerCallback
       }
@@ -118,11 +118,11 @@ class KafkaProducerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
 
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

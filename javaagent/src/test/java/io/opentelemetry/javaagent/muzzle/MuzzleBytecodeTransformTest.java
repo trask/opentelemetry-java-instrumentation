@@ -50,7 +50,7 @@ class MuzzleBytecodeTransformTest {
         if (f.get(instrumenter) == null) {
           unInitFields.add(instrumenter.getClass());
         }
-      } catch (NoSuchFieldException | NoSuchMethodException e) {
+      } catch (NoSuchFieldException | NoSuchMethodException ignored) {
         unMuzzledClasses.add(instrumenter.getClass());
       } finally {
         if (f != null) {

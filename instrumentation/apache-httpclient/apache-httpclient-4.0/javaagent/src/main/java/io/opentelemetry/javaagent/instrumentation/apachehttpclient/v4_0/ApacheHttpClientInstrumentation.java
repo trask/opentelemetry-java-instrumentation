@@ -147,10 +147,10 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
           context, parentContext, otelRequest, handler);
     }
 
-    public void end(@Nullable Object result, @Nullable Throwable throwable) {
+    public void end(@Nullable Object result, @Nullable Throwable t) {
       scope.close();
-      if (throwable != null) {
-        instrumenter().end(context, otelRequest, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, otelRequest, null, t);
       } else if (result instanceof HttpResponse) {
         instrumenter().end(context, otelRequest, (HttpResponse) result, null);
       }
@@ -170,11 +170,11 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
     public static void methodExit(
         @Advice.Argument(0) HttpUriRequest request,
         @Advice.Return @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(result, throwable);
+        adviceScope.end(result, t);
       }
     }
   }
@@ -198,12 +198,12 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
 
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(result, throwable);
+        adviceScope.end(result, t);
       }
     }
   }
@@ -220,11 +220,11 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(result, throwable);
+        adviceScope.end(result, t);
       }
     }
   }
@@ -250,12 +250,12 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
 
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(result, throwable);
+        adviceScope.end(result, t);
       }
     }
   }

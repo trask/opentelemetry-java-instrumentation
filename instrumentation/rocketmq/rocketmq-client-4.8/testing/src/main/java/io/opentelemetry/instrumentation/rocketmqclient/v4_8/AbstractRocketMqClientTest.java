@@ -152,8 +152,8 @@ abstract class AbstractRocketMqClientTest {
           }
 
           @Override
-          public void onException(Throwable throwable) {
-            result.completeExceptionally(throwable);
+          public void onException(Throwable t) {
+            result.completeExceptionally(t);
           }
         });
     SendResult sendResult = result.get(10, SECONDS);

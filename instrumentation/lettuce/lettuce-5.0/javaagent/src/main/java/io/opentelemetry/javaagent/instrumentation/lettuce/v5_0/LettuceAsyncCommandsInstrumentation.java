@@ -50,13 +50,13 @@ class LettuceAsyncCommandsInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           RedisCommand<?, ?, ?> command,
           AsyncCommand<?, ?, ?> asyncCommand) {
         scope.close();
 
-        if (throwable != null) {
-          instrumenter().end(context, command, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, command, null, t);
           return;
         }
 
@@ -86,12 +86,12 @@ class LettuceAsyncCommandsInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(0) RedisCommand<?, ?, ?> command,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable AsyncCommand<?, ?, ?> asyncCommand,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        adviceScope.end(throwable, command, asyncCommand);
+        adviceScope.end(t, command, asyncCommand);
       }
     }
   }

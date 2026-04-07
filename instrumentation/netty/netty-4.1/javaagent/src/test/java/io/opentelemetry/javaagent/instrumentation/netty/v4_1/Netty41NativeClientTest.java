@@ -52,7 +52,7 @@ class Netty41NativeClientTest extends AbstractNetty41ClientTest {
     static boolean isAvailable() {
       try {
         return KQueue.isAvailable();
-      } catch (NoClassDefFoundError error) {
+      } catch (NoClassDefFoundError ignored) {
         // kqueue is available only in latest dep tests
         // in regular tests we only have a compile time dependency because kqueue support was added
         // after 4.1.0

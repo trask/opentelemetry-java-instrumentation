@@ -75,7 +75,7 @@ class DataSourceInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable, DataSource ds, Connection connection) {
+      public void end(@Nullable Throwable t, DataSource ds, Connection connection) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -88,7 +88,7 @@ class DataSourceInstrumentation implements TypeInstrumentation {
         if (realConnection != null) {
           dbInfo = JdbcUtils.extractDbInfo(realConnection);
         }
-        dataSourceInstrumenter().end(context, ds, dbInfo, throwable);
+        dataSourceInstrumenter().end(context, ds, dbInfo, t);
       }
     }
 
@@ -101,9 +101,9 @@ class DataSourceInstrumentation implements TypeInstrumentation {
     public static void stopSpan(
         @Advice.This DataSource ds,
         @Advice.Return @Nullable Connection connection,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.end(throwable, ds, connection);
+      adviceScope.end(t, ds, connection);
     }
   }
 }

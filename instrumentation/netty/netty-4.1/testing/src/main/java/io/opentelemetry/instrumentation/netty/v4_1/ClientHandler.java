@@ -52,8 +52,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<HttpObject> {
   }
 
   @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-    responseCode.completeExceptionally(cause);
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable t) {
+    responseCode.completeExceptionally(t);
     ctx.close();
   }
 }

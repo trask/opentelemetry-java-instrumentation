@@ -26,21 +26,21 @@ public class JettyHelper<REQUEST, RESPONSE> extends ServletHelper<REQUEST, RESPO
       ServletRequestContext<REQUEST> requestContext,
       REQUEST request,
       RESPONSE response,
-      @Nullable Throwable throwable,
+      @Nullable Throwable t,
       Context context,
       Scope scope) {
 
     scope.close();
 
-    if (throwable == null) {
+    if (t == null) {
       // on jetty versions before 9.4 exceptions from servlet don't propagate to this method
       // check from request whether a throwable has been stored there
-      throwable = errorException(request);
+      t = errorException(request);
     }
 
     ServletResponseContext<RESPONSE> responseContext = new ServletResponseContext<>(response);
-    if (throwable != null || mustEndOnHandlerMethodExit(context)) {
-      instrumenter.end(context, requestContext, responseContext, throwable);
+    if (t != null || mustEndOnHandlerMethodExit(context)) {
+      instrumenter.end(context, requestContext, responseContext, t);
     }
   }
 

@@ -26,10 +26,10 @@ public class Servlet2HttpAttributesGetter
   public Integer getHttpResponseStatusCode(
       ServletRequestContext<HttpServletRequest> requestContext,
       ServletResponseContext<HttpServletResponse> responseContext,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     HttpServletResponse response = responseContext.response();
 
-    if (response != null && !accessor.isResponseCommitted(response) && error != null) {
+    if (response != null && !accessor.isResponseCommitted(response) && t != null) {
       // if response is not committed and there is a throwable set status to 500 /
       // INTERNAL_SERVER_ERROR, due to servlet spec
       // https://javaee.github.io/servlet-spec/downloads/servlet-4.0/servlet-4_0_FINAL.pdf:

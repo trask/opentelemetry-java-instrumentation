@@ -103,8 +103,8 @@ final class ProducerImplInstrumentation implements TypeInstrumentation {
     @AssignReturned.ToReturned
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static CompletableFuture<SendReceipt> onExit(
-        @Advice.Return CompletableFuture<SendReceipt> future, @Advice.Thrown Throwable throwable) {
-      return throwable == null ? CompletableFutureWrapper.wrap(future) : future;
+        @Advice.Return CompletableFuture<SendReceipt> future, @Advice.Thrown Throwable t) {
+      return t == null ? CompletableFutureWrapper.wrap(future) : future;
     }
   }
 }

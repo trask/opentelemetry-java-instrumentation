@@ -49,7 +49,7 @@ public final class QuartzTelemetry {
           return;
         }
       }
-    } catch (SchedulerException e) {
+    } catch (SchedulerException ignored) {
       // Ignore
     }
     try {

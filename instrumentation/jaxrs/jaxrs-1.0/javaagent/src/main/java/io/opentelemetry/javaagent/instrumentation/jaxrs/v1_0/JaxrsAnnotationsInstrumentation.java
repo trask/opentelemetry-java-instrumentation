@@ -101,12 +101,12 @@ class JaxrsAnnotationsInstrumentation implements TypeInstrumentation {
         scope = context.makeCurrent();
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return;
         }
         scope.close();
-        instrumenter().end(context, handlerData, null, throwable);
+        instrumenter().end(context, handlerData, null, t);
       }
     }
 
@@ -117,8 +117,8 @@ class JaxrsAnnotationsInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.exit(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
+      adviceScope.exit(t);
     }
   }
 }

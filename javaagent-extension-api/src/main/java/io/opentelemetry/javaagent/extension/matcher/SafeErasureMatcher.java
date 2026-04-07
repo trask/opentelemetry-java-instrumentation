@@ -56,13 +56,13 @@ class SafeErasureMatcher<T extends TypeDefinition> extends ElementMatcher.Juncti
   static TypeDescription safeAsErasure(TypeDefinition typeDefinition) {
     try {
       return typeDefinition.asErasure();
-    } catch (Throwable e) {
+    } catch (Throwable t) {
       if (logger.isLoggable(FINE)) {
         logger.log(
             FINE,
             "{0} trying to get erasure for target {1}: {2}",
             new Object[] {
-              e.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), e.getMessage()
+              t.getClass().getSimpleName(), safeTypeDefinitionName(typeDefinition), t.getMessage()
             });
       }
       return null;

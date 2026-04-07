@@ -81,17 +81,17 @@ class RestClientInstrumentation implements TypeInstrumentation {
           responseListener, parentContext, instrumenter(), context, request);
     }
 
-    public void endWithListener(@Nullable Throwable throwable) {
+    public void endWithListener(@Nullable Throwable t) {
       scope.close();
-      if (throwable != null) {
-        instrumenter().end(context, request, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, request, null, t);
       }
       // span ended in RestResponseListener
     }
 
-    public void endWithResponse(@Nullable Throwable throwable, @Nullable Response response) {
+    public void endWithResponse(@Nullable Throwable t, @Nullable Response response) {
       scope.close();
-      instrumenter().end(context, request, response, throwable);
+      instrumenter().end(context, request, response, t);
     }
   }
 
@@ -114,10 +114,10 @@ class RestClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Return @Nullable Response response,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.endWithResponse(throwable, response);
+        adviceScope.endWithResponse(t, response);
       }
     }
   }
@@ -148,10 +148,10 @@ class RestClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.endWithListener(throwable);
+        adviceScope.endWithListener(t);
       }
     }
   }

@@ -76,8 +76,8 @@ public final class SafeServiceLoader {
       while (true) {
         try {
           return delegate.hasNext();
-        } catch (UnsupportedClassVersionError unsupportedClassVersionError) {
-          handleUnsupportedClassVersionError(unsupportedClassVersionError);
+        } catch (UnsupportedClassVersionError error) {
+          handleUnsupportedClassVersionError(error);
         }
       }
     }
@@ -87,8 +87,8 @@ public final class SafeServiceLoader {
       // jdk8 throws UnsupportedClassVersionError in next()
       try {
         return delegate.next();
-      } catch (UnsupportedClassVersionError unsupportedClassVersionError) {
-        handleUnsupportedClassVersionError(unsupportedClassVersionError);
+      } catch (UnsupportedClassVersionError error) {
+        handleUnsupportedClassVersionError(error);
         return null;
       }
     }

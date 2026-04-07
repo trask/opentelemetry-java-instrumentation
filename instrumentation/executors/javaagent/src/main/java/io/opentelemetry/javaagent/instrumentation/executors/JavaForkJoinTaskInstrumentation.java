@@ -120,9 +120,9 @@ class JavaForkJoinTaskInstrumentation implements TypeInstrumentation {
     public static void exitFork(
         @Advice.This ForkJoinTask<?> task,
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
-        @Advice.Thrown @Nullable Throwable throwable) {
+        @Advice.Thrown @Nullable Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, FORKJOINTASK_PROPAGATED_CONTEXT, task);
+          propagatedContext, t, FORKJOINTASK_PROPAGATED_CONTEXT, task);
     }
   }
 }

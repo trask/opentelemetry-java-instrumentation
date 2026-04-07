@@ -140,7 +140,7 @@ class AgentInstrumentationTest {
       try {
         try {
           urls.add(new File(entry).toURI().toURL());
-        } catch (SecurityException e) { // File.toURI checks to see if the file is a directory
+        } catch (SecurityException ignored) { // File.toURI checks to see if the file is a directory
           urls.add(new URL("file", null, new File(entry).getAbsolutePath()));
         }
       } catch (MalformedURLException e) {

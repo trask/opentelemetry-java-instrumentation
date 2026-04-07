@@ -57,9 +57,9 @@ public class ClientInstrumentation implements TypeInstrumentation {
         this.scope = scope;
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         scope.close();
-        clientInstrumenter().end(context, method, null, throwable);
+        clientInstrumenter().end(context, method, null, t);
       }
     }
 
@@ -77,10 +77,9 @@ public class ClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(throwable);
+        adviceScope.exit(t);
       }
     }
   }

@@ -55,11 +55,10 @@ final class OpenTelemetryFallbackErrorHandler implements ClientErrorHandler, Ser
   }
 
   @Override
-  public void error(Context context, Throwable throwable) {
+  public void error(Context context, Throwable t) {
     if (logger.isLoggable(WARNING)) {
       WarnOnce.execute();
-      logger.log(
-          WARNING, getMsg(ServerErrorHandler.class, "server error", context) + "\n", throwable);
+      logger.log(WARNING, getMsg(ServerErrorHandler.class, "server error", context) + "\n", t);
     }
     context.getResponse().status(500).send();
   }

@@ -93,12 +93,12 @@ class TwilioAsyncInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent(), spanName);
       }
 
-      public void end(Throwable throwable, ListenableFuture<?> response) {
+      public void end(Throwable t, ListenableFuture<?> response) {
         scope.close();
-        if (throwable != null) {
+        if (t != null) {
           // There was a synchronous error,
           // which means we shouldn't wait for a callback to close the span.
-          instrumenter().end(context, spanName, null, throwable);
+          instrumenter().end(context, spanName, null, t);
         } else {
           // We're calling an async operation, we still need to finish the span when it's
           // complete and report the results; set an appropriate callback
@@ -121,11 +121,11 @@ class TwilioAsyncInstrumentation implements TypeInstrumentation {
     /** Method exit instrumentation. */
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope,
         @Advice.Return ListenableFuture<?> response) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, response);
+        adviceScope.end(t, response);
       }
     }
   }

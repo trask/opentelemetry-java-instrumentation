@@ -79,9 +79,9 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
       return new AdviceScope(context, context.makeCurrent(), request);
     }
 
-    public void end(@Nullable Throwable throwable) {
+    public void end(@Nullable Throwable t) {
       scope.close();
-      JedisRequestContext.endIfNotAttached(instrumenter(), context, request, throwable);
+      JedisRequestContext.endIfNotAttached(instrumenter(), context, request, t);
     }
   }
 
@@ -99,10 +99,9 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }
@@ -122,10 +121,9 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

@@ -91,8 +91,8 @@ public final class HttpClientAttributesExtractor<REQUEST, RESPONSE>
       Context context,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
-    super.onEnd(attributes, context, request, response, error);
+      @Nullable Throwable t) {
+    super.onEnd(attributes, context, request, response, t);
 
     internalNetworkExtractor.onEnd(attributes, request, response);
   }

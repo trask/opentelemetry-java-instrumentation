@@ -41,7 +41,7 @@ public final class AwsLambdaFunctionAttributesExtractor
       getFunctionArn =
           lookup.findVirtual(
               Context.class, "getInvokedFunctionArn", MethodType.methodType(String.class));
-    } catch (NoSuchMethodException | IllegalAccessException e) {
+    } catch (NoSuchMethodException | IllegalAccessException ignored) {
       getFunctionArn = null;
     }
     GET_FUNCTION_ARN = getFunctionArn;
@@ -77,7 +77,7 @@ public final class AwsLambdaFunctionAttributesExtractor
     }
     try {
       return (String) GET_FUNCTION_ARN.invoke(awsContext);
-    } catch (Throwable throwable) {
+    } catch (Throwable ignored) {
       return null;
     }
   }

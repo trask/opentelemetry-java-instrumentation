@@ -65,7 +65,7 @@ final class InstrumentationContexts {
     return context;
   }
 
-  void endClientSpan(@Nullable HttpClientResponse response, @Nullable Throwable error) {
+  void endClientSpan(@Nullable HttpClientResponse response, @Nullable Throwable t) {
     HttpClientRequest request = null;
     Context context = null;
     RequestAndContext requestAndContext = clientContexts.poll();
@@ -79,16 +79,16 @@ final class InstrumentationContexts {
     }
 
     if (request != null && context != null) {
-      instrumenter().end(context, request, response, error);
+      instrumenter().end(context, request, response, t);
     }
   }
 
-  void startAndEndConnectionErrorSpan(HttpClientRequest request, Throwable error) {
+  void startAndEndConnectionErrorSpan(HttpClientRequest request, Throwable t) {
     Context parentContext = this.parentContext;
     if (instrumenter().shouldStart(parentContext, request)) {
       Timer timer = this.timer;
       InstrumenterUtil.startAndEnd(
-          instrumenter(), parentContext, request, null, error, timer.startTime(), timer.now());
+          instrumenter(), parentContext, request, null, t, timer.startTime(), timer.now());
     }
   }
 

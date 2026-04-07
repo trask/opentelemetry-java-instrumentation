@@ -132,8 +132,8 @@ public abstract class BaseServletHelper<REQUEST, RESPONSE> {
     accessor.setRequestAttribute(request, ServletHelper.CONTEXT_ATTRIBUTE, context);
   }
 
-  public void recordException(Context context, Throwable throwable) {
-    AppServerBridge.recordException(context, throwable);
+  public void recordException(Context context, Throwable t) {
+    AppServerBridge.recordException(context, t);
   }
 
   public Context updateContext(

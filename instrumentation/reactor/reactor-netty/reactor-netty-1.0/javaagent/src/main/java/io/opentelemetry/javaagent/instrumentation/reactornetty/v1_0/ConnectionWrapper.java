@@ -29,15 +29,14 @@ public class ConnectionWrapper {
         .doOnCancel(() -> end(mono, null, null));
   }
 
-  private static void end(
-      Mono<Channel> mono, @Nullable Channel channel, @Nullable Throwable error) {
+  private static void end(Mono<Channel> mono, @Nullable Channel channel, @Nullable Throwable t) {
     ConnectionRequestAndContext requestAndContext =
         requestAndContextField.get((ChannelPromise) mono);
     if (requestAndContext == null) {
       return;
     }
     connectionInstrumenter()
-        .end(requestAndContext.context(), requestAndContext.request(), channel, error);
+        .end(requestAndContext.context(), requestAndContext.request(), channel, t);
   }
 
   private ConnectionWrapper() {}

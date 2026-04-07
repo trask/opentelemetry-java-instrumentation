@@ -42,11 +42,11 @@ class DefaultFilterChainInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static void onFail(
-        @Advice.Argument(0) FilterChainContext ctx, @Advice.Argument(1) Throwable throwable) {
+        @Advice.Argument(0) FilterChainContext ctx, @Advice.Argument(1) Throwable t) {
       Context context = GrizzlyStateStorage.removeContext(ctx);
       HttpRequestPacket request = GrizzlyStateStorage.removeRequest(ctx);
       if (context != null && request != null) {
-        Throwable error = GrizzlyErrorHolder.getOrDefault(context, throwable);
+        Throwable error = GrizzlyErrorHolder.getOrDefault(context, t);
         error = AppServerBridge.getException(context, error);
         instrumenter().end(context, request, null, error);
       }

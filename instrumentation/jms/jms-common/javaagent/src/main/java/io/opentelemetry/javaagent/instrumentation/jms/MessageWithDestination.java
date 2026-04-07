@@ -65,7 +65,7 @@ public abstract class MessageWithDestination {
   private static String getDestinationName(DestinationAdapter destination, NameGetter nameGetter) {
     try {
       return nameGetter.getName(destination);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return "unknown";
     }
   }

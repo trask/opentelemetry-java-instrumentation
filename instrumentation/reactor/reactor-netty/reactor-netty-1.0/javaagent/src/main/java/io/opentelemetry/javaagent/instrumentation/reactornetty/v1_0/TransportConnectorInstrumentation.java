@@ -113,10 +113,10 @@ class TransportConnectorInstrumentation implements TypeInstrumentation {
       return new AdviceScope(request, context, context.makeCurrent());
     }
 
-    public void end(@Nullable Throwable throwable) {
+    public void end(@Nullable Throwable t) {
       scope.close();
-      if (throwable != null) {
-        connectionInstrumenter().end(context, request, null, throwable);
+      if (t != null) {
+        connectionInstrumenter().end(context, request, null, t);
       }
     }
   }
@@ -134,10 +134,9 @@ class TransportConnectorInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endConnect(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }
@@ -157,9 +156,9 @@ class TransportConnectorInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endConnect(
-        @Advice.Thrown Throwable throwable, @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

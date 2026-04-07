@@ -40,15 +40,15 @@ public class EndConnectAsyncBiFunction<T, U extends Throwable, R>
   }
 
   @Override
-  public R apply(T t, Throwable throwable) {
-    if (throwable instanceof CancellationException) {
+  public R apply(T result, Throwable t) {
+    if (t instanceof CancellationException) {
       if (CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
         Span.fromContext(context).setAttribute("lettuce.command.cancelled", true);
       }
       // and don't report this as an error
-      throwable = null;
+      t = null;
     }
-    connectInstrumenter().end(context, redisUri, null, throwable);
+    connectInstrumenter().end(context, redisUri, null, t);
     return null;
   }
 }

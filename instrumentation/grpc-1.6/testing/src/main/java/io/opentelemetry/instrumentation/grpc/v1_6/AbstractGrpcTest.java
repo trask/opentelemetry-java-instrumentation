@@ -418,8 +418,8 @@ public abstract class AbstractGrpcTest {
                       }
 
                       @Override
-                      public void onError(Throwable throwable) {
-                        error.set(throwable);
+                      public void onError(Throwable t) {
+                        error.set(t);
                       }
 
                       @Override
@@ -911,8 +911,8 @@ public abstract class AbstractGrpcTest {
                       }
 
                       @Override
-                      public void onError(Throwable throwable) {
-                        error.set(throwable);
+                      public void onError(Throwable t) {
+                        error.set(t);
                       }
 
                       @Override
@@ -1058,8 +1058,8 @@ public abstract class AbstractGrpcTest {
                       }
 
                       @Override
-                      public void onError(Throwable throwable) {
-                        error.set(throwable);
+                      public void onError(Throwable t) {
+                        error.set(t);
                         latch.countDown();
                       }
 
@@ -1206,8 +1206,8 @@ public abstract class AbstractGrpcTest {
               }
 
               @Override
-              public void onError(Throwable throwable) {
-                error.set(throwable);
+              public void onError(Throwable t) {
+                error.set(t);
                 latch.countDown();
               }
 
@@ -1561,7 +1561,7 @@ public abstract class AbstractGrpcTest {
                                 context1 -> cancelCalled.set(true), MoreExecutors.directExecutor());
                             try {
                               cancelLatch.await(10, SECONDS);
-                            } catch (InterruptedException e) {
+                            } catch (InterruptedException ignored) {
                               Thread.currentThread().interrupt();
                             }
                             responseObserver.onNext(

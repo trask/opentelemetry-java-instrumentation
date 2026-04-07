@@ -78,14 +78,14 @@ class AsyncCompletionHandlerInstrumentation implements TypeInstrumentation {
     @Nullable
     @Advice.OnMethodEnter(suppress = Throwable.class)
     public static Scope onEnter(
-        @Advice.This AsyncCompletionHandler<?> handler, @Advice.Argument(0) Throwable throwable) {
+        @Advice.This AsyncCompletionHandler<?> handler, @Advice.Argument(0) Throwable t) {
 
       RequestContext requestContext = ASYNC_HANDLER_REQUEST_CONTEXT.get(handler);
       if (requestContext == null) {
         return null;
       }
       ASYNC_HANDLER_REQUEST_CONTEXT.set(handler, null);
-      instrumenter().end(requestContext.getContext(), requestContext, null, throwable);
+      instrumenter().end(requestContext.getContext(), requestContext, null, t);
       return requestContext.getParentContext().makeCurrent();
     }
 

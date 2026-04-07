@@ -112,7 +112,7 @@ public final class LogEventMapper<T> {
       Message message,
       Level level,
       @Nullable Marker marker,
-      @Nullable Throwable throwable,
+      @Nullable Throwable t,
       T contextData,
       String threadName,
       long threadId,
@@ -137,8 +137,8 @@ public final class LogEventMapper<T> {
       builder.setSeverityText(level.name());
     }
 
-    if (throwable != null) {
-      builder.setException(throwable);
+    if (t != null) {
+      builder.setException(t);
     }
 
     if (captureExperimentalAttributes) {

@@ -54,9 +54,9 @@ class SimpleJobHandlerInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Return(typing = Assigner.Typing.DYNAMIC) @Nullable Object result,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable XxlJobHelper.XxlJobScope scope) {
-      helper().endSpan(scope, result, throwable);
+      helper().endSpan(scope, result, t);
     }
   }
 }

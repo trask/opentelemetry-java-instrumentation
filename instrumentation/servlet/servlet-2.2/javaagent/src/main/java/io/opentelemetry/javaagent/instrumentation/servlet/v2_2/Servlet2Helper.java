@@ -29,13 +29,13 @@ public class Servlet2Helper extends BaseServletHelper<HttpServletRequest, HttpSe
       ServletRequestContext<HttpServletRequest> requestContext,
       HttpServletResponse response,
       int statusCode,
-      @Nullable Throwable throwable) {
+      @Nullable Throwable t) {
 
     ServletResponseContext<HttpServletResponse> responseContext =
         new ServletResponseContext<>(response);
     responseContext.setStatus(statusCode);
 
-    instrumenter.end(context, requestContext, responseContext, throwable);
+    instrumenter.end(context, requestContext, responseContext, t);
   }
 
   public Context updateContext(Context context, HttpServletRequest request) {

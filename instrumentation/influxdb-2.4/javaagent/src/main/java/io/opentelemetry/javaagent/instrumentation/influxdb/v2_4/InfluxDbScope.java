@@ -27,9 +27,9 @@ public class InfluxDbScope {
     return new InfluxDbScope(influxDbRequest, context, context.makeCurrent());
   }
 
-  public void end(Throwable throwable) {
+  public void end(Throwable t) {
     scope.close();
 
-    instrumenter().end(context, influxDbRequest, null, throwable);
+    instrumenter().end(context, influxDbRequest, null, t);
   }
 }

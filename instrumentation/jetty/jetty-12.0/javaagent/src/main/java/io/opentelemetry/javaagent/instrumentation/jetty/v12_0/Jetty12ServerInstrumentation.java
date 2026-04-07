@@ -65,10 +65,10 @@ class Jetty12ServerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, scope);
       }
 
-      public void end(Request request, Response response, @Nullable Throwable throwable) {
+      public void end(Request request, Response response, @Nullable Throwable t) {
         scope.close();
-        if (throwable != null) {
-          helper().end(context, request, response, throwable);
+        if (t != null) {
+          helper().end(context, request, response, t);
         }
       }
     }
@@ -86,10 +86,10 @@ class Jetty12ServerInstrumentation implements TypeInstrumentation {
     public static void stopSpan(
         @Advice.Argument(0) Request request,
         @Advice.Argument(1) Response response,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(request, response, throwable);
+        adviceScope.end(request, response, t);
       }
     }
   }

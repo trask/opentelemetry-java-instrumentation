@@ -32,7 +32,7 @@ public final class AgentTestRunner extends InstrumentationTestRunner {
     try {
       LoggerUtils.setLevel(LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME), Level.WARN);
       LoggerUtils.setLevel(LoggerFactory.getLogger("io.opentelemetry"), Level.DEBUG);
-    } catch (NoClassDefFoundError e) {
+    } catch (NoClassDefFoundError ignored) {
       // this happens when excluding logback in order to test slf4j -> log4j2
     }
   }

@@ -174,29 +174,28 @@ public class RuleParser {
       JmxConfig config = loadConfig(is);
       logger.log(FINE, "Found {0} metric rules", config.getRules().size());
       config.addMetricDefsTo(conf);
-    } catch (Exception exception) {
+    } catch (Exception e) {
       // It is essential that the parser exception is made visible to the user.
       // It contains contextual information about any syntax issues found by the parser.
       String msg =
-          String.format(
-              "Failed to parse YAML rules : %s %s", rootCause(exception), exception.getMessage());
-      throw new IllegalArgumentException(msg, exception);
+          String.format("Failed to parse YAML rules : %s %s", rootCause(e), e.getMessage());
+      throw new IllegalArgumentException(msg, e);
     }
   }
 
   /**
    * Given an exception thrown by the parser, try to find the original cause of the problem.
    *
-   * @param exception the exception thrown by the parser
+   * @param t the exception thrown by the parser
    * @return a String describing the probable root cause
    */
-  private static String rootCause(Throwable exception) {
+  private static String rootCause(Throwable t) {
     String rootClass = "";
     String message = null;
     // Go to the bottom of it
-    for (; exception != null; exception = exception.getCause()) {
-      rootClass = exception.getClass().getSimpleName();
-      message = exception.getMessage();
+    for (; t != null; t = t.getCause()) {
+      rootClass = t.getClass().getSimpleName();
+      message = t.getMessage();
     }
     return message == null ? rootClass : message;
   }

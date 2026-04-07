@@ -1154,8 +1154,8 @@ public final class BedrockRuntimeImpl {
       throws Throwable {
     try {
       return method.invoke(target, args);
-    } catch (InvocationTargetException exception) {
-      throw exception.getCause();
+    } catch (InvocationTargetException e) {
+      throw e.getCause();
     }
   }
 
@@ -1202,8 +1202,8 @@ public final class BedrockRuntimeImpl {
     }
 
     @Override
-    public final void exceptionOccurred(Throwable throwable) {
-      delegate.exceptionOccurred(throwable);
+    public final void exceptionOccurred(Throwable t) {
+      delegate.exceptionOccurred(t);
     }
 
     @Override

@@ -94,15 +94,15 @@ class OpenSearchTransportInstrumentation implements TypeInstrumentation {
       return future.whenComplete(new OpenSearchResponseHandler(context, otelRequest));
     }
 
-    public void end(@Nullable Throwable throwable) {
+    public void end(@Nullable Throwable t) {
       scope.close();
-      instrumenter().end(context, otelRequest, null, throwable);
+      instrumenter().end(context, otelRequest, null, t);
     }
 
-    public void endAsync(@Nullable Throwable throwable) {
+    public void endAsync(@Nullable Throwable t) {
       scope.close();
-      if (throwable != null) {
-        instrumenter().end(context, otelRequest, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, otelRequest, null, t);
       }
       // span ended in OpenSearchResponseHandler
     }
@@ -121,10 +121,9 @@ class OpenSearchTransportInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable,
-        @Advice.Enter @Nullable AdviceScope adviceScope) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }
@@ -146,11 +145,11 @@ class OpenSearchTransportInstrumentation implements TypeInstrumentation {
     @Advice.AssignReturned.ToReturned
     public static CompletableFuture<Object> stopSpan(
         @Advice.Return CompletableFuture<Object> future,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.endAsync(throwable);
+        adviceScope.endAsync(t);
         return adviceScope.wrapFuture(future);
       }
       return future;

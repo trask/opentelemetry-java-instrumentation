@@ -91,18 +91,18 @@ class VertxRxWebClientTest extends AbstractHttpClientTest<HttpRequest<Buffer>> {
     }
   }
 
-  private static Throwable clientSpanError(URI uri, Throwable exception) {
-    if (exception.getClass() == RuntimeException.class) {
+  private static Throwable clientSpanError(URI uri, Throwable t) {
+    if (t.getClass() == RuntimeException.class) {
       switch (uri.toString()) {
         case "http://localhost:61/": // unopened port
         case "http://192.0.2.1/": // non routable address
-          exception = exception.getCause();
+          t = t.getCause();
           break;
         default:
           break;
       }
     }
-    return exception;
+    return t;
   }
 
   private static String expectedClientSpanName(URI uri, String method) {

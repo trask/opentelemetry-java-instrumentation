@@ -69,10 +69,10 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
       return new AdviceScope(context, context.makeCurrent(), request);
     }
 
-    public void end(@Nullable Socket socket, @Nullable Throwable throwable) {
+    public void end(@Nullable Socket socket, @Nullable Throwable t) {
       request.setSocket(socket);
       scope.close();
-      JedisRequestContext.endIfNotAttached(instrumenter(), context, request, throwable);
+      JedisRequestContext.endIfNotAttached(instrumenter(), context, request, t);
     }
   }
 
@@ -89,10 +89,10 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.FieldValue("socket") Socket socket,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(socket, throwable);
+        adviceScope.end(socket, t);
       }
     }
   }
@@ -109,10 +109,10 @@ class JedisConnectionInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.FieldValue("socket") Socket socket,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(socket, throwable);
+        adviceScope.end(socket, t);
       }
     }
   }

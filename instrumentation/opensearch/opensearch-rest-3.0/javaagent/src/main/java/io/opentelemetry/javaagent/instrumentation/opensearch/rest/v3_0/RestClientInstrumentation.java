@@ -85,15 +85,15 @@ class RestClientInstrumentation implements TypeInstrumentation {
           OpenSearchRestSingletons::convertResponse);
     }
 
-    public void endWithResponse(@Nullable Response response, @Nullable Throwable throwable) {
+    public void endWithResponse(@Nullable Response response, @Nullable Throwable t) {
       scope.close();
-      instrumenter().end(context, otelRequest, convertResponse(response), throwable);
+      instrumenter().end(context, otelRequest, convertResponse(response), t);
     }
 
-    public void endWithListener(@Nullable Throwable throwable) {
+    public void endWithListener(@Nullable Throwable t) {
       scope.close();
-      if (throwable != null) {
-        instrumenter().end(context, otelRequest, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, otelRequest, null, t);
       }
       // span ended in RestResponseListener
     }
@@ -110,10 +110,10 @@ class RestClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Return @Nullable Response response,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.endWithResponse(response, throwable);
+        adviceScope.endWithResponse(response, t);
       }
     }
   }
@@ -135,10 +135,10 @@ class RestClientInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.endWithListener(throwable);
+        adviceScope.endWithListener(t);
       }
     }
   }

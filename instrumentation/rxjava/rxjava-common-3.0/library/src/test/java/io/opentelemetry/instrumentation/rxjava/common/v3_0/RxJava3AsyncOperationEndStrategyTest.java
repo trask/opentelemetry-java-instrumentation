@@ -938,8 +938,8 @@ class RxJava3AsyncOperationEndStrategyTest {
         this.subscriber.onComplete();
       }
 
-      public void onError(Throwable exception) {
-        this.subscriber.onError(exception);
+      public void onError(Throwable t) {
+        this.subscriber.onError(t);
       }
 
       @Override

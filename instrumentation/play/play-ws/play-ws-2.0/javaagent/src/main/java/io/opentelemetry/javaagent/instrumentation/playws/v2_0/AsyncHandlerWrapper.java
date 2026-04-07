@@ -70,11 +70,11 @@ public class AsyncHandlerWrapper<T> implements AsyncHandler<T> {
   }
 
   @Override
-  public void onThrowable(Throwable throwable) {
-    instrumenter().end(context, request, null, throwable);
+  public void onThrowable(Throwable t) {
+    instrumenter().end(context, request, null, t);
 
     try (Scope ignored = parentContext.makeCurrent()) {
-      delegate.onThrowable(throwable);
+      delegate.onThrowable(t);
     }
   }
 
@@ -94,8 +94,8 @@ public class AsyncHandlerWrapper<T> implements AsyncHandler<T> {
   }
 
   @Override
-  public void onHostnameResolutionFailure(String name, Throwable cause) {
-    delegate.onHostnameResolutionFailure(name, cause);
+  public void onHostnameResolutionFailure(String name, Throwable t) {
+    delegate.onHostnameResolutionFailure(name, t);
   }
 
   @Override
@@ -109,8 +109,8 @@ public class AsyncHandlerWrapper<T> implements AsyncHandler<T> {
   }
 
   @Override
-  public void onTcpConnectFailure(InetSocketAddress remoteAddress, Throwable cause) {
-    delegate.onTcpConnectFailure(remoteAddress, cause);
+  public void onTcpConnectFailure(InetSocketAddress remoteAddress, Throwable t) {
+    delegate.onTcpConnectFailure(remoteAddress, t);
   }
 
   @Override
@@ -124,8 +124,8 @@ public class AsyncHandlerWrapper<T> implements AsyncHandler<T> {
   }
 
   @Override
-  public void onTlsHandshakeFailure(Throwable cause) {
-    delegate.onTlsHandshakeFailure(cause);
+  public void onTlsHandshakeFailure(Throwable t) {
+    delegate.onTlsHandshakeFailure(t);
   }
 
   @Override

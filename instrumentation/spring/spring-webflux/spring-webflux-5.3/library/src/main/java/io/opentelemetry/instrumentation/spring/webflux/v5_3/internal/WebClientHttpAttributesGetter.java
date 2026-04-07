@@ -65,10 +65,10 @@ public enum WebClientHttpAttributesGetter
   @Nullable
   @Override
   public String getErrorType(
-      ClientRequest request, @Nullable ClientResponse response, @Nullable Throwable error) {
+      ClientRequest request, @Nullable ClientResponse response, @Nullable Throwable t) {
     // if both response and error are null it means the request has been cancelled -- see the
     // WebClientTracingFilter class
-    if (response == null && error == null) {
+    if (response == null && t == null) {
       return "cancelled";
     }
     return null;

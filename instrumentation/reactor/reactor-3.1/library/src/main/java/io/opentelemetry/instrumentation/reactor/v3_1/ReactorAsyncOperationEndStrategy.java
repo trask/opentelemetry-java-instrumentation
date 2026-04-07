@@ -53,8 +53,8 @@ public final class ReactorAsyncOperationEndStrategy implements AsyncOperationEnd
     EndOnFirstNotificationConsumer notificationConsumer =
         new EndOnFirstNotificationConsumer(context) {
           @Override
-          protected void end(Object result, Throwable error) {
-            instrumenter.end(context, request, tryToGetResponse(responseType, result), error);
+          protected void end(Object result, Throwable t) {
+            instrumenter.end(context, request, tryToGetResponse(responseType, result), t);
           }
         };
 
@@ -110,13 +110,13 @@ public final class ReactorAsyncOperationEndStrategy implements AsyncOperationEnd
     }
 
     @Override
-    public void accept(Throwable exception) {
-      accept(null, exception);
+    public void accept(Throwable t) {
+      accept(null, t);
     }
 
-    private void accept(Object result, Throwable error) {
+    private void accept(Object result, Throwable t) {
       if (compareAndSet(false, true)) {
-        end(result, error);
+        end(result, t);
       }
     }
 

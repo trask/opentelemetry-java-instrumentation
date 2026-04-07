@@ -91,13 +91,13 @@ final class InstrumentedBatchInterceptor<K, V> implements BatchInterceptor<K, V>
     }
   }
 
-  private void end(ConsumerRecords<K, V> records, @Nullable Throwable error) {
+  private void end(ConsumerRecords<K, V> records, @Nullable Throwable t) {
     State<KafkaReceiveRequest> state = stateField.get(records);
     stateField.set(records, null);
     if (state != null) {
       KafkaReceiveRequest request = state.request();
       state.scope().close();
-      batchProcessInstrumenter.end(state.context(), request, null, error);
+      batchProcessInstrumenter.end(state.context(), request, null, t);
       lastProcessed.set(new WeakReference<>(records));
     }
   }

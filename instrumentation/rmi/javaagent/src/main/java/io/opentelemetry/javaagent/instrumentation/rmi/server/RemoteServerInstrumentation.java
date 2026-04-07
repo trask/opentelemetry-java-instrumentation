@@ -80,7 +80,7 @@ class RemoteServerInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, classAndMethod, context, context.makeCurrent());
       }
 
-      public void end(Throwable throwable) {
+      public void end(Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -88,7 +88,7 @@ class RemoteServerInstrumentation implements TypeInstrumentation {
           return;
         }
         scope.close();
-        instrumenter().end(context, classAndMethod, null, throwable);
+        instrumenter().end(context, classAndMethod, null, t);
       }
     }
 
@@ -100,8 +100,8 @@ class RemoteServerInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.end(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
+      adviceScope.end(t);
     }
   }
 }

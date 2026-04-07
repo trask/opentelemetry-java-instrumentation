@@ -91,14 +91,11 @@ class HandlerAdapterInstrumentation implements TypeInstrumentation {
       }
 
       public Mono<HandlerResult> exit(
-          Throwable throwable,
-          ServerWebExchange exchange,
-          Object handler,
-          Mono<HandlerResult> mono) {
+          Throwable t, ServerWebExchange exchange, Object handler, Mono<HandlerResult> mono) {
         scope.close();
 
-        if (throwable != null) {
-          instrumenter().end(context, handler, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, handler, null, t);
         } else {
           mono = AdviceUtils.wrapMono(mono, context);
           exchange.getAttributes().put(AdviceUtils.CONTEXT, context);
@@ -124,14 +121,14 @@ class HandlerAdapterInstrumentation implements TypeInstrumentation {
         @Advice.Return Mono<HandlerResult> mono,
         @Advice.Argument(0) ServerWebExchange exchange,
         @Advice.Argument(1) Object handler,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope == null) {
         return mono;
       }
 
-      return adviceScope.exit(throwable, exchange, handler, mono);
+      return adviceScope.exit(t, exchange, handler, mono);
     }
   }
 }

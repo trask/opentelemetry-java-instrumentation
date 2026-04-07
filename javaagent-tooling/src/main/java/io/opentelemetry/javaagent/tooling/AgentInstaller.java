@@ -400,12 +400,10 @@ public class AgentInstaller {
 
     @Override
     public Iterable<? extends List<Class<?>>> onError(
-        int index, List<Class<?>> batch, Throwable throwable, List<Class<?>> types) {
+        int index, List<Class<?>> batch, Throwable t, List<Class<?>> types) {
       if (logger.isLoggable(FINE)) {
         logger.log(
-            FINE,
-            "Exception while retransforming " + batch.size() + " classes: " + batch,
-            throwable);
+            FINE, "Exception while retransforming " + batch.size() + " classes: " + batch, t);
       }
       return emptyList();
     }
@@ -422,18 +420,14 @@ public class AgentInstaller {
 
     @Override
     public void onError(
-        String typeName,
-        ClassLoader classLoader,
-        JavaModule module,
-        boolean loaded,
-        Throwable throwable) {
+        String typeName, ClassLoader classLoader, JavaModule module, boolean loaded, Throwable t) {
 
       if (logger.isLoggable(FINE)) {
         logger.log(
             FINE,
             "Failed to handle {0} for transformation on class loader {1}",
             new Object[] {typeName, classLoader},
-            throwable);
+            t);
       }
     }
 
@@ -641,7 +635,7 @@ public class AgentInstaller {
       return () -> {
         try {
           Thread.sleep(sleepMillis);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
           Thread.currentThread().interrupt();
         }
         scope.close();

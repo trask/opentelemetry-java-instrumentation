@@ -105,10 +105,10 @@ class HttpRequestInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(@Nullable Throwable throwable, HttpClientRequest request) {
+      public void end(@Nullable Throwable t, HttpClientRequest request) {
         scope.close();
-        if (throwable != null) {
-          instrumenter().end(context, request, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, request, null, t);
         }
       }
     }
@@ -122,10 +122,10 @@ class HttpRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void endScope(
         @Advice.This HttpClientRequest request,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, request);
+        adviceScope.end(t, request);
       }
     }
   }

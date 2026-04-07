@@ -249,10 +249,10 @@ public abstract class AbstractRatpackHttpServerTest extends AbstractHttpServerTe
 
                     @SuppressWarnings("SystemOut")
                     @Override
-                    public void onError(Throwable throwable) {
+                    public void onError(Throwable t) {
                       // prints the assertion error from onNext
-                      throwable.printStackTrace();
-                      context.getResponse().status(500).send(throwable.getMessage());
+                      t.printStackTrace();
+                      context.getResponse().status(500).send(t.getMessage());
                     }
 
                     @Override
@@ -271,8 +271,8 @@ public abstract class AbstractRatpackHttpServerTest extends AbstractHttpServerTe
   // user registered handler.
   private static class TestErrorHandler implements ServerErrorHandler {
     @Override
-    public void error(Context context, Throwable throwable) {
-      context.getResponse().status(500).send(throwable.getMessage());
+    public void error(Context context, Throwable t) {
+      context.getResponse().status(500).send(t.getMessage());
     }
   }
 

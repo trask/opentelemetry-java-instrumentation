@@ -147,10 +147,10 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
     public CompletableFuture<Message> end(
         Connection connection,
         @Nullable CompletableFuture<Message> messageFuture,
-        @Nullable Throwable throwable) {
+        @Nullable Throwable t) {
       scope.close();
-      if (throwable != null || messageFuture == null) {
-        getProducerInstrumenter().end(context, request, null, throwable);
+      if (t != null || messageFuture == null) {
+        getProducerInstrumenter().end(context, request, null, t);
         return messageFuture;
       }
 
@@ -206,8 +206,7 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void end(
-          Connection connection, @Nullable Message message, @Nullable Throwable throwable) {
+      public void end(Connection connection, @Nullable Message message, @Nullable Throwable t) {
         scope.close();
 
         NatsRequest response = null;
@@ -215,7 +214,7 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
           response = NatsRequest.create(connection, message);
         }
 
-        getProducerInstrumenter().end(context, request, response, throwable);
+        getProducerInstrumenter().end(context, request, response, t);
       }
     }
 
@@ -235,12 +234,12 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.This Connection connection,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable Message message,
         @Advice.Enter Object[] enterResult) {
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(connection, message, throwable);
+        adviceScope.end(connection, message, t);
       }
     }
   }
@@ -310,12 +309,12 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static CompletableFuture<Message> onExit(
         @Advice.This Connection connection,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable CompletableFuture<Message> originalReturnValue,
         @Advice.Enter Object[] enterResult) {
       MessageFutureAdviceScope adviceScope = (MessageFutureAdviceScope) enterResult[0];
       if (adviceScope != null) {
-        return adviceScope.end(connection, originalReturnValue, throwable);
+        return adviceScope.end(connection, originalReturnValue, t);
       }
       return originalReturnValue;
     }
@@ -387,12 +386,12 @@ class ConnectionRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static CompletableFuture<Message> onExit(
         @Advice.This Connection connection,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable CompletableFuture<Message> originalMessageFuture,
         @Advice.Enter Object[] enterResult) {
       MessageFutureAdviceScope adviceScope = (MessageFutureAdviceScope) enterResult[0];
       if (adviceScope != null) {
-        return adviceScope.end(connection, originalMessageFuture, throwable);
+        return adviceScope.end(connection, originalMessageFuture, t);
       }
       return originalMessageFuture;
     }

@@ -84,7 +84,7 @@ class S3CamelTest {
     awsConnector.deleteBucket(bucketName);
     try {
       awsConnector.purgeQueue(queueUrl);
-    } catch (PurgeQueueInProgressException e) {
+    } catch (PurgeQueueInProgressException ignored) {
       logger.warn("Throttled by AWS trying to purge queue, try doing it manually.");
     }
   }

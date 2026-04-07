@@ -63,7 +63,7 @@ final class MetroServerSpanNameUpdater {
     HttpServletRequestAdapter adapter;
     try {
       adapter = new HttpServletRequestAdapter(Class.forName(httpServletRequestClassName));
-    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
+    } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException ignored) {
       // Ignore.  Don't register
       return;
     }
@@ -152,7 +152,7 @@ final class MetroServerSpanNameUpdater {
     private static String invokeSafely(MethodHandle methodHandle, Object httpServletRequest) {
       try {
         return (String) methodHandle.invoke(httpServletRequest);
-      } catch (UnsupportedOperationException e) {
+      } catch (UnsupportedOperationException ignored) {
         // when request wrapper throws UnsupportedOperationException return null to skip adding
         // servlet path to the span name
         // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/10986

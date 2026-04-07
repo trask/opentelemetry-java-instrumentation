@@ -46,7 +46,7 @@ public final class ServletAsyncContext implements ImplicitContextKeyed {
   }
 
   @Nullable
-  public static Throwable getAsyncException(Context context, @Nullable Throwable error) {
+  public static Throwable getAsyncException(Context context, @Nullable Throwable t) {
     Throwable result = null;
     ServletAsyncContext servletAsyncContext = get(context);
     if (servletAsyncContext != null) {
@@ -55,13 +55,13 @@ public final class ServletAsyncContext implements ImplicitContextKeyed {
       // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/16129
       servletAsyncContext.throwable = null;
     }
-    return error != null ? error : result;
+    return t != null ? t : result;
   }
 
-  public static void recordAsyncException(Context context, Throwable throwable) {
+  public static void recordAsyncException(Context context, Throwable t) {
     ServletAsyncContext servletAsyncContext = get(context);
     if (servletAsyncContext != null) {
-      servletAsyncContext.throwable = throwable;
+      servletAsyncContext.throwable = t;
     }
   }
 

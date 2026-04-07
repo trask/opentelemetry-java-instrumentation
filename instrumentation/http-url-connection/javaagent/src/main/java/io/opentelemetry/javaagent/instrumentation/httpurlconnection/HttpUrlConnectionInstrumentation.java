@@ -100,7 +100,7 @@ class HttpUrlConnectionInstrumentation implements TypeInstrumentation {
       public void end(
           HttpURLConnection connection,
           int responseCode,
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           String methodName) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           return;
@@ -118,7 +118,7 @@ class HttpUrlConnectionInstrumentation implements TypeInstrumentation {
           GetOutputStreamContext.set(
               httpUrlState.context, connectionClass, methodName, requestMethod);
 
-          if (throwable != null) {
+          if (t != null) {
             if (responseCode >= 400) {
               // HttpURLConnection unnecessarily throws exception on error response.
               // None of the other http clients do this, so not recording the exception on the span
@@ -130,7 +130,7 @@ class HttpUrlConnectionInstrumentation implements TypeInstrumentation {
                       httpUrlState.context,
                       connection,
                       responseCode > 0 ? responseCode : httpUrlState.statusCode,
-                      throwable);
+                      t);
             }
             httpUrlState.finish();
           } else if (methodName.equals("getInputStream") && responseCode > 0) {
@@ -156,10 +156,10 @@ class HttpUrlConnectionInstrumentation implements TypeInstrumentation {
     public static void methodExit(
         @Advice.This HttpURLConnection connection,
         @Advice.FieldValue("responseCode") int responseCode,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Origin("#m") String methodName,
         @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.end(connection, responseCode, throwable, methodName);
+      adviceScope.end(connection, responseCode, t, methodName);
     }
   }
 

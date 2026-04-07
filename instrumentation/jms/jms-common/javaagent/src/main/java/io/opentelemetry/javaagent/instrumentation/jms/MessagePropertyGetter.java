@@ -17,7 +17,7 @@ enum MessagePropertyGetter implements TextMapGetter<MessageWithDestination> {
   public Iterable<String> keys(MessageWithDestination message) {
     try {
       return message.message().getPropertyNames();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return emptyList();
     }
   }

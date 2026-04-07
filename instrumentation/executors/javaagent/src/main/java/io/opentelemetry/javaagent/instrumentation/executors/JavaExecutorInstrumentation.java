@@ -130,12 +130,12 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
         return new ExecuteRunnableAdviceScope(callDepth, propagatedContext, task);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
         ExecutorAdviceHelper.cleanUpAfterSubmit(
-            propagatedContext, throwable, RUNNABLE_PROPAGATED_CONTEXT, task);
+            propagatedContext, t, RUNNABLE_PROPAGATED_CONTEXT, task);
       }
     }
 
@@ -151,10 +151,10 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void exitJobSubmit(
         @Advice.Argument(0) Runnable task,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter Object[] enterResult) {
       ExecuteRunnableAdviceScope adviceScope = (ExecuteRunnableAdviceScope) enterResult[0];
-      adviceScope.end(throwable);
+      adviceScope.end(t);
     }
   }
 
@@ -176,9 +176,9 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
     public static void exitJobSubmit(
         @Advice.Argument(0) ForkJoinTask<?> task,
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
-        @Advice.Thrown @Nullable Throwable throwable) {
+        @Advice.Thrown @Nullable Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, FORKJOINTASK_PROPAGATED_CONTEXT, task);
+          propagatedContext, t, FORKJOINTASK_PROPAGATED_CONTEXT, task);
     }
   }
 
@@ -218,7 +218,7 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
         return new SubmitRunnableAdviceScope(callDepth, propagatedContext, task);
       }
 
-      public void end(@Nullable Throwable throwable, @Nullable Future<?> future) {
+      public void end(@Nullable Throwable t, @Nullable Future<?> future) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -226,7 +226,7 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
           FUTURE_PROPAGATED_CONTEXT.set(future, propagatedContext);
         }
         ExecutorAdviceHelper.cleanUpAfterSubmit(
-            propagatedContext, throwable, RUNNABLE_PROPAGATED_CONTEXT, task);
+            propagatedContext, t, RUNNABLE_PROPAGATED_CONTEXT, task);
       }
     }
 
@@ -242,11 +242,11 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void exitJobSubmit(
         @Advice.Argument(0) Runnable task,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable Future<?> future,
         @Advice.Enter Object[] enterResult) {
       SubmitRunnableAdviceScope adviceScope = (SubmitRunnableAdviceScope) enterResult[0];
-      adviceScope.end(throwable, future);
+      adviceScope.end(t, future);
     }
   }
 
@@ -287,7 +287,7 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
         return task;
       }
 
-      public void end(@Nullable Throwable throwable, @Nullable Future<?> future) {
+      public void end(@Nullable Throwable t, @Nullable Future<?> future) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -295,7 +295,7 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
           FUTURE_PROPAGATED_CONTEXT.set(future, propagatedContext);
         }
         ExecutorAdviceHelper.cleanUpAfterSubmit(
-            propagatedContext, throwable, CALLABLE_PROPAGATED_CONTEXT, task);
+            propagatedContext, t, CALLABLE_PROPAGATED_CONTEXT, task);
       }
     }
 
@@ -311,11 +311,11 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void exitJobSubmit(
         @Advice.Argument(0) Callable<?> task,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable Future<?> future,
         @Advice.Enter Object[] enterResult) {
       CallableAdviceScope adviceScope = (CallableAdviceScope) enterResult[0];
-      adviceScope.end(throwable, future);
+      adviceScope.end(t, future);
     }
   }
 
@@ -373,7 +373,7 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
         return new CallableCollectionAdviceScope(callDepth, list != null ? list : tasks);
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -387,12 +387,12 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
          any parent spans in case of an error.
          (according to ExecutorService docs and AbstractExecutorService code)
         */
-        if (throwable != null) {
+        if (t != null) {
           for (Callable<?> task : tasks) {
             if (task != null) {
               PropagatedContext propagatedContext = CALLABLE_PROPAGATED_CONTEXT.get(task);
               ExecutorAdviceHelper.cleanUpAfterSubmit(
-                  propagatedContext, throwable, CALLABLE_PROPAGATED_CONTEXT, task);
+                  propagatedContext, t, CALLABLE_PROPAGATED_CONTEXT, task);
             }
           }
         }
@@ -414,10 +414,10 @@ class JavaExecutorInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void submitExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
       CallableCollectionAdviceScope adviceScope = (CallableCollectionAdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

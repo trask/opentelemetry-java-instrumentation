@@ -25,9 +25,9 @@ abstract class BaseMonoWithSpanTest extends AbstractWithSpanTest<Mono<String>, M
   }
 
   @Override
-  protected void fail(Mono<String> future, Throwable error) {
+  protected void fail(Mono<String> future, Throwable t) {
     UnicastProcessor<String> source = processor(future);
-    source.onError(error);
+    source.onError(t);
   }
 
   @Override

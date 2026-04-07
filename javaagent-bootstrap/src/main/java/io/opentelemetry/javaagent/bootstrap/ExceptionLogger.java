@@ -22,8 +22,8 @@ public final class ExceptionLogger {
 
   /** See {@code io.opentelemetry.javaagent.tooling.ExceptionHandlers} for usages. */
   @SuppressWarnings("unused")
-  public static void logSuppressedError(String message, Throwable error) {
-    logger.log(FINE, message, error);
+  public static void logSuppressedError(String message, Throwable t) {
+    logger.log(FINE, message, t);
     counter.incrementAndGet();
   }
 

@@ -93,9 +93,9 @@ class DispatcherServletInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void exit(ModelAndView mv, @Nullable Throwable throwable) {
+      public void exit(ModelAndView mv, @Nullable Throwable t) {
         scope.close();
-        modelAndViewInstrumenter().end(context, mv, null, throwable);
+        modelAndViewInstrumenter().end(context, mv, null, t);
       }
     }
 
@@ -108,10 +108,10 @@ class DispatcherServletInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(0) ModelAndView mv,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.exit(mv, throwable);
+        adviceScope.exit(mv, t);
       }
     }
   }

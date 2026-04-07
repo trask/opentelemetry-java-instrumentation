@@ -37,7 +37,7 @@ public class Axis2Helper {
     message.setProperty(SCOPE_KEY, scope);
   }
 
-  public static void end(MessageContext message, @Nullable Throwable throwable) {
+  public static void end(MessageContext message, @Nullable Throwable t) {
     Scope scope = (Scope) message.getProperty(SCOPE_KEY);
     if (scope == null) {
       return;
@@ -51,6 +51,6 @@ public class Axis2Helper {
     message.setProperty(CONTEXT_KEY, null);
     message.setProperty(SCOPE_KEY, null);
 
-    instrumenter().end(context, request, null, throwable);
+    instrumenter().end(context, request, null, t);
   }
 }

@@ -29,7 +29,7 @@ public class FinatraResponseListener implements FutureEventListener<Response> {
   }
 
   @Override
-  public void onFailure(Throwable cause) {
-    instrumenter().end(context, request, null, cause);
+  public void onFailure(Throwable t) {
+    instrumenter().end(context, request, null, t);
   }
 }

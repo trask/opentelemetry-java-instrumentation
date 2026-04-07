@@ -164,8 +164,8 @@ public class Servlet5Accessor implements ServletAccessor<HttpServletRequest, Htt
   }
 
   @Override
-  public boolean isServletException(Throwable throwable) {
-    return throwable instanceof ServletException;
+  public boolean isServletException(Throwable t) {
+    return t instanceof ServletException;
   }
 
   private static class Listener implements AsyncListener {

@@ -44,9 +44,9 @@ class HttpHandlerInstrumentation implements TypeInstrumentation {
   public static class ServiceAdvice {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
-    public static void onExit(@Advice.Thrown Throwable throwable) {
-      if (throwable != null) {
-        GrizzlyErrorHolder.set(Java8BytecodeBridge.currentContext(), throwable);
+    public static void onExit(@Advice.Thrown Throwable t) {
+      if (t != null) {
+        GrizzlyErrorHolder.set(Java8BytecodeBridge.currentContext(), t);
       }
     }
   }

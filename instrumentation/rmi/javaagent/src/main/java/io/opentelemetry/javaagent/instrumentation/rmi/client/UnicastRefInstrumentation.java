@@ -57,9 +57,9 @@ class UnicastRefInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent());
       }
 
-      public void end(Method method, @Nullable Throwable throwable) {
+      public void end(Method method, @Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, method, null, throwable);
+        instrumenter().end(context, method, null, t);
       }
     }
 
@@ -72,10 +72,10 @@ class UnicastRefInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
         @Advice.Argument(value = 1) Method method,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(method, throwable);
+        adviceScope.end(method, t);
       }
     }
   }

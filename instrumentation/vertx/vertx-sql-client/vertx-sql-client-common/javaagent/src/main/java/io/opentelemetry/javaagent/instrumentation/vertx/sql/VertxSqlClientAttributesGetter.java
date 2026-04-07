@@ -93,8 +93,8 @@ class VertxSqlClientAttributesGetter
   @Nullable
   @Override
   public String getErrorType(
-      VertxSqlClientRequest request, @Nullable Void response, @Nullable Throwable error) {
-    return responseStatusExtractor.apply(error);
+      VertxSqlClientRequest request, @Nullable Void response, @Nullable Throwable t) {
+    return responseStatusExtractor.apply(t);
   }
 
   @Override
@@ -125,13 +125,13 @@ class VertxSqlClientAttributesGetter
         if (exClass.isInstance(error)) {
           try {
             return String.valueOf(method.invoke(error)); // can be String or int
-          } catch (IllegalAccessException | InvocationTargetException e) {
+          } catch (IllegalAccessException | InvocationTargetException ignored) {
             return null;
           }
         }
         return null;
       };
-    } catch (ClassNotFoundException | NoSuchMethodException e) {
+    } catch (ClassNotFoundException | NoSuchMethodException ignored) {
       return (error) -> null;
     }
   }

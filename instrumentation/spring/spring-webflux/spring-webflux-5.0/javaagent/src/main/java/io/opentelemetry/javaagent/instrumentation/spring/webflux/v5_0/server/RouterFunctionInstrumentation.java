@@ -65,8 +65,8 @@ class RouterFunctionInstrumentation implements TypeInstrumentation {
     public static Mono<HandlerFunction<?>> methodExit(
         @Advice.This RouterFunction<?> thiz,
         @Advice.Return Mono<HandlerFunction<?>> result,
-        @Advice.Thrown Throwable throwable) {
-      if (throwable == null) {
+        @Advice.Thrown Throwable t) {
+      if (t == null) {
         return result.doOnNext(new RouteOnSuccess(thiz));
       }
       return result;

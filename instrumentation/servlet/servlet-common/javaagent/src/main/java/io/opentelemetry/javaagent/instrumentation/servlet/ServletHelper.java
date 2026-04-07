@@ -27,7 +27,7 @@ public class ServletHelper<REQUEST, RESPONSE> extends BaseServletHelper<REQUEST,
       ServletRequestContext<REQUEST> requestContext,
       REQUEST request,
       RESPONSE response,
-      Throwable throwable,
+      Throwable t,
       boolean topLevel,
       Context context,
       Scope scope) {
@@ -40,12 +40,12 @@ public class ServletHelper<REQUEST, RESPONSE> extends BaseServletHelper<REQUEST,
       Context currentContext = Context.current();
       // Something else is managing the context, we're in the outermost level of Servlet
       // instrumentation and we have an uncaught throwable. Let's add it to the current span.
-      if (throwable != null) {
-        recordException(currentContext, throwable);
+      if (t != null) {
+        recordException(currentContext, t);
         if (!mustEndOnHandlerMethodExit(currentContext)) {
           // We could be inside async dispatch. Unlike tomcat jetty does not call
           // ServletAsyncListener.onError when exception is thrown inside async dispatch.
-          recordAsyncException(currentContext, throwable);
+          recordAsyncException(currentContext, t);
         }
       }
       // also capture request parameters as servlet attributes
@@ -57,8 +57,8 @@ public class ServletHelper<REQUEST, RESPONSE> extends BaseServletHelper<REQUEST,
     }
 
     ServletResponseContext<RESPONSE> responseContext = new ServletResponseContext<>(response);
-    if (throwable != null || mustEndOnHandlerMethodExit(context)) {
-      instrumenter.end(context, requestContext, responseContext, throwable);
+    if (t != null || mustEndOnHandlerMethodExit(context)) {
+      instrumenter.end(context, requestContext, responseContext, t);
     }
   }
 
@@ -117,8 +117,8 @@ public class ServletHelper<REQUEST, RESPONSE> extends BaseServletHelper<REQUEST,
     return AsyncRunnableWrapper.wrap(this, runnable);
   }
 
-  public void recordAsyncException(Context context, Throwable throwable) {
-    ServletAsyncContext.recordAsyncException(context, throwable);
+  public void recordAsyncException(Context context, Throwable t) {
+    ServletAsyncContext.recordAsyncException(context, t);
   }
 
   @Nullable

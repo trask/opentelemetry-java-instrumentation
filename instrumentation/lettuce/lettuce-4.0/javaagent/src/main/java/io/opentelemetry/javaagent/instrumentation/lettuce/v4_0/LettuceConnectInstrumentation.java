@@ -44,9 +44,9 @@ class LettuceConnectInstrumentation implements TypeInstrumentation {
         this.scope = scope;
       }
 
-      public void end(Throwable throwable, RedisURI redisUri) {
+      public void end(Throwable t, RedisURI redisUri) {
         scope.close();
-        connectInstrumenter().end(context, redisUri, null, throwable);
+        connectInstrumenter().end(context, redisUri, null, t);
       }
     }
 
@@ -65,10 +65,10 @@ class LettuceConnectInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.Argument(1) RedisURI redisUri,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, redisUri);
+        adviceScope.end(t, redisUri);
       }
     }
   }

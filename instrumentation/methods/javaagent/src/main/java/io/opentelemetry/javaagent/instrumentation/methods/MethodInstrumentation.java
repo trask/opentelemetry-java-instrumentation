@@ -119,11 +119,10 @@ class MethodInstrumentation implements TypeInstrumentation {
         return new AdviceScope(methodAndType, context, context.makeCurrent());
       }
 
-      public Object end(
-          Class<?> methodReturnType, Object returnValue, @Nullable Throwable throwable) {
+      public Object end(Class<?> methodReturnType, Object returnValue, @Nullable Throwable t) {
         scope.close();
         return AsyncOperationEndSupport.create(instrumenter(), Void.class, methodReturnType)
-            .asyncEnd(context, classAndMethod, returnValue, throwable);
+            .asyncEnd(context, classAndMethod, returnValue, t);
       }
     }
 
@@ -141,11 +140,11 @@ class MethodInstrumentation implements TypeInstrumentation {
     public static Object stopSpan(
         @MethodReturnType Class<?> methodReturnType,
         @Advice.Return(typing = Assigner.Typing.DYNAMIC) Object returnValue,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
 
       if (adviceScope != null) {
-        return adviceScope.end(methodReturnType, returnValue, throwable);
+        return adviceScope.end(methodReturnType, returnValue, t);
       }
       return returnValue;
     }

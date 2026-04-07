@@ -108,7 +108,7 @@ public abstract class JavaxServletAccessor<R> implements ServletAccessor<HttpSer
   }
 
   @Override
-  public boolean isServletException(Throwable throwable) {
-    return throwable instanceof ServletException;
+  public boolean isServletException(Throwable t) {
+    return t instanceof ServletException;
   }
 }

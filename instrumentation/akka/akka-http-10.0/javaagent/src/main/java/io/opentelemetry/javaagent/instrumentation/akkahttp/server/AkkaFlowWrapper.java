@@ -138,8 +138,8 @@ public class AkkaFlowWrapper
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
-              fail(requestOut, exception);
+            public void onUpstreamFailure(Throwable t) {
+              fail(requestOut, t);
             }
           });
 
@@ -178,18 +178,17 @@ public class AkkaFlowWrapper
             }
 
             @Override
-            public void onUpstreamFailure(Throwable exception) {
+            public void onUpstreamFailure(Throwable t) {
               TracingRequest tracingRequest;
               while ((tracingRequest = requests.poll()) != null) {
                 if (tracingRequest == TracingRequest.EMPTY) {
                   continue;
                 }
                 instrumenter()
-                    .end(
-                        tracingRequest.context, tracingRequest.request, errorResponse(), exception);
+                    .end(tracingRequest.context, tracingRequest.request, errorResponse(), t);
               }
 
-              fail(responseOut, exception);
+              fail(responseOut, t);
             }
 
             @Override

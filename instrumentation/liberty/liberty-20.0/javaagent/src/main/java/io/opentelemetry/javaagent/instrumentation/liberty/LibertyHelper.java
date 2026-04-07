@@ -27,7 +27,7 @@ public class LibertyHelper<REQUEST, RESPONSE> extends ServletHelper<REQUEST, RES
       ServletRequestContext<REQUEST> requestContext,
       REQUEST request,
       RESPONSE response,
-      @Nullable Throwable throwable,
+      @Nullable Throwable t,
       @Nullable Context context,
       @Nullable Scope scope) {
 
@@ -36,10 +36,10 @@ public class LibertyHelper<REQUEST, RESPONSE> extends ServletHelper<REQUEST, RES
     }
     scope.close();
 
-    throwable = AppServerBridge.getException(context, throwable);
+    t = AppServerBridge.getException(context, t);
     ServletResponseContext<RESPONSE> responseContext = new ServletResponseContext<>(response);
-    if (throwable != null || mustEndOnHandlerMethodExit(context)) {
-      instrumenter.end(context, requestContext, responseContext, throwable);
+    if (t != null || mustEndOnHandlerMethodExit(context)) {
+      instrumenter.end(context, requestContext, responseContext, t);
     }
   }
 }

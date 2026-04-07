@@ -36,8 +36,8 @@ class SoapFaultBuilderInstrumentation implements TypeInstrumentation {
   public static class CaptureThrowableAdvice {
 
     @Advice.OnMethodExit(suppress = Throwable.class)
-    public static void onExit(@Advice.Argument(2) Throwable throwable) {
-      if (throwable == null) {
+    public static void onExit(@Advice.Argument(2) Throwable t) {
+      if (t == null) {
         return;
       }
       Packet request = null;
@@ -49,7 +49,7 @@ class SoapFaultBuilderInstrumentation implements TypeInstrumentation {
         // fiber not available
       }
       if (request != null) {
-        MetroHelper.storeThrowable(request, throwable);
+        MetroHelper.storeThrowable(request, t);
       }
     }
   }

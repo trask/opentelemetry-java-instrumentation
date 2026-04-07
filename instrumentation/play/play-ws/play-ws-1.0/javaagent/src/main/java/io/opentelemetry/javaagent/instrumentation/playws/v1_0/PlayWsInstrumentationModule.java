@@ -82,10 +82,10 @@ public class PlayWsInstrumentationModule extends InstrumentationModule
         return handler;
       }
 
-      public void end(@Nullable Throwable throwable) {
+      public void end(@Nullable Throwable t) {
         scope.close();
-        if (throwable != null) {
-          instrumenter().end(context, request, null, throwable);
+        if (t != null) {
+          instrumenter().end(context, request, null, t);
         }
       }
     }
@@ -106,11 +106,11 @@ public class PlayWsInstrumentationModule extends InstrumentationModule
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter Object[] enterResult) {
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter Object[] enterResult) {
 
       AdviceScope adviceScope = (AdviceScope) enterResult[0];
       if (adviceScope != null) {
-        adviceScope.end(throwable);
+        adviceScope.end(t);
       }
     }
   }

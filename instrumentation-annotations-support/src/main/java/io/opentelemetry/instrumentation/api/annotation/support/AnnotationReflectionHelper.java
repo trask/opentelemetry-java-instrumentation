@@ -25,7 +25,7 @@ public class AnnotationReflectionHelper {
       ClassLoader classLoader, String className) {
     try {
       return Class.forName(className, true, classLoader).asSubclass(Annotation.class);
-    } catch (ClassNotFoundException | ClassCastException exception) {
+    } catch (ClassNotFoundException | ClassCastException ignored) {
       return null;
     }
   }
@@ -77,8 +77,8 @@ public class AnnotationReflectionHelper {
     return a -> {
       try {
         return (T) valueHandle.invoke(a);
-      } catch (Throwable e) {
-        throw new IllegalStateException(e);
+      } catch (Throwable t) {
+        throw new IllegalStateException(t);
       }
     };
   }

@@ -84,7 +84,7 @@ class AnnotatedMethodInstrumentation implements TypeInstrumentation {
         return new AdviceScope(callDepth, request, context, parentContext.makeCurrent());
       }
 
-      public void exit(@Nullable Throwable throwable) {
+      public void exit(@Nullable Throwable t) {
         if (callDepth.decrementAndGet() > 0) {
           return;
         }
@@ -93,7 +93,7 @@ class AnnotatedMethodInstrumentation implements TypeInstrumentation {
         }
         scope.close();
         // scope non-null implies context and request are both non-null (see enter method above)
-        instrumenter().end(requireNonNull(context), requireNonNull(request), null, throwable);
+        instrumenter().end(requireNonNull(context), requireNonNull(request), null, t);
       }
     }
 
@@ -106,8 +106,8 @@ class AnnotatedMethodInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void stopSpan(
-        @Advice.Thrown @Nullable Throwable throwable, @Advice.Enter AdviceScope adviceScope) {
-      adviceScope.exit(throwable);
+        @Advice.Thrown @Nullable Throwable t, @Advice.Enter AdviceScope adviceScope) {
+      adviceScope.exit(t);
     }
   }
 }

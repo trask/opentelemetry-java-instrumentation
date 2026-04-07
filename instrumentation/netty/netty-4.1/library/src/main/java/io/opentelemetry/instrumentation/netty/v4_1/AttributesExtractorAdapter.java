@@ -40,7 +40,7 @@ final class AttributesExtractorAdapter
       Context context,
       NettyCommonRequest request,
       @Nullable HttpResponse response,
-      @Nullable Throwable error) {
-    delegate.onEnd(attributes, context, NettyRequest.create(request), response, error);
+      @Nullable Throwable t) {
+    delegate.onEnd(attributes, context, NettyRequest.create(request), response, t);
   }
 }

@@ -24,9 +24,9 @@ abstract class BaseFluxWithSpanTest extends AbstractWithSpanTest<Flux<String>, F
   }
 
   @Override
-  protected void fail(Flux<String> future, Throwable error) {
+  protected void fail(Flux<String> future, Throwable t) {
     UnicastProcessor<String> source = processor(future);
-    source.onError(error);
+    source.onError(t);
   }
 
   @Override

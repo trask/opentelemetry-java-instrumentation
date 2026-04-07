@@ -51,9 +51,9 @@ class AbstractMessageListenerContainerInstrumentation implements TypeInstrumenta
         this.scope = scope;
       }
 
-      public void exit(@Nullable Throwable throwable, Message message) {
+      public void exit(@Nullable Throwable t, Message message) {
         scope.close();
-        instrumenter().end(context, message, null, throwable);
+        instrumenter().end(context, message, null, t);
       }
     }
 
@@ -75,12 +75,12 @@ class AbstractMessageListenerContainerInstrumentation implements TypeInstrumenta
     @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class)
     public static void onExit(
         @Advice.Argument(1) Object data,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope == null || !(data instanceof Message)) {
         return;
       }
-      adviceScope.exit(throwable, (Message) data);
+      adviceScope.exit(t, (Message) data);
     }
   }
 }

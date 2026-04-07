@@ -61,9 +61,8 @@ class GuavaListenableFutureInstrumentation implements TypeInstrumentation {
     public static void addListenerExit(
         @Advice.Argument(0) Runnable task,
         @Advice.Enter PropagatedContext propagatedContext,
-        @Advice.Thrown Throwable throwable) {
-      ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, PROPAGATED_CONTEXT, task);
+        @Advice.Thrown Throwable t) {
+      ExecutorAdviceHelper.cleanUpAfterSubmit(propagatedContext, t, PROPAGATED_CONTEXT, task);
     }
   }
 }

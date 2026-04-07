@@ -109,8 +109,8 @@ final class YamlFileMappingsSource implements MappingsSource {
       ObjectWriter objectWriter =
           yamlMapper.writerWithDefaultPrettyPrinter().withView(Json.PrivateView.class);
       yaml = objectWriter.writeValueAsString(stubMapping);
-    } catch (IOException ioe) {
-      throwUnchecked(ioe, String.class);
+    } catch (IOException e) {
+      throwUnchecked(e, String.class);
     }
     TextFile outFile = mappingsFileSource.getTextFileNamed(fileMetadata.path);
     // For multiple requests from the same test, we append as a multi-file yaml.

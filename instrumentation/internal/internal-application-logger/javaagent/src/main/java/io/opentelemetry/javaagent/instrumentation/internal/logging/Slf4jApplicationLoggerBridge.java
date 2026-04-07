@@ -48,22 +48,22 @@ public class Slf4jApplicationLoggerBridge implements InternalLogger.Factory {
     }
 
     @Override
-    public void log(Level level, String message, @Nullable Throwable error) {
+    public void log(Level level, String message, @Nullable Throwable t) {
       switch (level) {
         case ERROR:
-          slf4jLogger.error(message, error);
+          slf4jLogger.error(message, t);
           break;
         case WARN:
-          slf4jLogger.warn(message, error);
+          slf4jLogger.warn(message, t);
           break;
         case INFO:
-          slf4jLogger.info(message, error);
+          slf4jLogger.info(message, t);
           break;
         case DEBUG:
-          slf4jLogger.debug(message, error);
+          slf4jLogger.debug(message, t);
           break;
         case TRACE:
-          slf4jLogger.trace(message, error);
+          slf4jLogger.trace(message, t);
           break;
       }
     }

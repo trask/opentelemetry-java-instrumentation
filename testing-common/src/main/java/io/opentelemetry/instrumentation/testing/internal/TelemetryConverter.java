@@ -763,7 +763,7 @@ public class TelemetryConverter {
     try {
       Class.forName(className);
       return true;
-    } catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException ignored) {
       return false;
     }
   }
@@ -776,7 +776,7 @@ public class TelemetryConverter {
     }
     try {
       return (Value<?>) Value.class.getMethod("empty").invoke(null);
-    } catch (Exception e) {
+    } catch (Exception ignored) {
       return null;
     }
   }

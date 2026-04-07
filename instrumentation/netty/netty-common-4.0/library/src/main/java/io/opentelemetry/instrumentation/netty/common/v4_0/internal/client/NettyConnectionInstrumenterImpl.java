@@ -34,7 +34,7 @@ final class NettyConnectionInstrumenterImpl implements NettyConnectionInstrument
       Context context,
       NettyConnectionRequest request,
       @Nullable Channel channel,
-      @Nullable Throwable error) {
-    instrumenter.end(context, request, channel, error);
+      @Nullable Throwable t) {
+    instrumenter.end(context, request, channel, t);
   }
 }

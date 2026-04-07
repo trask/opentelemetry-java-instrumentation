@@ -60,10 +60,10 @@ public final class HttpSpanStatusExtractor<REQUEST, RESPONSE>
       SpanStatusBuilder spanStatusBuilder,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
 
     if (response != null) {
-      Integer statusCode = getter.getHttpResponseStatusCode(request, response, error);
+      Integer statusCode = getter.getHttpResponseStatusCode(request, response, t);
       if (statusCode != null) {
         if (statusCodeConverter.isError(statusCode)) {
           spanStatusBuilder.setStatus(StatusCode.ERROR);
@@ -71,6 +71,6 @@ public final class HttpSpanStatusExtractor<REQUEST, RESPONSE>
         }
       }
     }
-    SpanStatusExtractor.getDefault().extract(spanStatusBuilder, request, response, error);
+    SpanStatusExtractor.getDefault().extract(spanStatusBuilder, request, response, t);
   }
 }

@@ -18,9 +18,9 @@ final class DefaultSpanStatusExtractor<REQUEST, RESPONSE>
       SpanStatusBuilder spanStatusBuilder,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
 
-    if (error != null) {
+    if (t != null) {
       spanStatusBuilder.setStatus(StatusCode.ERROR);
     }
   }

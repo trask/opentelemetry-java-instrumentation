@@ -89,9 +89,9 @@ class HttpClientInstrumentation implements TypeInstrumentation {
         return new AdviceScope(context, context.makeCurrent(), request);
       }
 
-      public void end(@Nullable HttpResponse<?> response, @Nullable Throwable throwable) {
+      public void end(@Nullable HttpResponse<?> response, @Nullable Throwable t) {
         scope.close();
-        instrumenter().end(context, request, response, throwable);
+        instrumenter().end(context, request, response, t);
       }
     }
 
@@ -104,11 +104,11 @@ class HttpClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return @Nullable HttpResponse<?> httpResponse,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AdviceScope scope) {
 
       if (scope != null) {
-        scope.end(httpResponse, throwable);
+        scope.end(httpResponse, t);
       }
     }
   }
@@ -152,15 +152,15 @@ class HttpClientInstrumentation implements TypeInstrumentation {
       }
 
       public CompletableFuture<HttpResponse<?>> end(
-          @Nullable Throwable throwable, CompletableFuture<HttpResponse<?>> future) {
+          @Nullable Throwable t, CompletableFuture<HttpResponse<?>> future) {
         if (callDepth.decrementAndGet() > 0 || scope == null) {
           // async end nested call
           return future;
         }
         scope.close();
-        if (throwable != null) {
+        if (t != null) {
           // async end with exception: ending span and no wrapping needed
-          instrumenter().end(context, request, null, throwable);
+          instrumenter().end(context, request, null, t);
           return future;
         }
         return CompletableFutureWrapper.wrap(future, parentContext)
@@ -179,9 +179,9 @@ class HttpClientInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static CompletableFuture<HttpResponse<?>> methodExit(
         @Advice.Return CompletableFuture<HttpResponse<?>> future,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable AsyncAdviceScope scope) {
-      return scope == null ? future : scope.end(throwable, future);
+      return scope == null ? future : scope.end(t, future);
     }
   }
 }

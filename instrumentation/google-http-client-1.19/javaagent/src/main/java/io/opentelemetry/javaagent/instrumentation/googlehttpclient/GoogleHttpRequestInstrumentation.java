@@ -73,15 +73,15 @@ class GoogleHttpRequestInstrumentation implements TypeInstrumentation {
       return new AdviceScope(context, context.makeCurrent(), request);
     }
 
-    public void end(HttpResponse response, Throwable throwable) {
+    public void end(HttpResponse response, Throwable t) {
       scope.close();
-      instrumenter().end(context, request, response, throwable);
+      instrumenter().end(context, request, response, t);
     }
 
-    public void endWhenThrown(HttpRequest request, Throwable throwable) {
+    public void endWhenThrown(HttpRequest request, Throwable t) {
       scope.close();
-      if (throwable != null) {
-        instrumenter().end(context, request, null, throwable);
+      if (t != null) {
+        instrumenter().end(context, request, null, t);
       }
     }
 
@@ -120,11 +120,11 @@ class GoogleHttpRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.Return HttpResponse response,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter @Nullable AdviceScope scope) {
 
       if (scope != null) {
-        scope.end(response, throwable);
+        scope.end(response, t);
       }
     }
   }
@@ -146,11 +146,11 @@ class GoogleHttpRequestInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void methodExit(
         @Advice.This HttpRequest request,
-        @Advice.Thrown Throwable throwable,
+        @Advice.Thrown Throwable t,
         @Advice.Enter @Nullable AdviceScope scope) {
 
       if (scope != null) {
-        scope.endWhenThrown(request, throwable);
+        scope.endWhenThrown(request, t);
       }
     }
   }

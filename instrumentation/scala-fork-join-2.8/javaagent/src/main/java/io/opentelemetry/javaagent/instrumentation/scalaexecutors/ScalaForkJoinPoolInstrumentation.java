@@ -56,9 +56,9 @@ class ScalaForkJoinPoolInstrumentation implements TypeInstrumentation {
     public static void exitJobSubmit(
         @Advice.Argument(0) ForkJoinTask<?> task,
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
-        @Advice.Thrown @Nullable Throwable throwable) {
+        @Advice.Thrown @Nullable Throwable t) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, FORK_JOIN_TASK_PROPAGATED_CONTEXT, task);
+          propagatedContext, t, FORK_JOIN_TASK_PROPAGATED_CONTEXT, task);
     }
   }
 }

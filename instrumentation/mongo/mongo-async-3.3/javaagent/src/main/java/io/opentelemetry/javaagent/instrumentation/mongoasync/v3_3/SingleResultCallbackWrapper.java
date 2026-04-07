@@ -19,9 +19,9 @@ public class SingleResultCallbackWrapper implements SingleResultCallback<Object>
   }
 
   @Override
-  public void onResult(Object server, Throwable throwable) {
+  public void onResult(Object server, Throwable t) {
     try (Scope ignored = context.makeCurrent()) {
-      delegate.onResult(server, throwable);
+      delegate.onResult(server, t);
     }
   }
 }

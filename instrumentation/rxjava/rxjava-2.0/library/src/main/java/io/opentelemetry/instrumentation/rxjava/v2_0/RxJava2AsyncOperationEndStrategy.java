@@ -64,8 +64,8 @@ public final class RxJava2AsyncOperationEndStrategy implements AsyncOperationEnd
     EndOnFirstNotificationConsumer<Object> notificationConsumer =
         new EndOnFirstNotificationConsumer<Object>(context) {
           @Override
-          protected void end(Object response, Throwable error) {
-            instrumenter.end(context, request, tryToGetResponse(responseType, response), error);
+          protected void end(Object response, Throwable t) {
+            instrumenter.end(context, request, tryToGetResponse(responseType, response), t);
           }
         };
 
@@ -162,14 +162,14 @@ public final class RxJava2AsyncOperationEndStrategy implements AsyncOperationEnd
     }
 
     @Override
-    public void accept(Throwable exception) {
-      accept(null, exception);
+    public void accept(Throwable t) {
+      accept(null, t);
     }
 
     @Override
-    public void accept(T value, Throwable exception) {
+    public void accept(T value, Throwable t) {
       if (compareAndSet(false, true)) {
-        end(value, exception);
+        end(value, t);
       }
     }
 

@@ -50,11 +50,11 @@ class LettuceAsyncCommandsInstrumentation implements TypeInstrumentation {
       }
 
       public void end(
-          @Nullable Throwable throwable,
+          @Nullable Throwable t,
           RedisCommand<?, ?, ?> command,
           AsyncCommand<?, ?, ?> asyncCommand) {
         scope.close();
-        InstrumentationPoints.afterCommand(command, context, throwable, asyncCommand);
+        InstrumentationPoints.afterCommand(command, context, t, asyncCommand);
       }
     }
 
@@ -76,11 +76,11 @@ class LettuceAsyncCommandsInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void onExit(
         @Advice.Argument(0) RedisCommand<?, ?, ?> command,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable AsyncCommand<?, ?, ?> asyncCommand,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, command, asyncCommand);
+        adviceScope.end(t, command, asyncCommand);
       }
     }
   }

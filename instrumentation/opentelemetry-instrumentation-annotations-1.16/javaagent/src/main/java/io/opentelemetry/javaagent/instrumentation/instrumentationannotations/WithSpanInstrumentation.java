@@ -103,11 +103,11 @@ class WithSpanInstrumentation implements TypeInstrumentation {
         return new WithSpanAdviceScope(method, context, context.makeCurrent());
       }
 
-      public Object end(@Nullable Object returnValue, @Nullable Throwable throwable) {
+      public Object end(@Nullable Object returnValue, @Nullable Throwable t) {
         scope.close();
         AsyncOperationEndSupport<Method, Object> operationEndSupport =
             AsyncOperationEndSupport.create(instrumenter(), Object.class, method.getReturnType());
-        return operationEndSupport.asyncEnd(context, method, returnValue, throwable);
+        return operationEndSupport.asyncEnd(context, method, returnValue, t);
       }
     }
 
@@ -123,10 +123,10 @@ class WithSpanInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static Object stopSpan(
         @Advice.Return(typing = Assigner.Typing.DYNAMIC) Object returnValue,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable WithSpanAdviceScope adviceScope) {
       if (adviceScope != null) {
-        return adviceScope.end(returnValue, throwable);
+        return adviceScope.end(returnValue, t);
       }
       return returnValue;
     }
@@ -161,12 +161,12 @@ class WithSpanInstrumentation implements TypeInstrumentation {
         return new WithSpanAttributesAdviceScope(method, request, context, context.makeCurrent());
       }
 
-      public Object end(@Nullable Object returnValue, @Nullable Throwable throwable) {
+      public Object end(@Nullable Object returnValue, @Nullable Throwable t) {
         scope.close();
         AsyncOperationEndSupport<MethodRequest, Object> operationEndSupport =
             AsyncOperationEndSupport.create(
                 instrumenterWithAttributes(), Object.class, method.getReturnType());
-        return operationEndSupport.asyncEnd(context, request, returnValue, throwable);
+        return operationEndSupport.asyncEnd(context, request, returnValue, t);
       }
     }
 
@@ -185,10 +185,10 @@ class WithSpanInstrumentation implements TypeInstrumentation {
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static Object stopSpan(
         @Advice.Return(typing = Assigner.Typing.DYNAMIC) @Nullable Object returnValue,
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Enter @Nullable WithSpanAttributesAdviceScope adviceScope) {
       if (adviceScope != null) {
-        return adviceScope.end(returnValue, throwable);
+        return adviceScope.end(returnValue, t);
       }
       return returnValue;
     }

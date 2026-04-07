@@ -84,11 +84,10 @@ class FinatraRouteInstrumentation implements TypeInstrumentation {
         return new AdviceScope(request, context, context.makeCurrent());
       }
 
-      public void end(
-          @Nullable Throwable throwable, @Nullable Some<Future<Response>> responseOption) {
+      public void end(@Nullable Throwable t, @Nullable Some<Future<Response>> responseOption) {
         scope.close();
-        if (throwable != null || responseOption == null) {
-          instrumenter().end(context, request, null, throwable);
+        if (t != null || responseOption == null) {
+          instrumenter().end(context, request, null, t);
         } else {
           responseOption.get().addEventListener(new FinatraResponseListener(context, request));
         }
@@ -105,11 +104,11 @@ class FinatraRouteInstrumentation implements TypeInstrumentation {
 
     @Advice.OnMethodExit(onThrowable = Throwable.class, suppress = Throwable.class)
     public static void setupCallback(
-        @Advice.Thrown @Nullable Throwable throwable,
+        @Advice.Thrown @Nullable Throwable t,
         @Advice.Return @Nullable Some<Future<Response>> responseOption,
         @Advice.Enter @Nullable AdviceScope adviceScope) {
       if (adviceScope != null) {
-        adviceScope.end(throwable, responseOption);
+        adviceScope.end(t, responseOption);
       }
     }
   }

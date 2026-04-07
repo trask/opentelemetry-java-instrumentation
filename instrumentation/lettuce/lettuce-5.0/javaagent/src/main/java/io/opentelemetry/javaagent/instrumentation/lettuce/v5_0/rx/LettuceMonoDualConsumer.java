@@ -34,9 +34,9 @@ public class LettuceMonoDualConsumer<R, T> implements Consumer<R>, BiConsumer<T,
   }
 
   @Override
-  public void accept(T t, Throwable throwable) {
+  public void accept(T result, Throwable t) {
     if (context != null) {
-      instrumenter().end(context, command, null, throwable);
+      instrumenter().end(context, command, null, t);
     } else {
       Logger.getLogger(Mono.class.getName())
           .severe(

@@ -34,9 +34,9 @@ public class SubscriberWrapper<T> implements Subscriber<T> {
   }
 
   @Override
-  public void onError(Throwable throwable) {
+  public void onError(Throwable t) {
     try (Scope ignored = context.makeCurrent()) {
-      delegate.onError(throwable);
+      delegate.onError(t);
     }
   }
 

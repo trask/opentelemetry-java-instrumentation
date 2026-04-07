@@ -43,8 +43,8 @@ public final class AgentSpanTestingInstrumenter {
     return context;
   }
 
-  public static void endHttpServer(Context context, @Nullable Throwable error) {
-    HTTP_SERVER_INSTRUMENTER.end(context, context.get(REQUEST_CONTEXT_KEY), null, error);
+  public static void endHttpServer(Context context, @Nullable Throwable t) {
+    HTTP_SERVER_INSTRUMENTER.end(context, context.get(REQUEST_CONTEXT_KEY), null, t);
   }
 
   public static Context startSpanWithAllKeys(String name) {
@@ -56,8 +56,8 @@ public final class AgentSpanTestingInstrumenter {
     return context;
   }
 
-  public static void end(Context context, @Nullable Throwable error) {
-    instrumenter.end(context, context.get(REQUEST_CONTEXT_KEY), null, error);
+  public static void end(Context context, @Nullable Throwable t) {
+    instrumenter.end(context, context.get(REQUEST_CONTEXT_KEY), null, t);
   }
 
   private static SpanKey[] getAllSpanKeys() {

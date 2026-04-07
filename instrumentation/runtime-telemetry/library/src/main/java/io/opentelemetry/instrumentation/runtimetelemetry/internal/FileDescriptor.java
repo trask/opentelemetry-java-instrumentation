@@ -23,7 +23,7 @@ public final class FileDescriptor {
   private static Class<?> loadClass(String className) {
     try {
       return Class.forName(className, false, FileDescriptor.class.getClassLoader());
-    } catch (ClassNotFoundException | LinkageError e) {
+    } catch (ClassNotFoundException | LinkageError ignored) {
       return null;
     }
   }

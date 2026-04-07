@@ -29,9 +29,9 @@ public class CompletableWrapper<T> implements Completable<T> {
   }
 
   @Override
-  public void complete(T t, Throwable error) {
+  public void complete(T result, Throwable t) {
     try (Scope ignore = context.makeCurrent()) {
-      delegate.complete(t, error);
+      delegate.complete(result, t);
     }
   }
 }

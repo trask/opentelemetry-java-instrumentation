@@ -51,8 +51,8 @@ class AsyncHttpClientTest extends AbstractHttpClientTest<Request> {
       Method method =
           builder.getClass().getMethod(methodName, testLatestDeps ? Duration.class : int.class);
       method.invoke(builder, testLatestDeps ? Duration.ofMillis(timeout) : timeout);
-    } catch (Exception exception) {
-      throw new IllegalStateException("Failed to set timeout " + methodName, exception);
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to set timeout " + methodName, e);
     }
   }
 
@@ -88,8 +88,8 @@ class AsyncHttpClientTest extends AbstractHttpClientTest<Request> {
           }
 
           @Override
-          public void onThrowable(Throwable throwable) {
-            requestResult.complete(throwable);
+          public void onThrowable(Throwable t) {
+            requestResult.complete(t);
           }
         });
   }

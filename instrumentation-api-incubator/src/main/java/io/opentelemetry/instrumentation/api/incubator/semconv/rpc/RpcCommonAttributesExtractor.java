@@ -60,12 +60,12 @@ abstract class RpcCommonAttributesExtractor<REQUEST, RESPONSE>
       Context context,
       REQUEST request,
       @Nullable RESPONSE response,
-      @Nullable Throwable error) {
+      @Nullable Throwable t) {
     if (emitStableRpcSemconv()) {
-      String errorType = getter.getErrorType(request, response, error);
+      String errorType = getter.getErrorType(request, response, t);
       // fall back to exception class name
-      if (errorType == null && error != null) {
-        errorType = error.getClass().getName();
+      if (errorType == null && t != null) {
+        errorType = t.getClass().getName();
       }
       attributes.put(ERROR_TYPE, errorType);
     }

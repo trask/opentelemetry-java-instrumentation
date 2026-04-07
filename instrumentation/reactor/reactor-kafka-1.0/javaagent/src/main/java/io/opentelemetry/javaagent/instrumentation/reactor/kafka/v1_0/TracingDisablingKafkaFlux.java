@@ -60,8 +60,8 @@ public class TracingDisablingKafkaFlux<T> extends FluxOperator<T, T> {
     }
 
     @Override
-    public void onError(Throwable throwable) {
-      actual.onError(throwable);
+    public void onError(Throwable t) {
+      actual.onError(t);
     }
 
     @Override

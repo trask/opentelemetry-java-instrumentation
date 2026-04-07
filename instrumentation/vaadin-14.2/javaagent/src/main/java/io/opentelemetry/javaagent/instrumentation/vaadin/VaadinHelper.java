@@ -38,9 +38,8 @@ public class VaadinHelper {
     return serviceInstrumenter.start(parentContext, request);
   }
 
-  public void endVaadinServiceSpan(
-      Context context, VaadinServiceRequest request, Throwable throwable) {
-    serviceInstrumenter.end(context, request, null, throwable);
+  public void endVaadinServiceSpan(Context context, VaadinServiceRequest request, Throwable t) {
+    serviceInstrumenter.end(context, request, null, t);
 
     HttpServerRoute.update(
         context,
@@ -85,8 +84,8 @@ public class VaadinHelper {
   }
 
   public void endRequestHandlerSpan(
-      Context context, VaadinHandlerRequest request, Throwable throwable, boolean handled) {
-    requestHandlerInstrumenter.end(context, request, null, throwable);
+      Context context, VaadinHandlerRequest request, Throwable t, boolean handled) {
+    requestHandlerInstrumenter.end(context, request, null, t);
 
     // request handler returns true when it processes the request, if that is the case then
     // mark request as handled

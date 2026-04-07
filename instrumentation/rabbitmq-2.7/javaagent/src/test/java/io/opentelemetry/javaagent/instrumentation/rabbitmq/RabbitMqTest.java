@@ -352,8 +352,8 @@ class RabbitMqTest extends AbstractRabbitMqTest {
     Throwable thrown = null;
     try {
       callback.accept(channel);
-    } catch (RuntimeException re) {
-      thrown = re.getCause();
+    } catch (RuntimeException e) {
+      thrown = e.getCause();
       assertThat(thrown.getClass().getName()).contains(accessor.getString(1));
     }
 
@@ -606,7 +606,7 @@ class RabbitMqTest extends AbstractRabbitMqTest {
       String resource,
       SpanData parentSpan,
       SpanData linkSpan,
-      Throwable exception,
+      Throwable t,
       String errorMsg,
       boolean expectTimestamp) {
     String spanName = resource;
@@ -627,8 +627,8 @@ class RabbitMqTest extends AbstractRabbitMqTest {
 
     verifyParentAndLink(span, parentSpan, linkSpan);
 
-    if (exception != null) {
-      verifyException(span, exception, errorMsg);
+    if (t != null) {
+      verifyException(span, t, errorMsg);
     }
 
     verifyNetAttributes(span);
@@ -742,14 +742,14 @@ class RabbitMqTest extends AbstractRabbitMqTest {
         satisfies(NETWORK_PEER_PORT, AbstractAssert::isNotNull));
   }
 
-  private static void verifyException(SpanDataAssert span, Throwable exception, String errorMsg) {
+  private static void verifyException(SpanDataAssert span, Throwable t, String errorMsg) {
     span.hasStatus(StatusData.error())
         .hasEventsSatisfying(
             events ->
                 assertThat(events.get(0))
                     .hasName("exception")
                     .hasAttributesSatisfying(
-                        equalTo(EXCEPTION_TYPE, exception.getClass().getName()),
+                        equalTo(EXCEPTION_TYPE, t.getClass().getName()),
                         equalTo(EXCEPTION_MESSAGE, errorMsg),
                         satisfies(EXCEPTION_STACKTRACE, val -> val.isInstanceOf(String.class))));
   }

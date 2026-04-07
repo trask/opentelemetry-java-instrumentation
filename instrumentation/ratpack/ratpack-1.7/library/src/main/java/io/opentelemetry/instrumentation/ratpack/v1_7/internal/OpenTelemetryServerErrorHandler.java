@@ -19,12 +19,12 @@ final class OpenTelemetryServerErrorHandler implements ServerErrorHandler {
   private OpenTelemetryServerErrorHandler() {}
 
   @Override
-  public void error(Context context, Throwable throwable) throws Exception {
+  public void error(Context context, Throwable t) throws Exception {
     context
         .getExecution()
         .add(
             OpenTelemetryServerHandler.ErrorHolder.class,
-            new OpenTelemetryServerHandler.ErrorHolder(throwable));
+            new OpenTelemetryServerHandler.ErrorHolder(t));
 
     ServerErrorHandler delegate = OpenTelemetryFallbackErrorHandler.INSTANCE;
     for (ServerErrorHandler errorHandler : context.getAll(ServerErrorHandler.class)) {
@@ -34,6 +34,6 @@ final class OpenTelemetryServerErrorHandler implements ServerErrorHandler {
       }
     }
 
-    delegate.error(context, throwable);
+    delegate.error(context, t);
   }
 }

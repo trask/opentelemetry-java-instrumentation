@@ -25,72 +25,66 @@ public abstract class AbstractSystemMetricsTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.memory.usage",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric)
-                            .hasUnit("By")
-                            // TODO: Provide fuzzy value matching
-                            .hasLongSumSatisfying(
-                                sum ->
-                                    assertThat(metric.getLongSumData().getPoints())
+            metric ->
+                metric
+                    .hasName("system.memory.usage")
+                    .hasUnit("By")
+                    // TODO: Provide fuzzy value matching
+                    .hasLongSumSatisfying(
+                        sum ->
+                            sum.satisfies(
+                                s ->
+                                    assertThat(s.getPoints())
                                         .anySatisfy(
                                             point -> assertThat(point.getValue()).isPositive()))));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.memory.utilization",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric)
-                            .hasUnit("1")
-                            // TODO: Provide fuzzy value matching
-                            .hasDoubleGaugeSatisfying(
-                                gauge ->
-                                    assertThat(metric.getDoubleGaugeData().getPoints())
+            metric ->
+                metric
+                    .hasName("system.memory.utilization")
+                    .hasUnit("1")
+                    // TODO: Provide fuzzy value matching
+                    .hasDoubleGaugeSatisfying(
+                        gauge ->
+                            gauge.satisfies(
+                                g ->
+                                    assertThat(g.getPoints())
                                         .anySatisfy(
                                             point -> assertThat(point.getValue()).isPositive()))));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.network.io",
-            metrics ->
-                metrics.anySatisfy(
-                    metric -> assertThat(metric).hasUnit("By").hasLongSumSatisfying(sum -> {})));
+            metric ->
+                metric.hasName("system.network.io").hasUnit("By").hasLongSumSatisfying(sum -> {}));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.network.packets",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric).hasUnit("{packets}").hasLongSumSatisfying(sum -> {})));
+            metric ->
+                metric
+                    .hasName("system.network.packets")
+                    .hasUnit("{packets}")
+                    .hasLongSumSatisfying(sum -> {}));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.network.errors",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric).hasUnit("{errors}").hasLongSumSatisfying(sum -> {})));
+            metric ->
+                metric
+                    .hasName("system.network.errors")
+                    .hasUnit("{errors}")
+                    .hasLongSumSatisfying(sum -> {}));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.disk.io",
-            metrics ->
-                metrics.anySatisfy(
-                    metric -> assertThat(metric).hasUnit("By").hasLongSumSatisfying(sum -> {})));
+            metric ->
+                metric.hasName("system.disk.io").hasUnit("By").hasLongSumSatisfying(sum -> {}));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "system.disk.operations",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric)
-                            .hasUnit("{operations}")
-                            .hasLongSumSatisfying(sum -> {})));
+            metric ->
+                metric
+                    .hasName("system.disk.operations")
+                    .hasUnit("{operations}")
+                    .hasLongSumSatisfying(sum -> {}));
   }
 }

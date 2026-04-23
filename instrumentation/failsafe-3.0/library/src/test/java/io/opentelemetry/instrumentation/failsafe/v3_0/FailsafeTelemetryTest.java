@@ -54,8 +54,8 @@ class FailsafeTelemetryTest {
     // then
     testing.waitAndAssertMetrics(
         "io.opentelemetry.failsafe-3.0",
-        metricAssert ->
-            metricAssert
+        metric ->
+            metric
                 .hasName("failsafe.circuit_breaker.execution.count")
                 .hasLongSumSatisfying(
                     sum ->
@@ -65,8 +65,8 @@ class FailsafeTelemetryTest {
                                     2, "failsafe.circuit_breaker.outcome", "failure"),
                                 buildCircuitBreakerAssertion(
                                     3, "failsafe.circuit_breaker.outcome", "success"))),
-        metricAssert ->
-            metricAssert
+        metric ->
+            metric
                 .hasName("failsafe.circuit_breaker.state_change.count")
                 .hasLongSumSatisfying(
                     sum ->
@@ -108,8 +108,8 @@ class FailsafeTelemetryTest {
     // then
     testing.waitAndAssertMetrics(
         "io.opentelemetry.failsafe-3.0",
-        metricAssert ->
-            metricAssert
+        metric ->
+            metric
                 .hasName("failsafe.retry_policy.execution.count")
                 .hasLongSumSatisfying(
                     sum ->
@@ -117,8 +117,8 @@ class FailsafeTelemetryTest {
                             .hasPointsSatisfying(
                                 buildRetryPolicyAssertion(2, "failure"),
                                 buildRetryPolicyAssertion(3, "success"))),
-        metricAssert ->
-            metricAssert
+        metric ->
+            metric
                 .hasName("failsafe.retry_policy.attempts")
                 .hasHistogramSatisfying(
                     histogramAssert ->

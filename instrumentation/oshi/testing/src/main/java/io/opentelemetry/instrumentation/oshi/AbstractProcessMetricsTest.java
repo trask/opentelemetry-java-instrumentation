@@ -27,31 +27,31 @@ public abstract class AbstractProcessMetricsTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "runtime.java.memory",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric)
-                            .hasUnit("By")
-                            // TODO: Provide fuzzy value matching
-                            .hasLongSumSatisfying(
-                                sum ->
-                                    assertThat(metric.getLongSumData().getPoints())
+            metric ->
+                metric
+                    .hasName("runtime.java.memory")
+                    .hasUnit("By")
+                    // TODO: Provide fuzzy value matching
+                    .hasLongSumSatisfying(
+                        sum ->
+                            sum.satisfies(
+                                s ->
+                                    assertThat(s.getPoints())
                                         .anySatisfy(
                                             point -> assertThat(point.getValue()).isPositive()))));
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.oshi",
-            "runtime.java.cpu_time",
-            metrics ->
-                metrics.anySatisfy(
-                    metric ->
-                        assertThat(metric)
-                            .hasUnit("ms")
-                            // TODO: Provide fuzzy value matching
-                            .hasLongGaugeSatisfying(
-                                gauge ->
-                                    assertThat(metric.getLongGaugeData().getPoints())
+            metric ->
+                metric
+                    .hasName("runtime.java.cpu_time")
+                    .hasUnit("ms")
+                    // TODO: Provide fuzzy value matching
+                    .hasLongGaugeSatisfying(
+                        gauge ->
+                            gauge.satisfies(
+                                g ->
+                                    assertThat(g.getPoints())
                                         .anySatisfy(
                                             point -> assertThat(point.getValue()).isPositive()))));
   }

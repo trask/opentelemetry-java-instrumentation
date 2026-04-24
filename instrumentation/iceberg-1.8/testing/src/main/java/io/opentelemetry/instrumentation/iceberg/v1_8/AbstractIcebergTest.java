@@ -111,8 +111,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName("iceberg.scan.planning.duration")
                     .hasUnit("s")
                     .hasHistogramSatisfying(
@@ -135,8 +135,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName("iceberg.scan.data_files.count")
                     .hasUnit("{file}")
                     .hasLongSumSatisfying(
@@ -172,8 +172,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName("iceberg.scan.data_manifests.count")
                     .hasUnit("{file}")
                     .hasLongSumSatisfying(
@@ -215,8 +215,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName("iceberg.scan.delete_manifests.count")
                     .hasUnit("{file}")
                     .hasLongSumSatisfying(
@@ -258,8 +258,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName("iceberg.scan.delete_files.count")
                     .hasUnit("{file}")
                     .hasLongSumSatisfying(
@@ -367,8 +367,8 @@ abstract class AbstractIcebergTest {
     testing()
         .waitAndAssertMetrics(
             "io.opentelemetry.iceberg-1.8",
-            metricAssert ->
-                metricAssert
+            metric ->
+                metric
                     .hasName(otelMetricName)
                     .hasUnit("By")
                     .hasLongSumSatisfying(

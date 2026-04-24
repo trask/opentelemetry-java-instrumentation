@@ -88,6 +88,14 @@ General rules:
 - Library packages use `io.opentelemetry.instrumentation.<lib>...`
 - Internal-only classes go in a `.internal` subpackage
 
+## Renaming an existing module: backwards compatibility
+
+A module rename touches two user-facing API surfaces — the
+`otel.instrumentation.<name>.enabled` config keys and the emitted `otel.scope.name` — that
+must both be preserved by default and only change under `otel.instrumentation.common.v3-preview`.
+See [api-deprecation-policy.md](api-deprecation-policy.md#module-renames-config-keys-and-emitted-scope-names)
+for the required pattern.
+
 ## What to Flag in Review
 
 - **Module directory name missing the minimum version** for a third-party library.

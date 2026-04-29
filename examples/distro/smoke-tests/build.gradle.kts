@@ -1,5 +1,5 @@
 plugins {
-  id "java"
+  id("java")
 }
 
 dependencies {
@@ -19,11 +19,11 @@ tasks.test {
 
   testLogging.showStandardStreams = true
 
-  def shadowTask = project(":agent").tasks.shadowJar
+  val shadowTask = project(":agent").tasks.named("shadowJar", AbstractArchiveTask::class.java)
   dependsOn(shadowTask)
   inputs.files(layout.files(shadowTask))
 
   doFirst {
-    jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${shadowTask.archiveFile.get()}")
+    jvmArgs("-Dio.opentelemetry.smoketest.agent.shadowJar.path=${shadowTask.get().archiveFile.get().asFile}")
   }
 }

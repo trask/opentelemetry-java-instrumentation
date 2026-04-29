@@ -54,27 +54,18 @@ fun getPinnedVersions(): Map<String, String> {
 fun lookupPinnedVersion(group: String?, name: String, version: String?): String? {
   if (!pinLatestDeps || group == null) return null
   val pinned = getPinnedVersions()
-  return if (version == "latest.release") {
-    pinned["$group:$name#+"]
+  val key = if (version == "latest.release") {
+    "$group:$name#+"
   } else if (version != null && version.contains("+")) {
-    val rangeKey = "$group:$name#$version"
-    val rangeVersion = pinned[rangeKey]
-    if (rangeVersion != null) {
-      rangeVersion
-    } else {
-      // Range-specific key is missing from the pinned versions JSON.
-      // Do NOT fall back to the base key because it could be a different major version
-      // (e.g. base key resolves to 4.x but the range "2.+" expects 2.x).
-      // Run resolveLatestDepVersions to populate the missing key.
-      throw GradleException(
-        "Pinned version missing for range key \"$rangeKey\". " +
-          "Run ./gradlew resolveLatestDepVersions -PtestLatestDeps=true -PresolveLatestDeps=true " +
-          "to regenerate .github/config/latest-dep-versions.json"
-      )
-    }
+    "$group:$name#$version"
   } else {
-    null
+    return null
   }
+  return pinned[key] ?: throw GradleException(
+    "Pinned version missing for key \"$key\". " +
+      "Run ./gradlew resolveLatestDepVersions -PtestLatestDeps=true -PresolveLatestDeps=true " +
+      "to regenerate .github/config/latest-dep-versions.json"
+  )
 }
 
 @CacheableRule
@@ -173,20 +164,35 @@ configurations {
   if (otelProps.testLatestDeps) {
     // Only apply to test-related configurations, not build tool configurations like Zinc
     // (the Scala compiler). Overriding scala-library in Zinc's configuration breaks compilation.
+    // Also intentionally skips e.g. japicmp's `tempConfig` which resolves
+    // `opentelemetry-instrumentation-bom:latest.release` against live Maven Central.
     configureEach {
-      if (isCanBeResolved && (name.startsWith("test") || name.startsWith("latestDepTest"))) {
-        resolutionStrategy.eachDependency {
+      if (!isCanBeResolved) return@configureEach
+      // latestDepTestLibrary overrides only apply to the main test/latestDepTest configurations.
+      // Custom JvmTestSuite source sets (e.g. `version20TestRuntimeClasspath`,
+      // `play24TestRuntimeClasspath`) declare their own explicit versions and must not be
+      // affected by overrides intended for the main test suite.
+      val applyOverrides = name.startsWith("test") || name.startsWith("latestDepTest")
+      // Pinning of `latest.release`/`+` versions is applied broadly (case-insensitive "test"
+      // match) so that custom JvmTestSuite source sets are also reproducible. Also include the
+      // main `compileClasspath` so that modules using `dependencySubstitution` to swap groups
+      // for the agent's compile classpath (e.g. gwt-2.0) get pinned versions in latest mode.
+      val applyPinning = pinLatestDeps &&
+        (name.contains("test", ignoreCase = true) || name == "compileClasspath")
+      if (!applyOverrides && !applyPinning) return@configureEach
+      resolutionStrategy.eachDependency {
+        if (applyOverrides) {
           // latestDepTestLibrary overrides take priority over pinned versions
           val override = latestDepTestLibraryOverrides["${requested.group}:${requested.name}"]
           if (override != null) {
             useVersion(override)
             return@eachDependency
           }
-          if (pinLatestDeps) {
-            val pinnedVersion = lookupPinnedVersion(requested.group, requested.name, requested.version)
-            if (pinnedVersion != null) {
-              useVersion(pinnedVersion)
-            }
+        }
+        if (applyPinning) {
+          val pinnedVersion = lookupPinnedVersion(requested.group, requested.name, requested.version)
+          if (pinnedVersion != null) {
+            useVersion(pinnedVersion)
           }
         }
       }

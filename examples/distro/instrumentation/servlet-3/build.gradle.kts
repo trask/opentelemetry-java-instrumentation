@@ -6,11 +6,12 @@ plugins {
   id("io.opentelemetry.instrumentation.muzzle-check")
 }
 
-@Suppress("UNCHECKED_CAST")
-val versions = extra["versions"] as Map<String, String>
+val otelVersions = the<OtelVersions>()
 
-@Suppress("UNCHECKED_CAST")
-val deps = extra["deps"] as Map<String, List<String>>
+val autoservice = listOf(
+  "com.google.auto.service:auto-service:${otelVersions.autoservice}",
+  "com.google.auto.service:auto-service-annotations:${otelVersions.autoservice}",
+)
 
 val testInstrumentation by configurations.creating
 val testAgent by configurations.creating
@@ -20,7 +21,7 @@ dependencies {
   compileOnly("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api")
   compileOnly("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
 
-  deps.getValue("autoservice").forEach {
+  autoservice.forEach {
     annotationProcessor(it)
     compileOnly(it)
   }
@@ -32,17 +33,17 @@ dependencies {
   testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
   testImplementation("org.assertj:assertj-core:3.27.7")
 
-  add("codegen", "io.opentelemetry.javaagent:opentelemetry-javaagent-tooling:${versions["opentelemetryJavaagentAlpha"]}")
-  add("muzzleBootstrap", "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations-support:${versions["opentelemetryJavaagentAlpha"]}")
-  add("muzzleTooling", "io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api:${versions["opentelemetryJavaagentAlpha"]}")
-  add("muzzleTooling", "io.opentelemetry.javaagent:opentelemetry-javaagent-tooling:${versions["opentelemetryJavaagentAlpha"]}")
+  add("codegen", "io.opentelemetry.javaagent:opentelemetry-javaagent-tooling:${otelVersions.opentelemetryJavaagentAlpha}")
+  add("muzzleBootstrap", "io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations-support:${otelVersions.opentelemetryJavaagentAlpha}")
+  add("muzzleTooling", "io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api:${otelVersions.opentelemetryJavaagentAlpha}")
+  add("muzzleTooling", "io.opentelemetry.javaagent:opentelemetry-javaagent-tooling:${otelVersions.opentelemetryJavaagentAlpha}")
 
   compileOnly(project(":bootstrap"))
   compileOnly("javax.servlet:javax.servlet-api:3.0.1")
 
-  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-common:${versions["opentelemetryJavaagentAlpha"]}")
-  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-2.2:${versions["opentelemetryJavaagentAlpha"]}")
-  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-3.0:${versions["opentelemetryJavaagentAlpha"]}")
+  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-common:${otelVersions.opentelemetryJavaagentAlpha}")
+  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-2.2:${otelVersions.opentelemetryJavaagentAlpha}")
+  testInstrumentation("io.opentelemetry.javaagent.instrumentation:opentelemetry-javaagent-servlet-3.0:${otelVersions.opentelemetryJavaagentAlpha}")
 
   testImplementation("io.opentelemetry.javaagent:opentelemetry-testing-common") {
     exclude(group = "org.eclipse.jetty", module = "jetty-server")

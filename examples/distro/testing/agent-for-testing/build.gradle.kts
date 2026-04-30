@@ -4,8 +4,7 @@ plugins {
   id("com.gradleup.shadow")
 }
 
-@Suppress("UNCHECKED_CAST")
-val versions = extra["versions"] as Map<String, String>
+val otelVersions = the<OtelVersions>()
 
 // this configuration collects libs that will be placed in the bootstrap classloader
 val bootstrapLibs by configurations.creating {
@@ -26,7 +25,7 @@ val upstreamAgent by configurations.creating {
 dependencies {
   bootstrapLibs(project(":bootstrap"))
   // and finally include everything from otel agent for testing
-  upstreamAgent("io.opentelemetry.javaagent:opentelemetry-agent-for-testing:${versions["opentelemetryJavaagentAlpha"]}")
+  upstreamAgent("io.opentelemetry.javaagent:opentelemetry-agent-for-testing:${otelVersions.opentelemetryJavaagentAlpha}")
 }
 
 fun isolateClasses(jars: Iterable<File>): CopySpec = copySpec {
@@ -116,7 +115,7 @@ tasks {
       attributes["Can-Redefine-Classes"] = "true"
       attributes["Can-Retransform-Classes"] = "true"
       attributes["Implementation-Vendor"] = "Demo"
-      attributes["Implementation-Version"] = "demo-${project.version}-otel-${versions["opentelemetryJavaagent"]}"
+      attributes["Implementation-Version"] = "demo-${project.version}-otel-${otelVersions.opentelemetryJavaagent}"
     }
   }
 

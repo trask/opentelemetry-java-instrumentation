@@ -83,3 +83,13 @@ class JavaagentProvider(
 ) : CommandLineArgumentProvider {
   override fun asArguments(): Iterable<String> = listOf("-javaagent:${agentJar.get().absolutePath}")
 }
+
+// Register this instrumentation module with the :instrumentation aggregator project
+// so that ":instrumentation:test" and ":instrumentation:assemble" pull in every
+// instrumentation module without an explicit subprojects {} block.
+project.parent?.let { parent ->
+  parent.tasks.named("test").configure {
+    dependsOn(tasks.named("test"))
+  }
+  parent.dependencies.add("implementation", project)
+}

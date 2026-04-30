@@ -3,7 +3,7 @@ plugins {
   id("com.diffplug.spotless")
 }
 
-extensions.add("otelVersions", otelVersions)
+extensions.add("otelVersions", defaultOtelVersions)
 
 repositories {
   mavenCentral()
@@ -22,11 +22,11 @@ spotless {
 }
 
 dependencies {
-  implementation(platform("io.opentelemetry:opentelemetry-bom:${otelVersions.opentelemetrySdk}"))
+  implementation(platform("io.opentelemetry:opentelemetry-bom:${defaultOtelVersions.opentelemetrySdk}"))
 
   // these serve as a test of the instrumentation boms
-  implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${otelVersions.opentelemetryJavaagent}"))
-  implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:${otelVersions.opentelemetryJavaagentAlpha}"))
+  implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:${defaultOtelVersions.opentelemetryJavaagent}"))
+  implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:${defaultOtelVersions.opentelemetryJavaagentAlpha}"))
 
   testImplementation("org.mockito:mockito-core:5.23.0")
 

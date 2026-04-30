@@ -5,7 +5,7 @@ data class OtelVersions(
   val autoservice: String,
 )
 
-val otelVersions = OtelVersions(
+val defaultOtelVersions = OtelVersions(
   // this line is managed by .github/scripts/update-sdk-version.sh
   opentelemetrySdk = "1.61.0",
 

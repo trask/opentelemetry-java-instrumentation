@@ -83,7 +83,7 @@ public abstract class AbstractFailsafeInstrumentationTest {
 
   protected void captureRetryPolicyMetrics(@Nullable String expectedPolicyName) {
     RetryPolicy<Object> userRetryPolicy =
-        dev.failsafe.RetryPolicy.builder().handleResult(null).withMaxAttempts(3).build();
+        RetryPolicy.builder().handleResult(null).withMaxAttempts(3).build();
     RetryPolicy<Object> instrumentedRetryPolicy = configure(userRetryPolicy);
     captureRetryPolicyMetrics(
         instrumentedRetryPolicy,

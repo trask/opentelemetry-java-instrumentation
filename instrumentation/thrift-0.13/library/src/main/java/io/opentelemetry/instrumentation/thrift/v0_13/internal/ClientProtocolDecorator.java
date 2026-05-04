@@ -42,7 +42,7 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
       String serviceName,
       Instrumenter<ThriftRequest, ThriftResponse> instrumenter,
       ContextPropagators propagators) {
-    this(protocol, serviceName, instrumenter, propagators, null, new State());
+    this(protocol, serviceName, instrumenter, propagators, null, new State(), true);
   }
 
   private ClientProtocolDecorator(
@@ -51,7 +51,8 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
       Instrumenter<ThriftRequest, ThriftResponse> instrumenter,
       ContextPropagators propagators,
       @Nullable TTransport transport,
-      State state) {
+      State state,
+      boolean endSpanInline) {
     super(protocol);
     this.protocol = protocol;
     this.serviceName = serviceName;
@@ -59,9 +60,7 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
     this.propagators = propagators;
     this.transport = transport;
     this.state = state;
-    // if there's an async callback, the span will be ended in the callback
-    this.endSpan = !ClientCallContext.hasAsyncCallback();
-    ClientCallContext.setClientProtocolDecorator(this);
+    this.endSpan = endSpanInline;
   }
 
   @Override
@@ -226,13 +225,18 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
 
     @Override
     public TProtocol getProtocol(TTransport transport) {
-      return new ClientProtocolDecorator(
-          protocolFactory.getProtocol(transport),
-          serviceName,
-          instrumenter,
-          propagators,
-          configuredTransport,
-          state);
+      ClientProtocolDecorator decorator =
+          new ClientProtocolDecorator(
+              protocolFactory.getProtocol(transport),
+              serviceName,
+              instrumenter,
+              propagators,
+              configuredTransport,
+              state,
+              false);
+      // span will be ended by the wrapped async callback, which calls back into this decorator
+      ClientCallContext.setClientProtocolDecorator(decorator);
+      return decorator;
     }
   }
 
@@ -260,7 +264,7 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
         return protocol;
       }
       return new ClientProtocolDecorator(
-          protocol, serviceName, instrumenter, propagators, null, state);
+          protocol, serviceName, instrumenter, propagators, null, state, true);
     }
   }
 }

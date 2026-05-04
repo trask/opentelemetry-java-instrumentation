@@ -15,7 +15,6 @@ public final class ClientCallContext {
   private static final ThreadLocal<ClientCallContext> current = new ThreadLocal<>();
 
   @Nullable private ClientProtocolDecorator protocolDecorator;
-  private boolean hasAsyncCallback;
 
   public static ClientCallContext start() {
     ClientCallContext context = new ClientCallContext();
@@ -28,17 +27,6 @@ public final class ClientCallContext {
     if (context != null) {
       context.protocolDecorator = protocolDecorator;
     }
-  }
-
-  /** Returns {@code true} when a callback has been installed for ending the span. */
-  static boolean hasAsyncCallback() {
-    ClientCallContext context = current.get();
-    return context != null && context.hasAsyncCallback;
-  }
-
-  /** Notify that a callback has been installed for ending the span. */
-  public void setHasAsyncCallback() {
-    this.hasAsyncCallback = true;
   }
 
   public void endSpan(@Nullable Throwable throwable) {

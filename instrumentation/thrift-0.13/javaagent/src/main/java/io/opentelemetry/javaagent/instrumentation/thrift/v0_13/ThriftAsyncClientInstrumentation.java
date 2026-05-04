@@ -96,7 +96,6 @@ class ThriftAsyncClientInstrumentation implements TypeInstrumentation {
       if (args[args.length - 1] != null) {
         AsyncMethodCallback<?> callback = (AsyncMethodCallback<?>) args[args.length - 1];
         args[args.length - 1] = AsyncMethodCallbackUtil.wrap(callback, clientContext);
-        clientContext.setHasAsyncCallback();
       }
       return new Object[] {args, clientContext};
     }

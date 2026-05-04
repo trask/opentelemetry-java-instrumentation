@@ -208,7 +208,6 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
     private final Instrumenter<ThriftRequest, ThriftResponse> instrumenter;
     private final ContextPropagators propagators;
     @Nullable private final TTransport configuredTransport;
-    private final State state = new State();
 
     public Factory(
         TProtocolFactory protocolFactory,
@@ -232,7 +231,7 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
               instrumenter,
               propagators,
               configuredTransport,
-              state,
+              new State(),
               false);
       // span will be ended by the wrapped async callback, which calls back into this decorator
       ClientCallContext.setClientProtocolDecorator(decorator);

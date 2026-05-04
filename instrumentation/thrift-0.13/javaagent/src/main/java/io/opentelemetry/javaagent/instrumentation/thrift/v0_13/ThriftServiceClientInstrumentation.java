@@ -48,13 +48,11 @@ class ThriftServiceClientInstrumentation implements TypeInstrumentation {
         @Advice.This TServiceClient serviceClient,
         @Advice.FieldValue("iprot_") TProtocol inProtocol,
         @Advice.FieldValue("oprot_") TProtocol outProtocol) {
-      Class<?> serviceClass = serviceClient.getClass();
-      if (serviceClass.getDeclaringClass() != null) {
-        serviceClass = serviceClass.getDeclaringClass();
-      }
       ClientProtocolDecorator.AgentDecorator agentDecorator =
           new ClientProtocolDecorator.AgentDecorator(
-              serviceClass.getName(), ThriftSingletons.clientInstrumenter(), getPropagators());
+              ThriftSingletons.thriftServiceName(serviceClient.getClass()),
+              ThriftSingletons.clientInstrumenter(),
+              getPropagators());
       return new Object[] {
         agentDecorator.decorate(inProtocol), agentDecorator.decorate(outProtocol)
       };

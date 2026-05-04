@@ -36,5 +36,15 @@ public final class ThriftSingletons {
     return GlobalOpenTelemetry.get().getPropagators();
   }
 
+  /**
+   * Returns the enclosing thrift service class name (e.g. {@code com.example.MyService}) for an
+   * inner client class such as {@code com.example.MyService$Client}; falls back to the class itself
+   * when there is no enclosing class.
+   */
+  public static String thriftServiceName(Class<?> clientClass) {
+    Class<?> declaring = clientClass.getDeclaringClass();
+    return declaring != null ? declaring.getName() : clientClass.getName();
+  }
+
   private ThriftSingletons() {}
 }

@@ -70,14 +70,9 @@ class ThriftAsyncClientInstrumentation implements TypeInstrumentation {
         @Advice.Origin("#t") Class<?> declaringClass,
         @Advice.Argument(0) TProtocolFactory protocolFactory,
         @Advice.Argument(2) TNonblockingTransport transport) {
-      Class<?> serviceClass = declaringClass;
-      if (serviceClass.getDeclaringClass() != null) {
-        serviceClass = serviceClass.getDeclaringClass();
-      }
-
       return new ClientProtocolDecorator.Factory(
           protocolFactory,
-          serviceClass.getName(),
+          ThriftSingletons.thriftServiceName(declaringClass),
           ThriftSingletons.clientInstrumenter(),
           getPropagators(),
           transport);

@@ -29,7 +29,6 @@ import org.apache.thrift.transport.TTransportException;
  */
 public final class ClientProtocolDecorator extends TProtocolDecorator {
 
-  private final TProtocol protocol;
   private final String serviceName;
   private final Instrumenter<ThriftRequest, ThriftResponse> instrumenter;
   private final ContextPropagators propagators;
@@ -54,7 +53,6 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
       State state,
       boolean endSpanInline) {
     super(protocol);
-    this.protocol = protocol;
     this.serviceName = serviceName;
     this.instrumenter = instrumenter;
     this.propagators = propagators;
@@ -130,7 +128,7 @@ public final class ClientProtocolDecorator extends TProtocolDecorator {
                   carrier.put(key, value);
                 }
               });
-      ContextPropagationUtil.writeHeaders(protocol, headers);
+      ContextPropagationUtil.writeHeaders(this, headers);
       state.contextPropagated = true;
     }
 

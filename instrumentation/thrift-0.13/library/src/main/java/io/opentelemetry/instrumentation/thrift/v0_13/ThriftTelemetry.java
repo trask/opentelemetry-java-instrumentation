@@ -93,7 +93,7 @@ public final class ThriftTelemetry {
                 return method.invoke(client, args);
               } catch (InvocationTargetException e) {
                 error = e.getCause();
-                throw e.getCause();
+                throw error;
               } catch (Throwable t) {
                 error = t;
                 throw t;

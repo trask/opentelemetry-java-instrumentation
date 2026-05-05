@@ -28,6 +28,7 @@ import org.apache.thrift.protocol.TType;
  */
 public final class ServerInProtocolDecorator extends TProtocolDecorator {
 
+  private final TProtocol protocol;
   private final Instrumenter<ThriftRequest, ThriftResponse> instrumenter;
   private final String serviceName;
 
@@ -41,6 +42,7 @@ public final class ServerInProtocolDecorator extends TProtocolDecorator {
       String serviceName,
       Instrumenter<ThriftRequest, ThriftResponse> instrumenter) {
     super(protocol);
+    this.protocol = protocol;
     this.serviceName = serviceName;
     this.instrumenter = instrumenter;
   }
@@ -58,7 +60,7 @@ public final class ServerInProtocolDecorator extends TProtocolDecorator {
     // start span when context propagation field is read, if the message doesn't include context
     // propagation field, span will be started in readMessageEnd()
     if (field.id == ContextPropagationUtil.TRACE_CONTEXT_FIELD_ID && field.type == TType.MAP) {
-      Map<String, String> headers = ContextPropagationUtil.readHeaders(this);
+      Map<String, String> headers = ContextPropagationUtil.readHeaders(protocol);
       super.readFieldEnd();
 
       Socket socket = SocketAccessor.getSocket(super.getTransport());

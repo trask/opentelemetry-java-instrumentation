@@ -16,9 +16,19 @@ concurrency:
 
 timeout-minutes: 60
 
+# Disable strict mode so we can opt out of the AWF agent sandbox below.
+strict: false
+
 engine:
   id: copilot
   model: ${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}
+
+# Disable the AWF sandbox so copilot-cli connects directly to
+# api.githubcopilot.com. The AWF api-proxy in v0.25.40 collapses Copilot
+# traffic to a single endpoint, which prevents the CLI from negotiating
+# /responses-API routing and blocks newer models like gpt-5.5.
+sandbox:
+  agent: false
 
 network:
   allowed:
@@ -31,6 +41,8 @@ tools:
   repo-memory: true
 
 safe-outputs:
+
+  threat-detection: false
 
   create-pull-request:
     title-prefix: "Module cleanup: "

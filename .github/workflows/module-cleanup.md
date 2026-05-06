@@ -6,8 +6,6 @@ description: |
   persistent repo memory and appends to it as modules are processed.
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions: read-all
@@ -33,12 +31,7 @@ tools:
   repo-memory: true
 
 safe-outputs:
-  # Mint an otelbot app token so the resulting PR is authored by the
-  # otelbot GitHub App rather than by GITHUB_TOKEN. PRs created by
-  # GITHUB_TOKEN do not trigger downstream workflow runs.
-  github-app:
-    app-id: ${{ vars.OTELBOT_APP_ID }}
-    private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
   create-pull-request:
     title-prefix: "Module cleanup: "
     labels: ["module cleanup"]
@@ -56,7 +49,7 @@ imports:
 
 jobs:
   dispatch:
-    if: github.repository == 'open-telemetry/opentelemetry-java-instrumentation'
+    if: github.repository == 'trask/opentelemetry-java-instrumentation'
     runs-on: ubuntu-latest
     permissions:
       contents: read

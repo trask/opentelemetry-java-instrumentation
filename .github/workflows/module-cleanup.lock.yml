@@ -1,5 +1,5 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"add8e9d85400c78aca3832186f77f07ef14967dc81f6cc009cdae0931cc3ea65","compiler_version":"v0.71.5","strict":true,"agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'claude-sonnet-4.6' }}"}
-# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN","OTELBOT_PRIVATE_KEY"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/create-github-app-token","sha":"1b10c78c7865c340bc4f6099eb2f838309f1e8c3","version":"v3.1.1"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9"},{"repo":"actions/setup-java","sha":"be666c2fcd27ec809703dec50e508c2fdc7f6654","version":"v5.2.0"},{"repo":"actions/setup-node","sha":"48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e","version":"v6.4.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"},{"repo":"gradle/actions/setup-gradle","sha":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e","version":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40","digest":"sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40@sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40","digest":"sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40@sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40","digest":"sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40@sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.3.6","digest":"sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.3.6@sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c"},{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"f0553f993470dfd506464c3ca24860de76a7343d02297f2530423f289ac590af","compiler_version":"v0.71.5","strict":true,"agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"}
+# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9"},{"repo":"actions/setup-java","sha":"be666c2fcd27ec809703dec50e508c2fdc7f6654","version":"v5.2.0"},{"repo":"actions/setup-node","sha":"48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e","version":"v6.4.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"},{"repo":"gradle/actions/setup-gradle","sha":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e","version":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e"}],"containers":[{"image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40","digest":"sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504","pinned_image":"ghcr.io/github/gh-aw-firewall/agent:0.25.40@sha256:14ff567e8d9d4c2fbc5e55c973488381c71d7e0fdbe72d30ee7b8a738fd86504"},{"image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40","digest":"sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280","pinned_image":"ghcr.io/github/gh-aw-firewall/api-proxy:0.25.40@sha256:2883ca3e5ae9f330cafdd9345bfd4ae17fc8da36c96d4c9a1f76e922b4c45280"},{"image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40","digest":"sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51","pinned_image":"ghcr.io/github/gh-aw-firewall/squid:0.25.40@sha256:b084f4a2c771f584ee68084ced52fa6b3245197a1889645d817462d307d3ac51"},{"image":"ghcr.io/github/gh-aw-mcpg:v0.3.6","digest":"sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c","pinned_image":"ghcr.io/github/gh-aw-mcpg:v0.3.6@sha256:2bb8eef86006a4c5963c55616a9c51c32f27bfdecb023b8aa6f91f6718d9171c"},{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
 #  | |_| | __ _  ___ _ __ | |_ _  ___ 
@@ -37,11 +37,9 @@
 #   - GH_AW_GITHUB_MCP_SERVER_TOKEN
 #   - GH_AW_GITHUB_TOKEN
 #   - GITHUB_TOKEN
-#   - OTELBOT_PRIVATE_KEY
 #
 # Custom actions used:
 #   - actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-#   - actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
 #   - actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
 #   - actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
 #   - actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -61,8 +59,6 @@
 
 name: "Module Cleanup"
 "on":
-  schedule:
-  - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       aw_context:
@@ -112,7 +108,7 @@ jobs:
         env:
           GH_AW_INFO_ENGINE_ID: "copilot"
           GH_AW_INFO_ENGINE_NAME: "GitHub Copilot CLI"
-          GH_AW_INFO_MODEL: "${{ vars.MODULE_CLEANUP_MODEL || 'claude-sonnet-4.6' }}"
+          GH_AW_INFO_MODEL: "${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"
           GH_AW_INFO_VERSION: "1.0.40"
           GH_AW_INFO_AGENT_VERSION: "1.0.40"
           GH_AW_INFO_CLI_VERSION: "v0.71.5"
@@ -199,24 +195,24 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_d81fb802c3cb9693_EOF'
+          cat << 'GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF'
           <system>
-          GH_AW_PROMPT_d81fb802c3cb9693_EOF
+          GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/repo_memory_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_d81fb802c3cb9693_EOF'
+          cat << 'GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF'
           <safe-output-tools>
           Tools: create_pull_request, missing_tool, missing_data, noop
-          GH_AW_PROMPT_d81fb802c3cb9693_EOF
+          GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_create_pull_request.md"
-          cat << 'GH_AW_PROMPT_d81fb802c3cb9693_EOF'
+          cat << 'GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF'
           </safe-output-tools>
-          GH_AW_PROMPT_d81fb802c3cb9693_EOF
+          GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/mcp_cli_tools_prompt.md"
-          cat << 'GH_AW_PROMPT_d81fb802c3cb9693_EOF'
+          cat << 'GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF'
           <github-context>
           The following GitHub context information is available for this workflow:
           {{#if __GH_AW_GITHUB_ACTOR__ }}
@@ -245,13 +241,13 @@ jobs:
           {{/if}}
           </github-context>
           
-          GH_AW_PROMPT_d81fb802c3cb9693_EOF
+          GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_d81fb802c3cb9693_EOF'
+          cat << 'GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF'
           </system>
           {{#runtime-import .github/agents/module-cleanup.agent.md}}
           {{#runtime-import .github/workflows/module-cleanup.md}}
-          GH_AW_PROMPT_d81fb802c3cb9693_EOF
+          GH_AW_PROMPT_c0d0fd8c8f8a7986_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -346,8 +342,6 @@ jobs:
     if: needs.dispatch.outputs.has_work == 'true'
     runs-on: ubuntu-latest
     permissions: read-all
-    concurrency:
-      group: "gh-aw-copilot-${{ github.workflow }}"
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       GH_AW_ASSETS_ALLOWED_EXTS: ""
@@ -479,9 +473,9 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_7b010ba9f5bed3e3_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_dfeb34dc09e6d534_EOF'
           {"create_pull_request":{"draft":false,"if_no_changes":"ignore","labels":["module cleanup"],"max":1,"max_patch_files":100,"max_patch_size":1024,"protect_top_level_dot_folders":true,"protected_files":["package.json","bun.lockb","bunfig.toml","deno.json","deno.jsonc","deno.lock","global.json","NuGet.Config","Directory.Packages.props","mix.exs","mix.lock","go.mod","go.sum","stack.yaml","stack.yaml.lock","pom.xml","build.gradle","build.gradle.kts","settings.gradle","settings.gradle.kts","gradle.properties","package-lock.json","yarn.lock","pnpm-lock.yaml","npm-shrinkwrap.json","requirements.txt","Pipfile","Pipfile.lock","pyproject.toml","setup.py","setup.cfg","Gemfile","Gemfile.lock","uv.lock","CODEOWNERS","DESIGN.md","README.md","CONTRIBUTING.md","CHANGELOG.md","SECURITY.md","CODE_OF_CONDUCT.md","AGENTS.md","CLAUDE.md","GEMINI.md"],"protected_files_policy":"allowed","title_prefix":"Module cleanup: "},"create_report_incomplete_issue":{},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"push_repo_memory":{"memories":[{"dir":"/tmp/gh-aw/repo-memory/default","id":"default","max_file_count":100,"max_file_size":10240,"max_patch_size":10240}]},"report_incomplete":{}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_7b010ba9f5bed3e3_EOF
+          GH_AW_SAFE_OUTPUTS_CONFIG_dfeb34dc09e6d534_EOF
       - name: Generate Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
@@ -689,7 +683,7 @@ jobs:
           
           mkdir -p /home/runner/.copilot
           GH_AW_NODE=$(which node 2>/dev/null || command -v node 2>/dev/null || echo node)
-          cat << GH_AW_MCP_CONFIG_f52cff623c432b84_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
+          cat << GH_AW_MCP_CONFIG_b25309d7e54394fa_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
           {
             "mcpServers": {
               "github": {
@@ -730,7 +724,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_f52cff623c432b84_EOF
+          GH_AW_MCP_CONFIG_b25309d7e54394fa_EOF
       - name: Mount MCP servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
@@ -770,7 +764,7 @@ jobs:
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
           COPILOT_API_KEY: dummy-byok-key-for-offline-mode
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
-          COPILOT_MODEL: ${{ vars.MODULE_CLEANUP_MODEL || 'claude-sonnet-4.6' }}
+          COPILOT_MODEL: ${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}
           GH_AW_MCP_CONFIG: /home/runner/.copilot/mcp-config.json
           GH_AW_PHASE: agent
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
@@ -1000,18 +994,6 @@ jobs:
           GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
-      - name: Generate GitHub App token
-        id: safe-outputs-app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        with:
-          client-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          github-api-url: ${{ github.api_url }}
-          permission-contents: write
-          permission-issues: write
-          permission-pull-requests: write
       - name: Download agent output artifact
         id: download-agent-output
         continue-on-error: true
@@ -1037,7 +1019,7 @@ jobs:
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_NOOP_REPORT_AS_ISSUE: "true"
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
@@ -1053,7 +1035,7 @@ jobs:
           GH_AW_DETECTION_CONCLUSION: ${{ needs.detection.outputs.detection_conclusion }}
           GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
@@ -1067,7 +1049,7 @@ jobs:
           GH_AW_MISSING_TOOL_CREATE_ISSUE: "true"
           GH_AW_WORKFLOW_NAME: "Module Cleanup"
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
@@ -1081,7 +1063,7 @@ jobs:
           GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"
           GH_AW_WORKFLOW_NAME: "Module Cleanup"
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
@@ -1108,8 +1090,6 @@ jobs:
           GH_AW_ENGINE_API_HOSTS: "api.enterprise.githubcopilot.com,api.githubcopilot.com,api.business.githubcopilot.com,api.individual.githubcopilot.com"
           GH_AW_CODE_PUSH_FAILURE_ERRORS: ${{ needs.safe_outputs.outputs.code_push_failure_errors }}
           GH_AW_CODE_PUSH_FAILURE_COUNT: ${{ needs.safe_outputs.outputs.code_push_failure_count }}
-          GH_AW_SAFE_OUTPUTS_APP_TOKEN_MINTING_FAILED: ${{ needs.safe_outputs.outputs.app_token_minting_failed }}
-          GH_AW_CONCLUSION_APP_TOKEN_MINTING_FAILED: ${{ steps.safe-outputs-app-token.outcome == 'failure' }}
           GH_AW_LOCKDOWN_CHECK_FAILED: ${{ needs.activation.outputs.lockdown_check_failed }}
           GH_AW_STALE_LOCK_FILE_FAILED: ${{ needs.activation.outputs.stale_lock_file_failed }}
           GH_AW_PUSH_REPO_MEMORY_RESULT: ${{ needs.push_repo_memory.result }}
@@ -1122,25 +1102,12 @@ jobs:
           GH_AW_MISSING_DATA_REPORT_AS_FAILURE: "true"
           GH_AW_TIMEOUT_MINUTES: "60"
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/handle_agent_failure.cjs');
             await main();
-      - name: Invalidate GitHub App token
-        if: always() && steps.safe-outputs-app-token.outputs.token != ''
-        env:
-          TOKEN: ${{ steps.safe-outputs-app-token.outputs.token }}
-        run: |
-          echo "Revoking GitHub App installation token..."
-          # GitHub CLI will auth with the token being revoked.
-          gh api \
-            --method DELETE \
-            -H "Authorization: token $TOKEN" \
-            /installation/token || echo "Token revoke may already be expired."
-          
-          echo "Token invalidation step complete."
 
   detection:
     needs:
@@ -1276,7 +1243,7 @@ jobs:
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
           COPILOT_API_KEY: dummy-byok-key-for-offline-mode
           COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
-          COPILOT_MODEL: ${{ vars.MODULE_CLEANUP_MODEL || 'claude-sonnet-4.6' }}
+          COPILOT_MODEL: ${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}
           GH_AW_PHASE: detection
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_VERSION: v0.71.5
@@ -1332,7 +1299,7 @@ jobs:
             }
 
   dispatch:
-    if: github.repository == 'open-telemetry/opentelemetry-java-instrumentation'
+    if: github.repository == 'trask/opentelemetry-java-instrumentation'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -1465,12 +1432,11 @@ jobs:
       GH_AW_DETECTION_REASON: ${{ needs.detection.outputs.detection_reason }}
       GH_AW_EFFECTIVE_TOKENS: ${{ needs.agent.outputs.effective_tokens }}
       GH_AW_ENGINE_ID: "copilot"
-      GH_AW_ENGINE_MODEL: "${{ vars.MODULE_CLEANUP_MODEL || 'claude-sonnet-4.6' }}"
+      GH_AW_ENGINE_MODEL: "${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"
       GH_AW_ENGINE_VERSION: "1.0.40"
       GH_AW_WORKFLOW_ID: "module-cleanup"
       GH_AW_WORKFLOW_NAME: "Module Cleanup"
     outputs:
-      app_token_minting_failed: ${{ steps.safe-outputs-app-token.outcome == 'failure' }}
       code_push_failure_count: ${{ steps.process_safe_outputs.outputs.code_push_failure_count }}
       code_push_failure_errors: ${{ steps.process_safe_outputs.outputs.code_push_failure_errors }}
       create_discussion_error_count: ${{ steps.process_safe_outputs.outputs.create_discussion_error_count }}
@@ -1511,24 +1477,12 @@ jobs:
         with:
           name: agent
           path: /tmp/gh-aw/
-      - name: Generate GitHub App token
-        id: safe-outputs-app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        with:
-          client-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: ${{ github.event.repository.name }}
-          github-api-url: ${{ github.api_url }}
-          permission-contents: write
-          permission-issues: write
-          permission-pull-requests: write
       - name: Checkout repository
         if: (!cancelled()) && needs.agent.result != 'skipped' && contains(needs.agent.outputs.output_types, 'create_pull_request')
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.base_ref || github.event.pull_request.base.ref || github.ref_name || github.event.repository.default_branch }}
-          token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           persist-credentials: false
           fetch-depth: 1
       - name: Configure Git credentials
@@ -1536,7 +1490,7 @@ jobs:
         env:
           REPO_NAME: ${{ github.repository }}
           SERVER_URL: ${{ github.server_url }}
-          GIT_TOKEN: ${{ steps.safe-outputs-app-token.outputs.token }}
+          GIT_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
@@ -1564,27 +1518,13 @@ jobs:
           GITHUB_API_URL: ${{ github.api_url }}
           GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"create_pull_request\":{\"draft\":false,\"if_no_changes\":\"ignore\",\"labels\":[\"module cleanup\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":1024,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"CHANGELOG.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\",\"CLAUDE.md\",\"GEMINI.md\"],\"protected_files_policy\":\"allowed\",\"title_prefix\":\"Module cleanup: \"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"report_incomplete\":{}}"
           GH_AW_CI_TRIGGER_TOKEN: ${{ secrets.GH_AW_CI_TRIGGER_TOKEN }}
-          GITHUB_TOKEN: ${{ steps.safe-outputs-app-token.outputs.token }}
         with:
-          github-token: ${{ steps.safe-outputs-app-token.outputs.token }}
+          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
             setupGlobals(core, github, context, exec, io, getOctokit);
             const { main } = require('${{ runner.temp }}/gh-aw/actions/safe_output_handler_manager.cjs');
             await main();
-      - name: Invalidate GitHub App token
-        if: always() && steps.safe-outputs-app-token.outputs.token != ''
-        env:
-          TOKEN: ${{ steps.safe-outputs-app-token.outputs.token }}
-        run: |
-          echo "Revoking GitHub App installation token..."
-          # GitHub CLI will auth with the token being revoked.
-          gh api \
-            --method DELETE \
-            -H "Authorization: token $TOKEN" \
-            /installation/token || echo "Token revoke may already be expired."
-          
-          echo "Token invalidation step complete."
       - name: Upload Safe Outputs Items
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

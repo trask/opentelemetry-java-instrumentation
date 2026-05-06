@@ -177,8 +177,19 @@ retried on a future run.
 
 ## Output
 
-After the loop ends, your only remaining action is to emit a single
-`create_pull_request` safe output with:
+**Before exiting, you MUST emit a single `create_pull_request` safe output
+whenever any commits were produced in this run.** This applies regardless of
+why the loop ended:
+
+- The accumulated diff reached `FILE_THRESHOLD`, OR
+- You finished walking every module in the input list, OR
+- You decided to stop early for any other reason.
+
+Emitting the `create_pull_request` is the final action of this workflow. Do
+not end your turn without calling it if `git log origin/main..HEAD` shows any
+commits.
+
+The `create_pull_request` parameters:
 
 - **title**: `run ${{ github.run_id }}` (the `Module cleanup: ` prefix is
   prepended automatically by the safe-output framework).

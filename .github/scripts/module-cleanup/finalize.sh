@@ -94,8 +94,9 @@ for candidate in \
     "$ARTIFACT_DIR/tmp/gh-aw/agent/cleanup.patch" \
     "$ARTIFACT_DIR/cleanup.patch"; do
     if [ -f "$candidate" ]; then
-        PATCH_SRC="$candidate"
-        echo "Found cleanup patch at $candidate"
+        # Absolute path so the value survives the cd into $WIP_WT below.
+        PATCH_SRC="$(realpath "$candidate")"
+        echo "Found cleanup patch at $PATCH_SRC"
         break
     fi
 done

@@ -12,6 +12,7 @@ import io.opentelemetry.instrumentation.testing.junit.http.HttpClientInstrumenta
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.Map;
@@ -178,27 +179,28 @@ class ApacheHttpAsyncClientTest {
   }
 
   int getResponseCode(HttpResponse response) {
+    closeContent(response);
+    return response.getStatusLine().getStatusCode();
+  }
+
+  static void closeContent(HttpResponse response) {
     try {
-      if (response.getEntity() != null && response.getEntity().getContent() != null) {
-        response.getEntity().getContent().close();
+      if (response.getEntity() != null) {
+        InputStream content = response.getEntity().getContent();
+        if (content != null) {
+          content.close();
+        }
       }
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
-    return response.getStatusLine().getStatusCode();
   }
 
   static FutureCallback<HttpResponse> responseCallback(HttpClientResult httpClientResult) {
     return new FutureCallback<HttpResponse>() {
       @Override
       public void completed(HttpResponse response) {
-        try {
-          if (response.getEntity() != null && response.getEntity().getContent() != null) {
-            response.getEntity().getContent().close();
-          }
-        } catch (IOException e) {
-          throw new UncheckedIOException(e);
-        }
+        closeContent(response);
         httpClientResult.complete(response.getStatusLine().getStatusCode());
       }
 

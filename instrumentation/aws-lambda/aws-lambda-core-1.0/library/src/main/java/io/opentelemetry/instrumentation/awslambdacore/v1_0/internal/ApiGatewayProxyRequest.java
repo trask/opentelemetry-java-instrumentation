@@ -53,8 +53,7 @@ public abstract class ApiGatewayProxyRequest {
   }
 
   public Map<String, String> getHeaders() throws IOException {
-    Map<String, String> headers = ofStream(freshStream());
-    return (headers == null ? emptyMap() : headers);
+    return ofStream(freshStream());
   }
 
   public abstract InputStream freshStream() throws IOException;

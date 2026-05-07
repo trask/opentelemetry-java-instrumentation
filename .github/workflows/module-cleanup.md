@@ -1,23 +1,35 @@
 ---
 description: |
   Walks instrumentation modules one-at-a-time, processing exactly one
-  module per run. Each successful run's commit is appended to the
-  `module-cleanup-wip` branch. When the wip branch reaches FILE_THRESHOLD
-  modified files (or when the unprocessed-module queue empties), the
-  finalize job promotes wip to a fresh batch branch, opens a PR against
-  main, and resets wip back to main. Otherwise the workflow self-dispatches
-  to process the next module.
+  module per run. Each successful run's commit is appended to a
+  per-chain `module-cleanup-wip-<chain_id>` branch. When the wip branch
+  reaches FILE_THRESHOLD modified files (or when the unprocessed-module
+  queue empties), the finalize job promotes wip to a `module-cleanup-batch-<run_id>`
+  branch and opens a PR against main. Otherwise the workflow self-dispatches
+  to process the next module, threading the same wip branch.
+
+  Each chain (cron tick or manual workflow_dispatch) gets its own wip
+  branch named after the first run's id. If a chain dies mid-flight (e.g.
+  PR creation fails), its wip is simply abandoned — the next cron tick
+  starts a fresh chain on a fresh wip. Old wip and batch branches can be
+  garbage-collected manually.
 
   State:
     - `memory/module-cleanup` branch holds `processed.txt` (modules already
       attempted; never re-picked automatically) and `failed.txt` (a
       diagnostic log of timeouts and patch-conflict failures).
-    - `module-cleanup-wip` branch holds the not-yet-PR'd cleanup commits.
+    - `module-cleanup-wip-<chain_id>` branches hold not-yet-PR'd commits
+      for an in-flight chain.
     - Open PRs labeled `module cleanup` count toward MAX_OPEN_PRS; while at
       cap, dispatch exits and waits for cron to retry.
 
 on:
   workflow_dispatch:
+    inputs:
+      wip_branch:
+        description: "Per-chain wip branch (set automatically by self-dispatch; leave blank for manual chains)."
+        required: false
+        type: string
   schedule:
     # Walk-driver: each cron tick starts (or resumes) the chain. Inside a
     # tick, the workflow self-dispatches one module at a time until either
@@ -75,11 +87,23 @@ jobs:
       short_name: ${{ steps.pick.outputs.short_name }}
       module_dir: ${{ steps.pick.outputs.module_dir }}
       queue_remaining: ${{ steps.pick.outputs.queue_remaining }}
+      wip_branch: ${{ steps.wip.outputs.wip_branch }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
           persist-credentials: false
+      - name: Resolve wip branch for this chain
+        id: wip
+        env:
+          INHERITED_WIP: ${{ inputs.wip_branch }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INHERITED_WIP" ]; then
+            echo "wip_branch=$INHERITED_WIP" >> "$GITHUB_OUTPUT"
+          else
+            echo "wip_branch=module-cleanup-wip-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          fi
       - name: Pick next module
         id: pick
         env:
@@ -133,6 +157,7 @@ jobs:
           SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
           AGENT_RESULT: ${{ needs.agent.result }}
           QUEUE_REMAINING: ${{ needs.dispatch.outputs.queue_remaining }}
+          WIP_BRANCH: ${{ needs.dispatch.outputs.wip_branch }}
           ARTIFACT_DIR: ./agent-artifact
           WORKFLOW_FILE: module-cleanup.lock.yml
         run: bash .github/scripts/module-cleanup/finalize.sh

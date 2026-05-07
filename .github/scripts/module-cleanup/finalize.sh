@@ -11,10 +11,12 @@
 #   2. If the agent produced a cleanup patch, apply it onto
 #      module-cleanup-wip and push.
 #   3. If wip diff vs origin/main has reached FLUSH_THRESHOLD files OR
-#      the queue is empty, cut a batch branch from wip, open the PR,
-#      and reset wip back to origin/main.
+#      the queue is empty, cut a batch branch from wip and open the PR.
+#      Wip is NOT reset — each chain has its own wip branch, so the next
+#      chain starts fresh on a different wip.
 #   4. Self-dispatch the workflow unless we just opened a PR or the
-#      queue is empty (cron will pick up later).
+#      queue is empty (cron will pick up later). Threads WIP_BRANCH so
+#      the next run in the chain reuses the same wip.
 #
 # No rebase-retry loops on push: the workflow uses
 # concurrency.group=module-cleanup with cancel-in-progress=false, so this
@@ -35,12 +37,13 @@
 #   FLUSH_THRESHOLD   - file count that triggers a PR (default 10)
 #   WORKFLOW_FILE     - workflow file name for self-dispatch
 #   MEMORY_BRANCH     - default: memory/module-cleanup
-#   WIP_BRANCH        - default: module-cleanup-wip
+#   WIP_BRANCH        - per-chain wip branch (passed in by the workflow;
+#                       defaults to module-cleanup-wip-<GITHUB_RUN_ID>)
 
 set -euo pipefail
 
 MEMORY_BRANCH="${MEMORY_BRANCH:-memory/module-cleanup}"
-WIP_BRANCH="${WIP_BRANCH:-module-cleanup-wip}"
+WIP_BRANCH="${WIP_BRANCH:-module-cleanup-wip-${GITHUB_RUN_ID:-manual}}"
 THRESHOLD="${FLUSH_THRESHOLD:-10}"
 QUEUE_REMAINING="${QUEUE_REMAINING:-0}"
 REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY required}"
@@ -183,20 +186,13 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
             --reverse --format='## %s%n%n%b%n'
     } > "$BODY_FILE"
 
-    # Don't let a transient `gh pr create` failure (e.g. label not found,
-    # rate limiting) abort before we reset wip and self-dispatch — the batch
-    # branch is already pushed and a PR can be opened manually.
-    if ! gh pr create \
+    gh pr create \
         --repo "$REPO" \
         --base main \
         --head "$BATCH_BRANCH" \
         --title "Module cleanup: batch (run $RUN_ID)" \
         --body-file "$BODY_FILE" \
-        --label "module cleanup"; then
-        echo "WARNING: gh pr create failed; batch branch $BATCH_BRANCH still pushed."
-    fi
-
-    git push --force origin "origin/main:refs/heads/$WIP_BRANCH"
+        --label "module cleanup"
 
     OPENED_PR=true
 fi
@@ -208,8 +204,9 @@ if [ "$OPENED_PR" = "true" ]; then
 elif [ "$QUEUE_REMAINING" -le 0 ]; then
     echo "Queue empty; nothing to dispatch."
 else
-    echo "Self-dispatching workflow for next module."
-    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main
+    echo "Self-dispatching workflow for next module on $WIP_BRANCH."
+    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main \
+        --field "wip_branch=$WIP_BRANCH"
 fi
 
 git worktree remove --force "$MEM_WT" 2>/dev/null || true

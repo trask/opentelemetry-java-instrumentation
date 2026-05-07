@@ -23,12 +23,12 @@ class DruidInstrumentationTest extends AbstractDruidInstrumentationTest {
   }
 
   @Override
-  protected void configure(DruidDataSource dataSource, String name) throws Exception {
+  protected void configure(DruidDataSource dataSource, String name) {
     DruidDataSourceStatManager.addDataSource(dataSource, name);
   }
 
   @Override
-  protected void shutdown(DruidDataSource dataSource) throws Exception {
+  protected void shutdown(DruidDataSource dataSource) {
     DruidDataSourceStatManager.removeDataSource(dataSource);
   }
 }

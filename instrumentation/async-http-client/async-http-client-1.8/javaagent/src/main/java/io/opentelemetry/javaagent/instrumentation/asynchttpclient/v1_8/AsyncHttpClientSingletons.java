@@ -15,7 +15,7 @@ public class AsyncHttpClientSingletons {
 
   private static final Instrumenter<Request, Response> instrumenter =
       AsyncHttpClientInstrumenterFactory.create(
-          INSTRUMENTATION_NAME, AsyncHttpClient18Helper.INSTANCE);
+          INSTRUMENTATION_NAME, new AsyncHttpClient18Helper());
 
   public static Instrumenter<Request, Response> instrumenter() {
     return instrumenter;

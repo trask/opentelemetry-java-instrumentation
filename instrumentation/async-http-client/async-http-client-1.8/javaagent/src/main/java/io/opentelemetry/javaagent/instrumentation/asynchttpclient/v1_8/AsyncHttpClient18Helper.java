@@ -14,9 +14,7 @@ import javax.annotation.Nullable;
 
 final class AsyncHttpClient18Helper implements AsyncHttpClientHelper {
 
-  static final AsyncHttpClient18Helper INSTANCE = new AsyncHttpClient18Helper();
-
-  private AsyncHttpClient18Helper() {}
+  AsyncHttpClient18Helper() {}
 
   @Override
   @Nullable

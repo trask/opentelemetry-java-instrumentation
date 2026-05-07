@@ -12,6 +12,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 import io.opentelemetry.javaagent.extension.instrumentation.TypeInstrumentation;
 import io.opentelemetry.javaagent.extension.instrumentation.TypeTransformer;
+import javax.annotation.Nullable;
 import javax.management.ObjectName;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.type.TypeDescription;
@@ -38,7 +39,7 @@ class BasicDataSourceInstrumentation implements TypeInstrumentation {
   public static class PreRegisterAdvice {
     @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
     public static void onExit(
-        @Advice.This BasicDataSource dataSource, @Advice.Return ObjectName objectName) {
+        @Advice.This BasicDataSource dataSource, @Advice.Return @Nullable ObjectName objectName) {
       String dataSourceName;
       if (objectName != null) {
         dataSourceName = objectName.getKeyProperty("name");

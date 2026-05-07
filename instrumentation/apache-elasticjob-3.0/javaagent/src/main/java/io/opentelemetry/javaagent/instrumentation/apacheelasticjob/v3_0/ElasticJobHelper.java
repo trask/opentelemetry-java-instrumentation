@@ -31,11 +31,9 @@ public class ElasticJobHelper {
     return new ElasticJobScope(request, context, context.makeCurrent());
   }
 
-  public void endSpan(@Nullable ElasticJobScope scope, @Nullable Throwable throwable) {
-    if (scope != null) {
-      scope.scope.close();
-      this.instrumenter.end(scope.context, scope.request, null, throwable);
-    }
+  public void endSpan(ElasticJobScope scope, @Nullable Throwable throwable) {
+    scope.scope.close();
+    this.instrumenter.end(scope.context, scope.request, null, throwable);
   }
 
   public static class ElasticJobScope {

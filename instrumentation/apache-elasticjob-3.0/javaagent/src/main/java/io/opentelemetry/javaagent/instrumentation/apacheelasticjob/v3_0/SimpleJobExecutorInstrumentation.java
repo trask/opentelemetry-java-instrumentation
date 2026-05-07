@@ -58,7 +58,9 @@ class SimpleJobExecutorInstrumentation implements TypeInstrumentation {
     public static void onExit(
         @Advice.Enter @Nullable ElasticJobHelper.ElasticJobScope scope,
         @Advice.Thrown @Nullable Throwable throwable) {
-      helper().endSpan(scope, throwable);
+      if (scope != null) {
+        helper().endSpan(scope, throwable);
+      }
     }
   }
 }

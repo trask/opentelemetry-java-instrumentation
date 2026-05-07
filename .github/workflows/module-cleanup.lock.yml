@@ -1,5 +1,5 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"09413f54cb281ca716d3a28fd9a809f1e60c14f16d74df4eb95fb20fe7848c6e","compiler_version":"v0.71.5","agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"}
-# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_CI_TRIGGER_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9"},{"repo":"actions/setup-java","sha":"be666c2fcd27ec809703dec50e508c2fdc7f6654","version":"v5.2.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"},{"repo":"gradle/actions/setup-gradle","sha":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e","version":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e"}],"containers":[{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"6825637d1a43038ad3b33f3b044b15068ade7142375b1bd3520b72bf0691eb61","compiler_version":"v0.71.5","agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"}
+# gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"v6.0.2"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9"},{"repo":"actions/setup-java","sha":"be666c2fcd27ec809703dec50e508c2fdc7f6654","version":"v5.2.0"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"},{"repo":"gradle/actions/setup-gradle","sha":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e","version":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e"}],"containers":[{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
 #  | |_| | __ _  ___ _ __ | |_ _  ___ 
@@ -22,18 +22,32 @@
 #
 # For more information: https://github.github.com/gh-aw/introduction/overview/
 #
-# Walks instrumentation modules sequentially, applying safe repository-guideline
-# fixes, and opens a single PR per run once the accumulated change set reaches
-# FILE_THRESHOLD modified files. Reads the list of already-reviewed modules from
-# persistent repo memory and appends to it as modules are processed.
+# Walks instrumentation modules one-at-a-time, processing exactly one
+# module per run. Each successful run's commit is appended to the
+# `module-cleanup-wip` branch. When the wip branch reaches FILE_THRESHOLD
+# modified files (or when the unprocessed-module queue empties), the
+# finalize job promotes wip to a fresh batch branch, opens a PR against
+# main, and resets wip back to main. Otherwise the workflow self-dispatches
+# to process the next module.
+# 
+# State:
+# - `memory/module-cleanup` branch holds `processed.txt` (modules already
+# attempted; never re-picked automatically) and `failed.txt` (a
+# diagnostic log of timeouts and patch-conflict failures).
+# - `module-cleanup-wip` branch holds the not-yet-PR'd cleanup commits.
+# - Open PRs labeled `module cleanup` count toward MAX_OPEN_PRS; while at
+# cap, dispatch exits and waits for cron to retry.
 #
 # Resolved workflow manifest:
 #   Imports:
 #     - .github/agents/module-cleanup.agent.md
 #
+# Frontmatter env variables:
+#   - MODULE_DIR: (main workflow)
+#   - MODULE_SHORT_NAME: (main workflow)
+#
 # Secrets used:
 #   - COPILOT_GITHUB_TOKEN
-#   - GH_AW_CI_TRIGGER_TOKEN
 #   - GH_AW_GITHUB_MCP_SERVER_TOKEN
 #   - GH_AW_GITHUB_TOKEN
 #   - GITHUB_TOKEN
@@ -52,8 +66,11 @@
 #   - ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959
 #   - node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f
 
-name: "Module Cleanup"
+name: "Module Cleanup — Single Module"
 "on":
+  schedule:
+  - cron: "9 */6 * * *"
+    # Friendly format: every 6h (scattered)
   workflow_dispatch:
     inputs:
       aw_context:
@@ -68,12 +85,14 @@ concurrency:
   cancel-in-progress: false
   group: module-cleanup
 
-run-name: "Module Cleanup"
+run-name: "Module Cleanup — Single Module"
+
+env:
+  MODULE_DIR: ${{ needs.dispatch.outputs.module_dir }}
+  MODULE_SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
 
 jobs:
   activation:
-    needs: dispatch
-    if: needs.dispatch.outputs.has_work == 'true'
     runs-on: ubuntu-slim
     permissions:
       actions: read
@@ -95,7 +114,7 @@ jobs:
           destination: ${{ runner.temp }}/gh-aw/actions
           job-name: ${{ github.job }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Generate agentic run info
@@ -107,7 +126,7 @@ jobs:
           GH_AW_INFO_VERSION: "1.0.40"
           GH_AW_INFO_AGENT_VERSION: "1.0.40"
           GH_AW_INFO_CLI_VERSION: "v0.71.5"
-          GH_AW_INFO_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_INFO_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_INFO_EXPERIMENTAL: "false"
           GH_AW_INFO_SUPPORTS_TOOLS_ALLOWLIST: "true"
           GH_AW_INFO_STAGED: "false"
@@ -184,30 +203,27 @@ jobs:
           GH_AW_GITHUB_REPOSITORY: ${{ github.repository }}
           GH_AW_GITHUB_RUN_ID: ${{ github.run_id }}
           GH_AW_GITHUB_WORKSPACE: ${{ github.workspace }}
-          GH_AW_NEEDS_DISPATCH_OUTPUTS_MODULES: ${{ needs.dispatch.outputs.modules }}
-          GH_AW_WIKI_NOTE: ${{ '' }}
         # poutine:ignore untrusted_checkout_exec
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_30bac6fc1d337821_EOF'
+          cat << 'GH_AW_PROMPT_015450b8a9cb8dc7_EOF'
           <system>
-          GH_AW_PROMPT_30bac6fc1d337821_EOF
+          GH_AW_PROMPT_015450b8a9cb8dc7_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
-          cat "${RUNNER_TEMP}/gh-aw/prompts/repo_memory_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_30bac6fc1d337821_EOF'
+          cat << 'GH_AW_PROMPT_015450b8a9cb8dc7_EOF'
           <safe-output-tools>
-          Tools: create_pull_request, missing_tool, missing_data, noop
-          GH_AW_PROMPT_30bac6fc1d337821_EOF
-          cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_create_pull_request.md"
-          cat << 'GH_AW_PROMPT_30bac6fc1d337821_EOF'
+          Tools: create_issue
+          GH_AW_PROMPT_015450b8a9cb8dc7_EOF
+          cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_auto_create_issue.md"
+          cat << 'GH_AW_PROMPT_015450b8a9cb8dc7_EOF'
           </safe-output-tools>
-          GH_AW_PROMPT_30bac6fc1d337821_EOF
+          GH_AW_PROMPT_015450b8a9cb8dc7_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/mcp_cli_tools_prompt.md"
-          cat << 'GH_AW_PROMPT_30bac6fc1d337821_EOF'
+          cat << 'GH_AW_PROMPT_015450b8a9cb8dc7_EOF'
           <github-context>
           The following GitHub context information is available for this workflow:
           {{#if __GH_AW_GITHUB_ACTOR__ }}
@@ -236,21 +252,19 @@ jobs:
           {{/if}}
           </github-context>
           
-          GH_AW_PROMPT_30bac6fc1d337821_EOF
+          GH_AW_PROMPT_015450b8a9cb8dc7_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_30bac6fc1d337821_EOF'
+          cat << 'GH_AW_PROMPT_015450b8a9cb8dc7_EOF'
           </system>
           {{#runtime-import .github/agents/module-cleanup.agent.md}}
           {{#runtime-import .github/workflows/module-cleanup.md}}
-          GH_AW_PROMPT_30bac6fc1d337821_EOF
+          GH_AW_PROMPT_015450b8a9cb8dc7_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           GH_AW_PROMPT: /tmp/gh-aw/aw-prompts/prompt.txt
           GH_AW_ENGINE_ID: "copilot"
-          GH_AW_GITHUB_RUN_ID: ${{ github.run_id }}
-          GH_AW_NEEDS_DISPATCH_OUTPUTS_MODULES: ${{ needs.dispatch.outputs.modules }}
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -270,13 +284,6 @@ jobs:
           GH_AW_GITHUB_RUN_ID: ${{ github.run_id }}
           GH_AW_GITHUB_WORKSPACE: ${{ github.workspace }}
           GH_AW_MCP_CLI_SERVERS_LIST: '- `safeoutputs` — run `safeoutputs --help` to see available tools'
-          GH_AW_MEMORY_BRANCH_NAME: 'memory/module-cleanup'
-          GH_AW_MEMORY_CONSTRAINTS: "\n\n**Constraints:**\n- **Max File Size**: 10240 bytes (0.01 MB) per file\n- **Max File Count**: 100 files per commit\n- **Max Patch Size**: 10240 bytes (10 KB) total per push (max: 100 KB)\n"
-          GH_AW_MEMORY_DESCRIPTION: ''
-          GH_AW_MEMORY_DIR: '/tmp/gh-aw/repo-memory/default/'
-          GH_AW_MEMORY_TARGET_REPO: ' of the current repository'
-          GH_AW_NEEDS_DISPATCH_OUTPUTS_MODULES: ${{ needs.dispatch.outputs.modules }}
-          GH_AW_WIKI_NOTE: ''
         with:
           script: |
             const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
@@ -296,14 +303,7 @@ jobs:
                 GH_AW_GITHUB_REPOSITORY: process.env.GH_AW_GITHUB_REPOSITORY,
                 GH_AW_GITHUB_RUN_ID: process.env.GH_AW_GITHUB_RUN_ID,
                 GH_AW_GITHUB_WORKSPACE: process.env.GH_AW_GITHUB_WORKSPACE,
-                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST,
-                GH_AW_MEMORY_BRANCH_NAME: process.env.GH_AW_MEMORY_BRANCH_NAME,
-                GH_AW_MEMORY_CONSTRAINTS: process.env.GH_AW_MEMORY_CONSTRAINTS,
-                GH_AW_MEMORY_DESCRIPTION: process.env.GH_AW_MEMORY_DESCRIPTION,
-                GH_AW_MEMORY_DIR: process.env.GH_AW_MEMORY_DIR,
-                GH_AW_MEMORY_TARGET_REPO: process.env.GH_AW_MEMORY_TARGET_REPO,
-                GH_AW_NEEDS_DISPATCH_OUTPUTS_MODULES: process.env.GH_AW_NEEDS_DISPATCH_OUTPUTS_MODULES,
-                GH_AW_WIKI_NOTE: process.env.GH_AW_WIKI_NOTE
+                GH_AW_MCP_CLI_SERVERS_LIST: process.env.GH_AW_MCP_CLI_SERVERS_LIST
               }
             });
       - name: Validate prompt placeholders
@@ -337,6 +337,8 @@ jobs:
     if: needs.dispatch.outputs.has_work == 'true'
     runs-on: ubuntu-latest
     permissions: read-all
+    concurrency:
+      group: "gh-aw-copilot-${{ github.workflow }}"
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
       GH_AW_ASSETS_ALLOWED_EXTS: ""
@@ -365,7 +367,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Set runtime paths
@@ -397,16 +399,6 @@ jobs:
       - name: Use CLA approved bot
         run: .github/scripts/use-cla-approved-bot.sh
 
-      # Repo memory git-based storage configuration from frontmatter processed below
-      - name: Clone repo-memory branch (default)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          BRANCH_NAME: memory/module-cleanup
-          TARGET_REPO: ${{ github.repository }}
-          MEMORY_DIR: /tmp/gh-aw/repo-memory/default
-          CREATE_ORPHAN: true
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/clone_repo_memory_branch.sh"
       - name: Configure Git credentials
         env:
           REPO_NAME: ${{ github.repository }}
@@ -466,43 +458,29 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_2b5a97188c0b960e_EOF'
-          {"create_pull_request":{"draft":false,"if_no_changes":"ignore","labels":["module cleanup"],"max":1,"max_patch_files":100,"max_patch_size":1024,"protect_top_level_dot_folders":true,"protected_files":["package.json","bun.lockb","bunfig.toml","deno.json","deno.jsonc","deno.lock","global.json","NuGet.Config","Directory.Packages.props","mix.exs","mix.lock","go.mod","go.sum","stack.yaml","stack.yaml.lock","pom.xml","build.gradle","build.gradle.kts","settings.gradle","settings.gradle.kts","gradle.properties","package-lock.json","yarn.lock","pnpm-lock.yaml","npm-shrinkwrap.json","requirements.txt","Pipfile","Pipfile.lock","pyproject.toml","setup.py","setup.cfg","Gemfile","Gemfile.lock","uv.lock","CODEOWNERS","DESIGN.md","README.md","CONTRIBUTING.md","CHANGELOG.md","SECURITY.md","CODE_OF_CONDUCT.md","AGENTS.md","CLAUDE.md","GEMINI.md"],"protected_files_policy":"allowed","title_prefix":"Module cleanup: "},"create_report_incomplete_issue":{},"missing_data":{},"missing_tool":{},"noop":{"max":1,"report-as-issue":"true"},"push_repo_memory":{"memories":[{"dir":"/tmp/gh-aw/repo-memory/default","id":"default","max_file_count":100,"max_file_size":10240,"max_patch_size":10240}]},"report_incomplete":{}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_2b5a97188c0b960e_EOF
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_8739f06f59a0367f_EOF'
+          {"create_issue":{"labels":["module-cleanup"],"max":1,"title_prefix":"[module-cleanup]"}}
+          GH_AW_SAFE_OUTPUTS_CONFIG_8739f06f59a0367f_EOF
       - name: Generate Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
             {
               "description_suffixes": {
-                "create_pull_request": " CONSTRAINTS: Maximum 1 pull request(s) can be created. Title will be prefixed with \"Module cleanup: \". Labels [\"module cleanup\"] will be automatically added."
+                "create_issue": " CONSTRAINTS: Maximum 1 issue(s) can be created. Title will be prefixed with \"[module-cleanup]\". Labels [\"module-cleanup\"] will be automatically added."
               },
               "repo_params": {},
               "dynamic_tools": []
             }
           GH_AW_VALIDATION_JSON: |
             {
-              "create_pull_request": {
+              "create_issue": {
                 "defaultMax": 1,
                 "fields": {
-                  "base": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 128
-                  },
                   "body": {
                     "required": true,
                     "type": "string",
                     "sanitize": true,
                     "maxLength": 65000
-                  },
-                  "branch": {
-                    "required": true,
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 256
-                  },
-                  "draft": {
-                    "type": "boolean"
                   },
                   "labels": {
                     "type": "array",
@@ -510,88 +488,21 @@ jobs:
                     "itemSanitize": true,
                     "itemMaxLength": 128
                   },
+                  "parent": {
+                    "issueOrPRNumber": true
+                  },
                   "repo": {
                     "type": "string",
                     "maxLength": 256
+                  },
+                  "temporary_id": {
+                    "type": "string"
                   },
                   "title": {
                     "required": true,
                     "type": "string",
                     "sanitize": true,
                     "maxLength": 128
-                  }
-                }
-              },
-              "missing_data": {
-                "defaultMax": 20,
-                "fields": {
-                  "alternatives": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 256
-                  },
-                  "context": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 256
-                  },
-                  "data_type": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 128
-                  },
-                  "reason": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 256
-                  }
-                }
-              },
-              "missing_tool": {
-                "defaultMax": 20,
-                "fields": {
-                  "alternatives": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 512
-                  },
-                  "reason": {
-                    "required": true,
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 256
-                  },
-                  "tool": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 128
-                  }
-                }
-              },
-              "noop": {
-                "defaultMax": 1,
-                "fields": {
-                  "message": {
-                    "required": true,
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 65000
-                  }
-                }
-              },
-              "report_incomplete": {
-                "defaultMax": 5,
-                "fields": {
-                  "details": {
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 65000
-                  },
-                  "reason": {
-                    "required": true,
-                    "type": "string",
-                    "sanitize": true,
-                    "maxLength": 1024
                   }
                 }
               }
@@ -676,7 +587,7 @@ jobs:
           
           mkdir -p /home/runner/.copilot
           GH_AW_NODE=$(which node 2>/dev/null || command -v node 2>/dev/null || echo node)
-          cat << GH_AW_MCP_CONFIG_2701621504aa2ac4_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
+          cat << GH_AW_MCP_CONFIG_be1221de3101d000_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
           {
             "mcpServers": {
               "github": {
@@ -717,7 +628,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_2701621504aa2ac4_EOF
+          GH_AW_MCP_CONFIG_be1221de3101d000_EOF
       - name: Mount MCP servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
@@ -742,7 +653,7 @@ jobs:
       - name: Execute GitHub Copilot CLI
         id: agentic_execution
         # Copilot CLI tool arguments (sorted):
-        timeout-minutes: 60
+        timeout-minutes: 30
         run: |
           set -o pipefail
           touch /tmp/gh-aw/agent-step-summary.md
@@ -870,21 +781,6 @@ jobs:
           if [ ! -f /tmp/gh-aw/agent_output.json ]; then
             echo '{"items":[]}' > /tmp/gh-aw/agent_output.json
           fi
-      # Upload repo memory as artifacts for push job
-      - name: Sanitize repo-memory filenames (default)
-        if: always()
-        continue-on-error: true
-        env:
-          MEMORY_DIR: /tmp/gh-aw/repo-memory/default
-        run: bash "${RUNNER_TEMP}/gh-aw/actions/sanitize_repo_memory_filenames.sh"
-      - name: Upload repo-memory artifact (default)
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: repo-memory-default
-          path: /tmp/gh-aw/repo-memory/default
-          retention-days: 1
-          if-no-files-found: ignore
       - name: Upload agent artifacts
         if: always()
         continue-on-error: true
@@ -902,8 +798,6 @@ jobs:
             /tmp/gh-aw/github_rate_limits.jsonl
             /tmp/gh-aw/safeoutputs.jsonl
             /tmp/gh-aw/agent_output.json
-            /tmp/gh-aw/aw-*.patch
-            /tmp/gh-aw/aw-*.bundle
           if-no-files-found: ignore
 
   conclusion:
@@ -911,24 +805,18 @@ jobs:
       - activation
       - agent
       - dispatch
-      - push_repo_memory
+      - finalize
       - safe_outputs
     if: >
       always() && (needs.agent.result != 'skipped' || needs.activation.outputs.lockdown_check_failed == 'true' ||
       needs.activation.outputs.stale_lock_file_failed == 'true')
     runs-on: ubuntu-slim
     permissions:
-      contents: write
+      contents: read
       issues: write
-      pull-requests: write
     concurrency:
       group: "gh-aw-conclusion-module-cleanup"
       cancel-in-progress: false
-    outputs:
-      incomplete_count: ${{ steps.report_incomplete.outputs.incomplete_count }}
-      noop_message: ${{ steps.noop.outputs.noop_message }}
-      tools_reported: ${{ steps.missing_tool.outputs.tools_reported }}
-      total_count: ${{ steps.missing_tool.outputs.total_count }}
     steps:
       - name: Setup Scripts
         id: setup
@@ -938,7 +826,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Download agent output artifact
@@ -955,58 +843,13 @@ jobs:
           mkdir -p /tmp/gh-aw/
           find "/tmp/gh-aw/" -type f -print
           echo "GH_AW_AGENT_OUTPUT=/tmp/gh-aw/agent_output.json" >> "$GITHUB_OUTPUT"
-      - name: Process no-op messages
-        id: noop
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_NOOP_MAX: "1"
-          GH_AW_WORKFLOW_NAME: "Module Cleanup"
-          GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
-          GH_AW_NOOP_REPORT_AS_ISSUE: "true"
-        with:
-          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require('${{ runner.temp }}/gh-aw/actions/handle_noop_message.cjs');
-            await main();
-      - name: Record missing tool
-        id: missing_tool
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_MISSING_TOOL_CREATE_ISSUE: "true"
-          GH_AW_WORKFLOW_NAME: "Module Cleanup"
-        with:
-          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require('${{ runner.temp }}/gh-aw/actions/missing_tool.cjs');
-            await main();
-      - name: Record incomplete
-        id: report_incomplete
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        env:
-          GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_REPORT_INCOMPLETE_CREATE_ISSUE: "true"
-          GH_AW_WORKFLOW_NAME: "Module Cleanup"
-        with:
-          github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          script: |
-            const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require('${{ runner.temp }}/gh-aw/actions/report_incomplete_handler.cjs');
-            await main();
       - name: Handle agent failure
         id: handle_agent_failure
         if: always()
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           GH_AW_AGENT_OUTPUT: ${{ steps.setup-agent-output-env.outputs.GH_AW_AGENT_OUTPUT }}
-          GH_AW_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GH_AW_AGENT_CONCLUSION: ${{ needs.agent.result }}
           GH_AW_WORKFLOW_ID: "module-cleanup"
@@ -1019,19 +862,13 @@ jobs:
           GH_AW_AGENTIC_ENGINE_TIMEOUT: ${{ needs.agent.outputs.agentic_engine_timeout }}
           GH_AW_MODEL_NOT_SUPPORTED_ERROR: ${{ needs.agent.outputs.model_not_supported_error }}
           GH_AW_ENGINE_API_HOSTS: "api.enterprise.githubcopilot.com,api.githubcopilot.com,api.business.githubcopilot.com,api.individual.githubcopilot.com"
-          GH_AW_CODE_PUSH_FAILURE_ERRORS: ${{ needs.safe_outputs.outputs.code_push_failure_errors }}
-          GH_AW_CODE_PUSH_FAILURE_COUNT: ${{ needs.safe_outputs.outputs.code_push_failure_count }}
           GH_AW_LOCKDOWN_CHECK_FAILED: ${{ needs.activation.outputs.lockdown_check_failed }}
           GH_AW_STALE_LOCK_FILE_FAILED: ${{ needs.activation.outputs.stale_lock_file_failed }}
-          GH_AW_PUSH_REPO_MEMORY_RESULT: ${{ needs.push_repo_memory.result }}
-          GH_AW_REPO_MEMORY_VALIDATION_FAILED_default: ${{ needs.push_repo_memory.outputs.validation_failed_default }}
-          GH_AW_REPO_MEMORY_VALIDATION_ERROR_default: ${{ needs.push_repo_memory.outputs.validation_error_default }}
-          GH_AW_REPO_MEMORY_PATCH_SIZE_EXCEEDED_default: ${{ needs.push_repo_memory.outputs.patch_size_exceeded_default }}
           GH_AW_GROUP_REPORTS: "false"
           GH_AW_FAILURE_REPORT_AS_ISSUE: "true"
           GH_AW_MISSING_TOOL_REPORT_AS_FAILURE: "true"
           GH_AW_MISSING_DATA_REPORT_AS_FAILURE: "true"
-          GH_AW_TIMEOUT_MINUTES: "60"
+          GH_AW_TIMEOUT_MINUTES: "30"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -1041,17 +878,18 @@ jobs:
             await main();
 
   dispatch:
+    needs: activation
     if: github.repository == 'trask/opentelemetry-java-instrumentation'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: read
 
-    env:
-      MEMORY_BRANCH: memory/module-cleanup
     outputs:
-      has_work: ${{ steps.build-matrix.outputs.has_work }}
-      modules: ${{ steps.build-matrix.outputs.modules }}
+      has_work: ${{ steps.pick.outputs.has_work }}
+      module_dir: ${{ steps.pick.outputs.module_dir }}
+      queue_remaining: ${{ steps.pick.outputs.queue_remaining }}
+      short_name: ${{ steps.pick.outputs.short_name }}
     steps:
       - name: Configure GH_HOST for enterprise compatibility
         id: ghes-host-config
@@ -1065,93 +903,73 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
-      - name: Fetch progress branch
-        run: git fetch origin "$MEMORY_BRANCH" || true
-      - name: Build cleanup matrix
-        id: build-matrix
+          persist-credentials: false
+      - name: Pick next module
+        id: pick
         run: |
-          # Files inside the repo-memory branch live at <branch>/<file>.
-          progress=$(git show "origin/$MEMORY_BRANCH:$MEMORY_BRANCH/reviewed.txt" 2>/dev/null || true)
-          if [[ -n "$progress" ]]; then
-            export REVIEW_PROGRESS="$progress"
+          set -euo pipefail
+          # processed.txt lives at the root of the memory branch.
+          processed=""
+          if git fetch origin "$MEMORY_BRANCH" --depth=1 2>/dev/null; then
+            processed=$(git show "origin/$MEMORY_BRANCH:processed.txt" 2>/dev/null || true)
           fi
+          # Also exclude shorts already in inflight module-cleanup PRs (their
+          # bodies list the modules under "## Modules in this batch" as
+          # `- ` + backticks + short + backticks). Once a PR merges, those
+          # shorts also exist in processed.txt so they won't be re-picked.
+          inflight=$(gh pr list --repo "$GITHUB_REPOSITORY" \
+                       --label "module cleanup" --state open \
+                       --json body --jq '.[].body' \
+                     | sed -n 's/^- `\([^`]*\)`$/\1/p' || true)
+          export REVIEW_PROGRESS="$(printf '%s\n%s\n' "$processed" "$inflight" \
+                                    | grep -v '^$' | sort -u)"
           python .github/scripts/module-cleanup/build-cleanup-matrix.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMORY_BRANCH: memory/module-cleanup
 
-  push_repo_memory:
+  finalize:
     needs:
-      - activation
       - agent
-    if: always() && (!cancelled()) && needs.agent.result == 'success'
-    runs-on: ubuntu-slim
+      - dispatch
+    if: always() && needs.dispatch.outputs.has_work == 'true'
+    runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
-    concurrency:
-      group: "push-repo-memory-${{ github.repository }}|memory/module-cleanup"
-      cancel-in-progress: false
-    outputs:
-      patch_size_exceeded_default: ${{ steps.push_repo_memory_default.outputs.patch_size_exceeded }}
-      validation_error_default: ${{ steps.push_repo_memory_default.outputs.validation_error }}
-      validation_failed_default: ${{ steps.push_repo_memory_default.outputs.validation_failed }}
+      pull-requests: write
+
     steps:
-      - name: Setup Scripts
-        id: setup
-        uses: github/gh-aw-actions/setup@b8068426813005612b960b5ab0b8bd2c27142323 # v0.71.5
-        with:
-          destination: ${{ runner.temp }}/gh-aw/actions
-          job-name: ${{ github.job }}
-          trace-id: ${{ needs.activation.outputs.setup-trace-id }}
-        env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
-          GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
-          GH_AW_INFO_VERSION: "1.0.40"
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-          sparse-checkout: .
-      - name: Configure Git credentials
-        env:
-          REPO_NAME: ${{ github.repository }}
-          SERVER_URL: ${{ github.server_url }}
-          GITHUB_TOKEN: ${{ github.token }}
+      - name: Configure GH_HOST for enterprise compatibility
+        id: ghes-host-config
+        shell: bash
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git config --global am.keepcr true
-          # Re-authenticate git with GitHub token
-          SERVER_URL_STRIPPED="${SERVER_URL#https://}"
-          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@${SERVER_URL_STRIPPED}/${REPO_NAME}.git"
-          echo "Git configured with standard GitHub Actions identity"
-      - name: Download repo-memory artifact (default)
+          # Derive GH_HOST from GITHUB_SERVER_URL so the gh CLI targets the correct
+          # GitHub instance (GHES/GHEC). On github.com this is a harmless no-op.
+          GH_HOST="${GITHUB_SERVER_URL#https://}"
+          GH_HOST="${GH_HOST#http://}"
+          echo "GH_HOST=${GH_HOST}" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Configure git author
+        run: .github/scripts/use-cla-approved-bot.sh
+      - name: Download agent artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: agent
+          path: ./agent-artifact
         continue-on-error: true
-        with:
-          name: repo-memory-default
-          path: /tmp/gh-aw/repo-memory/default
-      - name: Push repo-memory changes (default)
-        id: push_repo_memory_default
-        if: always()
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+      - name: Finalize
+        run: bash .github/scripts/module-cleanup/finalize.sh
         env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          ARTIFACT_DIR: /tmp/gh-aw/repo-memory/default
-          MEMORY_ID: default
-          TARGET_REPO: ${{ github.repository }}
-          BRANCH_NAME: memory/module-cleanup
-          MAX_FILE_SIZE: 10240
-          MAX_FILE_COUNT: 100
-          MAX_PATCH_SIZE: 10240
-          ALLOWED_EXTENSIONS: '[]'
-        with:
-          script: |
-            const { setupGlobals } = require('${{ runner.temp }}/gh-aw/actions/setup_globals.cjs');
-            setupGlobals(core, github, context, exec, io, getOctokit);
-            const { main } = require('${{ runner.temp }}/gh-aw/actions/push_repo_memory.cjs');
-            await main();
+          AGENT_RESULT: ${{ needs.agent.result }}
+          ARTIFACT_DIR: ./agent-artifact
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QUEUE_REMAINING: ${{ needs.dispatch.outputs.queue_remaining }}
+          SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
+          WORKFLOW_FILE: module-cleanup.lock.yml
 
   safe_outputs:
     needs:
@@ -1160,9 +978,8 @@ jobs:
     if: (!cancelled()) && needs.agent.result != 'skipped'
     runs-on: ubuntu-slim
     permissions:
-      contents: write
+      contents: read
       issues: write
-      pull-requests: write
     timeout-minutes: 15
     env:
       GH_AW_CALLER_WORKFLOW_ID: "${{ github.repository }}/module-cleanup"
@@ -1171,14 +988,14 @@ jobs:
       GH_AW_ENGINE_MODEL: "${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"
       GH_AW_ENGINE_VERSION: "1.0.40"
       GH_AW_WORKFLOW_ID: "module-cleanup"
-      GH_AW_WORKFLOW_NAME: "Module Cleanup"
+      GH_AW_WORKFLOW_NAME: "Module Cleanup — Single Module"
     outputs:
       code_push_failure_count: ${{ steps.process_safe_outputs.outputs.code_push_failure_count }}
       code_push_failure_errors: ${{ steps.process_safe_outputs.outputs.code_push_failure_errors }}
       create_discussion_error_count: ${{ steps.process_safe_outputs.outputs.create_discussion_error_count }}
       create_discussion_errors: ${{ steps.process_safe_outputs.outputs.create_discussion_errors }}
-      created_pr_number: ${{ steps.process_safe_outputs.outputs.created_pr_number }}
-      created_pr_url: ${{ steps.process_safe_outputs.outputs.created_pr_url }}
+      created_issue_number: ${{ steps.process_safe_outputs.outputs.created_issue_number }}
+      created_issue_url: ${{ steps.process_safe_outputs.outputs.created_issue_url }}
       process_safe_outputs_processed_count: ${{ steps.process_safe_outputs.outputs.processed_count }}
       process_safe_outputs_temporary_id_map: ${{ steps.process_safe_outputs.outputs.temporary_id_map }}
     steps:
@@ -1190,7 +1007,7 @@ jobs:
           job-name: ${{ github.job }}
           trace-id: ${{ needs.activation.outputs.setup-trace-id }}
         env:
-          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup"
+          GH_AW_SETUP_WORKFLOW_NAME: "Module Cleanup — Single Module"
           GH_AW_CURRENT_WORKFLOW_REF: ${{ github.repository }}/.github/workflows/module-cleanup.lock.yml@${{ github.ref }}
           GH_AW_INFO_VERSION: "1.0.40"
       - name: Download agent output artifact
@@ -1207,34 +1024,6 @@ jobs:
           mkdir -p /tmp/gh-aw/
           find "/tmp/gh-aw/" -type f -print
           echo "GH_AW_AGENT_OUTPUT=/tmp/gh-aw/agent_output.json" >> "$GITHUB_OUTPUT"
-      - name: Download patch artifact
-        continue-on-error: true
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: agent
-          path: /tmp/gh-aw/
-      - name: Checkout repository
-        if: (!cancelled()) && needs.agent.result != 'skipped' && contains(needs.agent.outputs.output_types, 'create_pull_request')
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: ${{ github.base_ref || github.event.pull_request.base.ref || github.ref_name || github.event.repository.default_branch }}
-          token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          persist-credentials: false
-          fetch-depth: 1
-      - name: Configure Git credentials
-        if: (!cancelled()) && needs.agent.result != 'skipped' && contains(needs.agent.outputs.output_types, 'create_pull_request')
-        env:
-          REPO_NAME: ${{ github.repository }}
-          SERVER_URL: ${{ github.server_url }}
-          GIT_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git config --global am.keepcr true
-          # Re-authenticate git with GitHub token
-          SERVER_URL_STRIPPED="${SERVER_URL#https://}"
-          git remote set-url origin "https://x-access-token:${GIT_TOKEN}@${SERVER_URL_STRIPPED}/${REPO_NAME}.git"
-          echo "Git configured with standard GitHub Actions identity"
       - name: Configure GH_HOST for enterprise compatibility
         id: ghes-host-config
         shell: bash
@@ -1252,8 +1041,7 @@ jobs:
           GH_AW_ALLOWED_DOMAINS: "*.gradle-enterprise.cloud,adoptium.net,api.adoptium.net,api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.foojay.io,api.github.com,api.githubcopilot.com,api.individual.githubcopilot.com,api.snapcraft.io,archive.apache.org,archive.ubuntu.com,azure.archive.ubuntu.com,cdn.azul.com,central.sonatype.com,crl.geotrust.com,crl.globalsign.com,crl.identrust.com,crl.sectigo.com,crl.thawte.com,crl.usertrust.com,crl.verisign.com,crl3.digicert.com,crl4.digicert.com,crls.ssl.com,develocity.apache.org,dl.google.com,dlcdn.apache.org,download.eclipse.org,download.java.net,download.oracle.com,downloads.gradle-dn.com,ge.spockframework.org,github.com,gradle.org,host.docker.internal,jcenter.bintray.com,jdk.java.net,json-schema.org,json.schemastore.org,keyserver.ubuntu.com,maven-central.storage-download.googleapis.com,maven.apache.org,maven.google.com,maven.oracle.com,maven.pkg.github.com,ocsp.digicert.com,ocsp.geotrust.com,ocsp.globalsign.com,ocsp.identrust.com,ocsp.sectigo.com,ocsp.ssl.com,ocsp.thawte.com,ocsp.usertrust.com,ocsp.verisign.com,packagecloud.io,packages.cloud.google.com,packages.microsoft.com,plugins-artifacts.gradle.org,plugins.gradle.org,ppa.launchpad.net,raw.githubusercontent.com,registry.npmjs.org,repo.gradle.org,repo.grails.org,repo.maven.apache.org,repo.spring.io,repo1.maven.org,repository.apache.org,s.symcb.com,s.symcd.com,scans-in.gradle.com,security.ubuntu.com,services.gradle.org,telemetry.enterprise.githubcopilot.com,ts-crl.ws.symantec.com,ts-ocsp.ws.symantec.com,www.googleapis.com,www.java.com"
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_API_URL: ${{ github.api_url }}
-          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"create_pull_request\":{\"draft\":false,\"if_no_changes\":\"ignore\",\"labels\":[\"module cleanup\"],\"max\":1,\"max_patch_files\":100,\"max_patch_size\":1024,\"protect_top_level_dot_folders\":true,\"protected_files\":[\"package.json\",\"bun.lockb\",\"bunfig.toml\",\"deno.json\",\"deno.jsonc\",\"deno.lock\",\"global.json\",\"NuGet.Config\",\"Directory.Packages.props\",\"mix.exs\",\"mix.lock\",\"go.mod\",\"go.sum\",\"stack.yaml\",\"stack.yaml.lock\",\"pom.xml\",\"build.gradle\",\"build.gradle.kts\",\"settings.gradle\",\"settings.gradle.kts\",\"gradle.properties\",\"package-lock.json\",\"yarn.lock\",\"pnpm-lock.yaml\",\"npm-shrinkwrap.json\",\"requirements.txt\",\"Pipfile\",\"Pipfile.lock\",\"pyproject.toml\",\"setup.py\",\"setup.cfg\",\"Gemfile\",\"Gemfile.lock\",\"uv.lock\",\"CODEOWNERS\",\"DESIGN.md\",\"README.md\",\"CONTRIBUTING.md\",\"CHANGELOG.md\",\"SECURITY.md\",\"CODE_OF_CONDUCT.md\",\"AGENTS.md\",\"CLAUDE.md\",\"GEMINI.md\"],\"protected_files_policy\":\"allowed\",\"title_prefix\":\"Module cleanup: \"},\"create_report_incomplete_issue\":{},\"missing_data\":{},\"missing_tool\":{},\"noop\":{\"max\":1,\"report-as-issue\":\"true\"},\"report_incomplete\":{}}"
-          GH_AW_CI_TRIGGER_TOKEN: ${{ secrets.GH_AW_CI_TRIGGER_TOKEN }}
+          GH_AW_SAFE_OUTPUTS_HANDLER_CONFIG: "{\"create_issue\":{\"labels\":[\"module-cleanup\"],\"max\":1,\"title_prefix\":\"[module-cleanup]\"}}"
         with:
           github-token: ${{ secrets.GH_AW_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |

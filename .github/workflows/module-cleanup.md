@@ -1,12 +1,28 @@
 ---
 description: |
-  Walks instrumentation modules sequentially, applying safe repository-guideline
-  fixes, and opens a single PR per run once the accumulated change set reaches
-  FILE_THRESHOLD modified files. Reads the list of already-reviewed modules from
-  persistent repo memory and appends to it as modules are processed.
+  Walks instrumentation modules one-at-a-time, processing exactly one
+  module per run. Each successful run's commit is appended to the
+  `module-cleanup-wip` branch. When the wip branch reaches FILE_THRESHOLD
+  modified files (or when the unprocessed-module queue empties), the
+  finalize job promotes wip to a fresh batch branch, opens a PR against
+  main, and resets wip back to main. Otherwise the workflow self-dispatches
+  to process the next module.
+
+  State:
+    - `memory/module-cleanup` branch holds `processed.txt` (modules already
+      attempted; never re-picked automatically) and `failed.txt` (a
+      diagnostic log of timeouts and patch-conflict failures).
+    - `module-cleanup-wip` branch holds the not-yet-PR'd cleanup commits.
+    - Open PRs labeled `module cleanup` count toward MAX_OPEN_PRS; while at
+      cap, dispatch exits and waits for cron to retry.
 
 on:
   workflow_dispatch:
+  schedule:
+    # Walk-driver: each cron tick starts (or resumes) the chain. Inside a
+    # tick, the workflow self-dispatches one module at a time until either
+    # a PR is opened, the open-PR cap is hit, or the queue empties.
+    - cron: "every 6h"
 
 permissions: read-all
 
@@ -14,7 +30,7 @@ concurrency:
   group: module-cleanup
   cancel-in-progress: false
 
-timeout-minutes: 60
+timeout-minutes: 30
 
 # Disable strict mode so we can opt out of the AWF agent sandbox below.
 strict: false
@@ -38,23 +54,11 @@ network:
 tools:
   edit:
   bash: [":*"]
-  repo-memory: true
 
-safe-outputs:
-
-  threat-detection: false
-
-  create-pull-request:
-    title-prefix: "Module cleanup: "
-    labels: ["module cleanup"]
-    draft: false
-    max: 1
-    if-no-changes: "ignore"
-    # This workflow is explicitly designed to edit Gradle build files,
-    # gradle.properties, and similar configuration files inside
-    # instrumentation modules, all of which are in the default protected
-    # set. Disable the protected-files defense.
-    protected-files: allowed
+# No safe-outputs: the finalize job owns PR creation directly via `gh`,
+# and memory-branch state is managed by plain git pushes from the finalize
+# script. This keeps all post-LLM logic in shell where it can run reliably
+# regardless of how the agent session ends.
 
 imports:
   - .github/agents/module-cleanup.agent.md
@@ -66,35 +70,78 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-    env:
-      # Orphan branch managed by gh-aw's `repo-memory` tool (see
-      # frontmatter `tools:` block). Holds `reviewed.txt`, the list of
-      # modules already reviewed in prior runs. The agent job mounts
-      # this branch automatically; the dispatch job is a separate plain
-      # Actions job and must fetch + read it manually.
-      MEMORY_BRANCH: memory/module-cleanup
     outputs:
-      modules: ${{ steps.build-matrix.outputs.modules }}
-      has_work: ${{ steps.build-matrix.outputs.has_work }}
+      has_work: ${{ steps.pick.outputs.has_work }}
+      short_name: ${{ steps.pick.outputs.short_name }}
+      module_dir: ${{ steps.pick.outputs.module_dir }}
+      queue_remaining: ${{ steps.pick.outputs.queue_remaining }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
-      - name: Fetch progress branch
-        run: git fetch origin "$MEMORY_BRANCH" || true
-      - name: Build cleanup matrix
-        id: build-matrix
+          persist-credentials: false
+      - name: Pick next module
+        id: pick
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MEMORY_BRANCH: memory/module-cleanup
         run: |
-          # Files inside the repo-memory branch live at <branch>/<file>.
-          progress=$(git show "origin/$MEMORY_BRANCH:$MEMORY_BRANCH/reviewed.txt" 2>/dev/null || true)
-          if [[ -n "$progress" ]]; then
-            export REVIEW_PROGRESS="$progress"
+          set -euo pipefail
+          # processed.txt lives at the root of the memory branch.
+          processed=""
+          if git fetch origin "$MEMORY_BRANCH" --depth=1 2>/dev/null; then
+            processed=$(git show "origin/$MEMORY_BRANCH:processed.txt" 2>/dev/null || true)
           fi
+          # Also exclude shorts already in inflight module-cleanup PRs (their
+          # bodies list the modules under "## Modules in this batch" as
+          # `- ` + backticks + short + backticks). Once a PR merges, those
+          # shorts also exist in processed.txt so they won't be re-picked.
+          inflight=$(gh pr list --repo "$GITHUB_REPOSITORY" \
+                       --label "module cleanup" --state open \
+                       --json body --jq '.[].body' \
+                     | sed -n 's/^- `\([^`]*\)`$/\1/p' || true)
+          export REVIEW_PROGRESS="$(printf '%s\n%s\n' "$processed" "$inflight" \
+                                    | grep -v '^$' | sort -u)"
           python .github/scripts/module-cleanup/build-cleanup-matrix.py
 
+  finalize:
+    needs:
+      - dispatch
+      - agent
+    if: always() && needs.dispatch.outputs.has_work == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Configure git author
+        run: .github/scripts/use-cla-approved-bot.sh
+      - name: Download agent artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: agent
+          path: ./agent-artifact
+        continue-on-error: true
+      - name: Finalize
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
+          AGENT_RESULT: ${{ needs.agent.result }}
+          QUEUE_REMAINING: ${{ needs.dispatch.outputs.queue_remaining }}
+          ARTIFACT_DIR: ./agent-artifact
+          WORKFLOW_FILE: module-cleanup.lock.yml
+        run: bash .github/scripts/module-cleanup/finalize.sh
+
 if: ${{ needs.dispatch.outputs.has_work == 'true' }}
+
+env:
+  MODULE_SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
+  MODULE_DIR: ${{ needs.dispatch.outputs.module_dir }}
 
 steps:
   - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -113,112 +160,55 @@ steps:
     run: .github/scripts/use-cla-approved-bot.sh
 ---
 
-# Module Cleanup
+# Module Cleanup — Single Module
 
-You walk a list of instrumentation modules sequentially, applying safe
-repository-guideline fixes per module, and stop after the accumulated change
-set reaches a file-count threshold so the result fits in one reasonably sized
-pull request.
+You clean up exactly **one** instrumentation module this run, then export
+your commit so the finalize job can roll it into a batched PR.
 
 ## Inputs
 
-The dispatch job has computed which modules to walk through this run.
-Read the JSON array of `{short_name, module_dir}` objects below — these are
-the modules in walk order, already filtered to exclude modules that have been
-reviewed in any prior run:
+This run targets a single module. Read its identifiers from the workflow
+environment, **not** from a JSON list:
 
-```
-${{ needs.dispatch.outputs.modules }}
-```
+- `<short_name>` is in the `MODULE_SHORT_NAME` environment variable.
+- `<module_dir>` is in the `MODULE_DIR` environment variable.
 
-`FILE_THRESHOLD = 10`. Stop walking modules as soon as
-`git diff --name-only origin/main | wc -l` is at least `10` after committing a
-module. Do not exceed this by a wide margin — finish the current module, then
-stop.
+Use these directly via `$MODULE_SHORT_NAME` / `$MODULE_DIR` in any shell
+command. Do **not** invent module names or guess directories.
 
-## Persistent state
+## Per-run workflow
 
-Persistent run-to-run state lives in `/tmp/gh-aw/repo-memory/default/`.
+Run **inline in this session**. Do **not** spawn background agents,
+sub-sessions, or use `Module-cleanup` as a callable tool. The persona
+instructions imported into this prompt are yours; execute them yourself.
 
-- `reviewed.txt` (newline-separated `<short_name>` values, one per line):
-  modules that have already been reviewed in any prior run. The dispatch job
-  has already filtered the input list using this file, so the list above is
-  authoritative for this run. **You must append the `<short_name>` of every
-  module you process, including modules that produced no edits, before
-  finishing the run.** Create the file if it does not yet exist.
+1. Confirm the module directory exists:
+   `test -d "$MODULE_DIR" || { echo "Module directory missing: $MODULE_DIR"; exit 1; }`
+2. Apply the imported `module-cleanup` persona's full checklist to
+   `$MODULE_DIR`. Reach the persona's commit step. The commit subject must
+   match the persona's format: `Cleanup for $MODULE_SHORT_NAME`. If the
+   persona reports it had to revert all of its changes (no substantive
+   diff remained), proceed to step 3 anyway — "no commit" is a valid
+   outcome and finalize handles it.
+3. **Final mandatory action** (do not skip even on no-op):
+   ```
+   bash .github/scripts/module-cleanup/export-cleanup-patch.sh "$MODULE_SHORT_NAME"
+   ```
+   This writes `/tmp/gh-aw/agent/cleanup.patch` (a `git format-patch` of
+   your commit range) so gh-aw's auto-uploader includes it in the
+   workflow's `agent` artifact. The finalize job downloads that artifact
+   and applies the patch to the `module-cleanup-wip` branch. The script
+   is idempotent and exits cleanly with no patch if you produced no
+   commit. **Run it exactly once as your last action.** If you do not run
+   it, your work is lost.
 
-The repo-memory tool will commit and push this file automatically after the
-run completes; you do not need to run any git commands against the memory
-directory.
+## What you must NOT do
 
-## Per-module workflow
-
-For each module in the input list, in order:
-
-1. Record the current branch SHA: `pre=$(git rev-parse HEAD)`.
-2. Invoke the `module-cleanup` persona (loaded via `imports:`) on
-   `<module_dir>`. Run the full persona end-to-end and reach its commit
-   step (a single commit with subject `Cleanup for <short_name>`).
-3. If the persona reports it had to revert all of its changes (no substantive
-   diff remained), reset back to `pre` (`git reset --hard "$pre"`) so the
-   branch state is exactly as it was before this module ran, then continue to
-   step 4.
-4. Append `<short_name>\n` to `/tmp/gh-aw/repo-memory/default/reviewed.txt`.
-   Do this whether or not the module produced edits — modules that produced
-   no edits must still be marked as reviewed so they are not re-walked on the
-   next run.
-5. Compute `count=$(git diff --name-only origin/main | wc -l)`. If
-   `count >= 10`, stop the loop. Otherwise continue to the next module.
-
-If a tool error or unrecoverable failure prevents you from completing a
-module's review, **do not** append that module to `reviewed.txt`. Reset to
-`pre`, skip that module, and continue with the next one. The module will be
-retried on a future run.
-
-## Output
-
-**Before exiting, you MUST emit a single `create_pull_request` safe output
-whenever any commits were produced in this run.** This applies regardless of
-why the loop ended:
-
-- The accumulated diff reached `FILE_THRESHOLD`, OR
-- You finished walking every module in the input list, OR
-- You decided to stop early for any other reason.
-
-Emitting the `create_pull_request` is the final action of this workflow. Do
-not end your turn without calling it if `git log origin/main..HEAD` shows any
-commits.
-
-The `create_pull_request` parameters:
-
-- **title**: `run ${{ github.run_id }}` (the `Module cleanup: ` prefix is
-  prepended automatically by the safe-output framework).
-- **body**: An ordered list of the modules processed in this run (using
-  `<short_name>` and `<module_dir>`), followed by a per-module section
-  summarizing the changes applied and any unresolved items. Use the same
-  Markdown shape that the persona's report produces, with a top-level
-  `## Module: <short_name>` heading per module and a single combined
-  `_Module path: <module_dir>_` line below each heading.
-- **branch**: do not specify; let the safe-output framework choose.
-- **labels**: already configured in frontmatter.
-
-The framework will collect every commit you have made in this run, push them
-to a fresh branch, and open the PR. Do not run `git push` yourself and do not
-attempt to call `gh pr create`.
-
-If no commits were produced this run (every module reverted or the loop
-terminated immediately), do not emit a `create_pull_request` output. The
-`if-no-changes: ignore` configuration handles this case automatically.
-
-## Constraints
-
-- Use repository-relative paths in the PR body.
-- Do not modify files in `.github/workflows/` or other infrastructure paths
-  unless a per-module fix strictly requires it.
-- Do not run `git push`, `git fetch`, or `gh pr create`. The framework
-  handles all remote operations.
-- Do not modify `/tmp/gh-aw/repo-memory/default/reviewed.txt` outside the
-  per-module append described above.
-- Honor every constraint in the imported `module-cleanup` persona, including
-  its skip list, its auto-fix boundaries, its validation procedure, and its
-  prohibition on inline review comments in source files.
+- Do not run `git push`. The finalize job handles all remote writes.
+- Do not call `gh pr create`. The finalize job opens the PR.
+- Do not modify `processed.txt` or `failed.txt`. The finalize job owns
+  the memory branch.
+- Do not spawn background agents, child sessions, or sub-tasks. The
+  persona is loaded into this session; execute it inline.
+- Do not modify files outside `$MODULE_DIR` unless the persona's
+  out-of-module-edit allowance applies to your specific change.

@@ -1,4 +1,4 @@
-# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"f6c05f53ffb41e5272ece56e2c067d880893c6b8eba67bca59045f31bad0c498","compiler_version":"v0.71.5","agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"}
+# gh-aw-metadata: {"schema_version":"v3","frontmatter_hash":"48aebefef96d3755319af820f11e1919e0263b1f39a2da4f58c15d86ba1f93d6","compiler_version":"v0.71.5","agent_id":"copilot","agent_model":"${{ vars.MODULE_CLEANUP_MODEL || 'gpt-5' }}"}
 # gh-aw-manifest: {"version":1,"secrets":["COPILOT_GITHUB_TOKEN","GH_AW_GITHUB_MCP_SERVER_TOKEN","GH_AW_GITHUB_TOKEN","GITHUB_TOKEN"],"actions":[{"repo":"actions/checkout","sha":"de0fac2e4500dabe0009e67214ff5f5447ce83dd","version":"de0fac2e4500dabe0009e67214ff5f5447ce83dd"},{"repo":"actions/download-artifact","sha":"3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c","version":"v8.0.1"},{"repo":"actions/github-script","sha":"3a2844b7e9c422d3c10d287c895573f7108da1b3","version":"v9"},{"repo":"actions/setup-java","sha":"be666c2fcd27ec809703dec50e508c2fdc7f6654","version":"be666c2fcd27ec809703dec50e508c2fdc7f6654"},{"repo":"actions/upload-artifact","sha":"043fb46d1a93c77aae656e7c1c64a875d1fc6a0a","version":"v7.0.1"},{"repo":"github/gh-aw-actions/setup","sha":"b8068426813005612b960b5ab0b8bd2c27142323","version":"v0.71.5"},{"repo":"gradle/actions/setup-gradle","sha":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e","version":"50e97c2cd7a37755bbfafc9c5b7cafaece252f6e"}],"containers":[{"image":"ghcr.io/github/github-mcp-server:v1.0.3","digest":"sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959","pinned_image":"ghcr.io/github/github-mcp-server:v1.0.3@sha256:2ac27ef03461ef2b877031b838a7d1fd7f12b12d4ace7796d8cad91446d55959"},{"image":"node:lts-alpine","digest":"sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f","pinned_image":"node:lts-alpine@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"}]}
 #    ___                   _   _      
 #   / _ \                 | | (_)     
@@ -23,18 +23,18 @@
 # For more information: https://github.github.com/gh-aw/introduction/overview/
 #
 # Walks instrumentation modules one-at-a-time, processing exactly one
-# module per run. Each successful run's commit is appended to a
-# per-chain `module-cleanup-wip-<chain_id>` branch. When the wip branch
-# reaches FILE_THRESHOLD modified files (or when the unprocessed-module
-# queue empties), the finalize job promotes wip to a `module-cleanup-batch-<run_id>`
-# branch and opens a PR against main. Otherwise the workflow self-dispatches
-# to process the next module, threading the same wip branch.
-# 
-# Each chain (cron tick or manual workflow_dispatch) gets its own wip
-# branch named after the first run's id. If a chain dies mid-flight (e.g.
-# PR creation fails), its wip is simply abandoned — the next cron tick
-# starts a fresh chain on a fresh wip. Old wip and batch branches can be
-# garbage-collected manually.
+# module per run. Each successful run's commit is appended to a per-chain
+# `module-cleanup-wip-<run_id>` branch and the workflow self-dispatches
+# one module at a time. When the wip branch reaches FILE_THRESHOLD
+# modified files (or when the unprocessed-module queue empties), the
+# finalize job promotes wip to a `module-cleanup-batch-<run_id>` branch,
+# opens a PR against main, and self-dispatches a fresh chain (new wip).
+# The chain terminates naturally once MAX_OPEN_PRS is reached: the
+# matrix script returns has_work=false and no further runs are
+# Cron (every 1h) picks back up after PRs merge: when a PR merges and
+# the open-PR count drops below MAX_OPEN_PRS, the next hourly tick
+# starts a fresh chain. A cron tick that fires while a chain is alive
+# is gated to a no-op so chains never fork in parallel.
 # 
 # State:
 # - `memory/module-cleanup` branch holds `processed.txt` (modules already
@@ -73,8 +73,8 @@
 name: "Module Cleanup — Single Module"
 "on":
   schedule:
-  - cron: "9 */6 * * *"
-    # Friendly format: every 6h (scattered)
+  - cron: "9 */1 * * *"
+    # Friendly format: every 1h (scattered)
   workflow_dispatch:
     inputs:
       aw_context:
@@ -211,23 +211,23 @@ jobs:
         run: |
           bash "${RUNNER_TEMP}/gh-aw/actions/create_prompt_first.sh"
           {
-          cat << 'GH_AW_PROMPT_5c26254bd8ba649f_EOF'
+          cat << 'GH_AW_PROMPT_6eee91e63a294a94_EOF'
           <system>
-          GH_AW_PROMPT_5c26254bd8ba649f_EOF
+          GH_AW_PROMPT_6eee91e63a294a94_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/xpia.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/temp_folder_prompt.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/markdown.md"
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_prompt.md"
-          cat << 'GH_AW_PROMPT_5c26254bd8ba649f_EOF'
+          cat << 'GH_AW_PROMPT_6eee91e63a294a94_EOF'
           <safe-output-tools>
           Tools: create_issue
-          GH_AW_PROMPT_5c26254bd8ba649f_EOF
+          GH_AW_PROMPT_6eee91e63a294a94_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/safe_outputs_auto_create_issue.md"
-          cat << 'GH_AW_PROMPT_5c26254bd8ba649f_EOF'
+          cat << 'GH_AW_PROMPT_6eee91e63a294a94_EOF'
           </safe-output-tools>
-          GH_AW_PROMPT_5c26254bd8ba649f_EOF
+          GH_AW_PROMPT_6eee91e63a294a94_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/mcp_cli_tools_prompt.md"
-          cat << 'GH_AW_PROMPT_5c26254bd8ba649f_EOF'
+          cat << 'GH_AW_PROMPT_6eee91e63a294a94_EOF'
           <github-context>
           The following GitHub context information is available for this workflow:
           {{#if __GH_AW_GITHUB_ACTOR__ }}
@@ -256,13 +256,13 @@ jobs:
           {{/if}}
           </github-context>
           
-          GH_AW_PROMPT_5c26254bd8ba649f_EOF
+          GH_AW_PROMPT_6eee91e63a294a94_EOF
           cat "${RUNNER_TEMP}/gh-aw/prompts/github_mcp_tools_with_safeoutputs_prompt.md"
-          cat << 'GH_AW_PROMPT_5c26254bd8ba649f_EOF'
+          cat << 'GH_AW_PROMPT_6eee91e63a294a94_EOF'
           </system>
           {{#runtime-import .github/agents/module-cleanup.agent.md}}
           {{#runtime-import .github/workflows/module-cleanup.md}}
-          GH_AW_PROMPT_5c26254bd8ba649f_EOF
+          GH_AW_PROMPT_6eee91e63a294a94_EOF
           } > "$GH_AW_PROMPT"
       - name: Interpolate variables and render templates
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -469,9 +469,9 @@ jobs:
           mkdir -p "${RUNNER_TEMP}/gh-aw/safeoutputs"
           mkdir -p /tmp/gh-aw/safeoutputs
           mkdir -p /tmp/gh-aw/mcp-logs/safeoutputs
-          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_1a392919af0c2cbe_EOF'
+          cat > "${RUNNER_TEMP}/gh-aw/safeoutputs/config.json" << 'GH_AW_SAFE_OUTPUTS_CONFIG_1637ad31eb04df26_EOF'
           {"create_issue":{"labels":["module-cleanup"],"max":1,"title_prefix":"[module-cleanup]"}}
-          GH_AW_SAFE_OUTPUTS_CONFIG_1a392919af0c2cbe_EOF
+          GH_AW_SAFE_OUTPUTS_CONFIG_1637ad31eb04df26_EOF
       - name: Generate Safe Outputs Tools
         env:
           GH_AW_TOOLS_META_JSON: |
@@ -598,7 +598,7 @@ jobs:
           
           mkdir -p /home/runner/.copilot
           GH_AW_NODE=$(which node 2>/dev/null || command -v node 2>/dev/null || echo node)
-          cat << GH_AW_MCP_CONFIG_95d6aefe8340e57d_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
+          cat << GH_AW_MCP_CONFIG_f4acdfb4be68f579_EOF | "$GH_AW_NODE" "${RUNNER_TEMP}/gh-aw/actions/start_mcp_gateway.cjs"
           {
             "mcpServers": {
               "github": {
@@ -639,7 +639,7 @@ jobs:
               "payloadDir": "${MCP_GATEWAY_PAYLOAD_DIR}"
             }
           }
-          GH_AW_MCP_CONFIG_95d6aefe8340e57d_EOF
+          GH_AW_MCP_CONFIG_f4acdfb4be68f579_EOF
       - name: Mount MCP servers as CLIs
         id: mount-mcp-clis
         continue-on-error: true
@@ -931,6 +931,38 @@ jobs:
         id: pick
         run: |
           set -euo pipefail
+          # Limit concurrency to one chain alive at a time. Cron fires
+          # hourly so that PRs merging mid-day promptly reopen the
+          # MAX_OPEN_PRS slot, but we don't want a hourly cron tick to
+          # fork a parallel chain on top of an already-running one. If
+          # any other module-cleanup run is queued or in progress, the
+          # cron tick exits cleanly. Self-dispatched runs (which carry
+          # an inherited wip_branch) skip this gate so an in-flight
+          # chain always makes forward progress.
+          #
+          # GitHub's run-state is the source of truth here, so there's
+          # no stale-lock problem: a dead/cancelled run is reported as
+          # completed and the next cron tick passes the gate.
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            others=$(gh run list --repo "$GITHUB_REPOSITORY" \
+                       --workflow "$WORKFLOW_FILE" \
+                       --status queued --status in_progress \
+                       --limit 50 --json databaseId \
+                     | jq --arg me "$GITHUB_RUN_ID" \
+                         '[.[] | select((.databaseId|tostring) != $me)] | length')
+            echo "other queued/in_progress runs: $others"
+            if [ "$others" -gt 0 ]; then
+              echo "Chain already alive; cron exiting to avoid fork."
+              {
+                echo "has_work=false"
+                echo "short_name="
+                echo "module_dir="
+                echo "queue_remaining=0"
+              } >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
           # processed.txt lives at the root of the memory branch.
           processed=""
           if git fetch origin "$MEMORY_BRANCH" --depth=1 2>/dev/null; then
@@ -948,8 +980,10 @@ jobs:
                                     | grep -v '^$' | sort -u)"
           python .github/scripts/module-cleanup/build-cleanup-matrix.py
         env:
+          EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEMORY_BRANCH: memory/module-cleanup
+          WORKFLOW_FILE: module-cleanup.lock.yml
 
   finalize:
     needs:

@@ -14,9 +14,11 @@
 #      the queue is empty, cut a batch branch from wip and open the PR.
 #      Wip is NOT reset — each chain has its own wip branch, so the next
 #      chain starts fresh on a different wip.
-#   4. Self-dispatch the workflow unless we just opened a PR or the
-#      queue is empty (cron will pick up later). Threads WIP_BRANCH so
-#      the next run in the chain reuses the same wip.
+#   4. Self-dispatch the workflow unless the queue is empty. After a
+#      PR is opened, dispatch WITHOUT inherited WIP_BRANCH so the next
+#      run starts a fresh chain on a fresh wip. The chain stops on its
+#      own once MAX_OPEN_PRS is reached (matrix script returns
+#      has_work=false and finalize is skipped).
 #
 # No rebase-retry loops on push: the workflow uses
 # concurrency.group=module-cleanup with cancel-in-progress=false, so this
@@ -199,10 +201,19 @@ fi
 
 # ---- 4. Self-dispatch ----
 
-if [ "$OPENED_PR" = "true" ]; then
-    echo "Opened a PR; cron will resume the chain on its next tick."
-elif [ "$QUEUE_REMAINING" -le 0 ]; then
+# The chain auto-continues past PR open: after flushing, we self-dispatch
+# WITHOUT inheriting WIP_BRANCH so the next run starts on a fresh
+# per-chain wip (we don't want subsequent commits piling onto a wip that
+# already underlies an open PR). The chain naturally terminates when
+# build-cleanup-matrix.py sees MAX_OPEN_PRS reached and returns
+# has_work=false, at which point neither agent nor finalize runs and no
+# self-dispatch fires. Cron picks back up later.
+
+if [ "$QUEUE_REMAINING" -le 0 ] && [ "$OPENED_PR" != "true" ]; then
     echo "Queue empty; nothing to dispatch."
+elif [ "$OPENED_PR" = "true" ]; then
+    echo "Opened a PR; self-dispatching to start a fresh chain (new wip)."
+    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main
 else
     echo "Self-dispatching workflow for next module on $WIP_BRANCH."
     gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main \

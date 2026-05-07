@@ -1,18 +1,18 @@
 ---
 description: |
   Walks instrumentation modules one-at-a-time, processing exactly one
-  module per run. Each successful run's commit is appended to a
-  per-chain `module-cleanup-wip-<chain_id>` branch. When the wip branch
-  reaches FILE_THRESHOLD modified files (or when the unprocessed-module
-  queue empties), the finalize job promotes wip to a `module-cleanup-batch-<run_id>`
-  branch and opens a PR against main. Otherwise the workflow self-dispatches
-  to process the next module, threading the same wip branch.
-
-  Each chain (cron tick or manual workflow_dispatch) gets its own wip
-  branch named after the first run's id. If a chain dies mid-flight (e.g.
-  PR creation fails), its wip is simply abandoned — the next cron tick
-  starts a fresh chain on a fresh wip. Old wip and batch branches can be
-  garbage-collected manually.
+  module per run. Each successful run's commit is appended to a per-chain
+  `module-cleanup-wip-<run_id>` branch and the workflow self-dispatches
+  one module at a time. When the wip branch reaches FILE_THRESHOLD
+  modified files (or when the unprocessed-module queue empties), the
+  finalize job promotes wip to a `module-cleanup-batch-<run_id>` branch,
+  opens a PR against main, and self-dispatches a fresh chain (new wip).
+  The chain terminates naturally once MAX_OPEN_PRS is reached: the
+  matrix script returns has_work=false and no further runs are
+  Cron (every 1h) picks back up after PRs merge: when a PR merges and
+  the open-PR count drops below MAX_OPEN_PRS, the next hourly tick
+  starts a fresh chain. A cron tick that fires while a chain is alive
+  is gated to a no-op so chains never fork in parallel.
 
   State:
     - `memory/module-cleanup` branch holds `processed.txt` (modules already
@@ -31,10 +31,12 @@ on:
         required: false
         type: string
   schedule:
-    # Walk-driver: each cron tick starts (or resumes) the chain. Inside a
-    # tick, the workflow self-dispatches one module at a time until either
-    # a PR is opened, the open-PR cap is hit, or the queue empties.
-    - cron: "every 6h"
+    # Cron is the primary chain driver. Each tick attempts to start a new
+    # chain, but the dispatch job exits if another module-cleanup run is
+    # already queued or in progress, so we never fork parallel chains.
+    # Inside a chain, the workflow self-dispatches one module at a time
+    # until a PR is opened, the open-PR cap is hit, or the queue empties.
+    - cron: "every 1h"
 
 permissions: read-all
 
@@ -109,8 +111,42 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEMORY_BRANCH: memory/module-cleanup
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_FILE: module-cleanup.lock.yml
         run: |
           set -euo pipefail
+          # Limit concurrency to one chain alive at a time. Cron fires
+          # hourly so that PRs merging mid-day promptly reopen the
+          # MAX_OPEN_PRS slot, but we don't want a hourly cron tick to
+          # fork a parallel chain on top of an already-running one. If
+          # any other module-cleanup run is queued or in progress, the
+          # cron tick exits cleanly. Self-dispatched runs (which carry
+          # an inherited wip_branch) skip this gate so an in-flight
+          # chain always makes forward progress.
+          #
+          # GitHub's run-state is the source of truth here, so there's
+          # no stale-lock problem: a dead/cancelled run is reported as
+          # completed and the next cron tick passes the gate.
+          if [ "$EVENT_NAME" = "schedule" ]; then
+            others=$(gh run list --repo "$GITHUB_REPOSITORY" \
+                       --workflow "$WORKFLOW_FILE" \
+                       --status queued --status in_progress \
+                       --limit 50 --json databaseId \
+                     | jq --arg me "$GITHUB_RUN_ID" \
+                         '[.[] | select((.databaseId|tostring) != $me)] | length')
+            echo "other queued/in_progress runs: $others"
+            if [ "$others" -gt 0 ]; then
+              echo "Chain already alive; cron exiting to avoid fork."
+              {
+                echo "has_work=false"
+                echo "short_name="
+                echo "module_dir="
+                echo "queue_remaining=0"
+              } >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+
           # processed.txt lives at the root of the memory branch.
           processed=""
           if git fetch origin "$MEMORY_BRANCH" --depth=1 2>/dev/null; then

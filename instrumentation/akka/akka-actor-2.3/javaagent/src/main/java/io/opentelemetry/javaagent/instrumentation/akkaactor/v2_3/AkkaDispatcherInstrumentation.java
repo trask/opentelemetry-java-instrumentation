@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.akkaactor.v2_3;
 
+import static io.opentelemetry.javaagent.instrumentation.akkaactor.v2_3.VirtualFields.ENVELOPE_PROPAGATED_CONTEXT;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
@@ -45,7 +46,7 @@ class AkkaDispatcherInstrumentation implements TypeInstrumentation {
       Context context = Java8BytecodeBridge.currentContext();
       if (ExecutorAdviceHelper.shouldPropagateContext(context, envelope.message())) {
         return ExecutorAdviceHelper.attachContextToTask(
-            context, VirtualFields.ENVELOPE_PROPAGATED_CONTEXT, envelope);
+            context, ENVELOPE_PROPAGATED_CONTEXT, envelope);
       }
       return null;
     }
@@ -56,7 +57,7 @@ class AkkaDispatcherInstrumentation implements TypeInstrumentation {
         @Advice.Enter @Nullable PropagatedContext propagatedContext,
         @Advice.Thrown @Nullable Throwable throwable) {
       ExecutorAdviceHelper.cleanUpAfterSubmit(
-          propagatedContext, throwable, VirtualFields.ENVELOPE_PROPAGATED_CONTEXT, envelope);
+          propagatedContext, throwable, ENVELOPE_PROPAGATED_CONTEXT, envelope);
     }
   }
 }

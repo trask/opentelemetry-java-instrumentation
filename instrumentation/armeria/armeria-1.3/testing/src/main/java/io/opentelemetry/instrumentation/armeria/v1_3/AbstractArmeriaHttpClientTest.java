@@ -14,6 +14,7 @@ import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.RequestHeaders;
 import com.linecorp.armeria.common.util.Exceptions;
+import io.opentelemetry.instrumentation.testing.internal.AutoCleanupExtension;
 import io.opentelemetry.instrumentation.testing.junit.http.AbstractHttpClientTest;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientResult;
 import io.opentelemetry.instrumentation.testing.junit.http.HttpClientTestOptions;
@@ -23,8 +24,11 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 public abstract class AbstractArmeriaHttpClientTest extends AbstractHttpClientTest<HttpRequest> {
+
+  @RegisterExtension final AutoCleanupExtension cleanup = AutoCleanupExtension.create();
 
   protected abstract WebClientBuilder configureClient(WebClientBuilder clientBuilder);
 
@@ -36,6 +40,8 @@ public abstract class AbstractArmeriaHttpClientTest extends AbstractHttpClientTe
   @BeforeEach
   void setupClient() {
     decoratorCalled = new AtomicBoolean();
+    ClientFactory clientFactory = ClientFactory.builder().connectTimeout(connectTimeout()).build();
+    cleanup.deferCleanup(clientFactory);
     client =
         configureClient(
                 WebClient.builder()
@@ -44,13 +50,16 @@ public abstract class AbstractArmeriaHttpClientTest extends AbstractHttpClientTe
                           decoratorCalled.set(true);
                           return delegate.execute(ctx, req);
                         })
-                    .factory(ClientFactory.builder().connectTimeout(connectTimeout()).build()))
+                    .factory(clientFactory))
             .build();
+    ClientFactory clientWithReadTimeoutFactory =
+        ClientFactory.builder().connectTimeout(connectTimeout()).build();
+    cleanup.deferCleanup(clientWithReadTimeoutFactory);
     clientWithReadTimeout =
         configureClient(
                 WebClient.builder()
                     .responseTimeout(READ_TIMEOUT)
-                    .factory(ClientFactory.builder().connectTimeout(connectTimeout()).build()))
+                    .factory(clientWithReadTimeoutFactory))
             .build();
   }
 

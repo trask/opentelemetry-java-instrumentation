@@ -119,6 +119,10 @@ testing {
 }
 
 tasks {
+  test {
+    usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
+  }
+
   if (!otelProps.testLatestDeps) {
     check {
       dependsOn(testing.suites)
@@ -130,7 +134,6 @@ tasks {
   }
 
   withType<Test>().configureEach {
-    usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
     // TODO run tests both with and without experimental span attributes
     jvmArgs("-Dotel.instrumentation.aws-sdk.experimental-span-attributes=true")
     systemProperty("testLatestDeps", otelProps.testLatestDeps)
@@ -141,6 +144,7 @@ tasks {
     testClassesDirs = sourceSets.test.get().output.classesDirs
     classpath = sourceSets.test.get().runtimeClasspath
 
+    usesService(gradle.sharedServices.registrations["testcontainersBuildService"].service)
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
     systemProperty("metadataConfig", "otel.semconv-stability.opt-in=database")
   }

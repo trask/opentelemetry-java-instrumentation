@@ -78,7 +78,7 @@ final class SqsImpl {
         receiveMessageResult, request, response, consumerProcessInstrumenter, receiveContext);
   }
 
-  @Nullable private static final Field messagesField = getMessagesField();
+  @Nullable private static final Field MESSAGES_FIELD = getMessagesField();
 
   @Nullable
   private static Field getMessagesField() {
@@ -97,13 +97,13 @@ final class SqsImpl {
       Response<?> response,
       Instrumenter<SqsProcessRequest, Response<?>> consumerProcessInstrumenter,
       @Nullable Context receiveContext) {
-    if (messagesField == null) {
+    if (MESSAGES_FIELD == null) {
       return;
     }
     // replace Messages list inside ReceiveMessageResult with a tracing list that creates process
     // spans as the list is iterated
     try {
-      messagesField.set(
+      MESSAGES_FIELD.set(
           receiveMessageResult,
           TracingList.wrap(
               receiveMessageResult.getMessages(),

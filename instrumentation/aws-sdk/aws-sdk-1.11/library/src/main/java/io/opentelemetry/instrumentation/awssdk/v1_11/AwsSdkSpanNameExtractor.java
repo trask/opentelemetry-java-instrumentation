@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 class AwsSdkSpanNameExtractor implements SpanNameExtractor<Request<?>> {
 
-  private static final AwsSdkRpcAttributesGetter RPC_ATTRIBUTES_GETTER =
+  private static final AwsSdkRpcAttributesGetter rpcAttributesGetter =
       new AwsSdkRpcAttributesGetter();
   private final NamesCache namesCache = new NamesCache();
 
@@ -19,8 +19,8 @@ class AwsSdkSpanNameExtractor implements SpanNameExtractor<Request<?>> {
   @Override
   public String extract(Request<?> request) {
     return qualifiedOperation(
-        RPC_ATTRIBUTES_GETTER.getService(request),
-        RPC_ATTRIBUTES_GETTER.getMethod(request),
+        rpcAttributesGetter.getService(request),
+        rpcAttributesGetter.getMethod(request),
         request.getOriginalRequest().getClass());
   }
 

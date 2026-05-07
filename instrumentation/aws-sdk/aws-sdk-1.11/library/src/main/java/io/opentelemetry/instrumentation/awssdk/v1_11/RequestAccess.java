@@ -33,7 +33,7 @@ final class RequestAccess {
     }
     Object config = invokeOrNull(access.getLambdaConfiguration, request, Object.class);
     return config != null
-        ? invokeOrNull(LambdaFunctionConfigurationAccess.getLambdaArnFromConfiguration, config)
+        ? invokeOrNull(LambdaFunctionConfigurationAccess.GET_LAMBDA_ARN_FROM_CONFIGURATION, config)
         : null;
   }
 
@@ -189,7 +189,7 @@ final class RequestAccess {
   }
 
   private static class LambdaFunctionConfigurationAccess {
-    private static final MethodHandle getLambdaArnFromConfiguration = findGetLambdaArnMethod();
+    private static final MethodHandle GET_LAMBDA_ARN_FROM_CONFIGURATION = findGetLambdaArnMethod();
 
     @Nullable
     private static MethodHandle findGetLambdaArnMethod() {

@@ -196,6 +196,12 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
         --body-file "$BODY_FILE" \
         --label "module cleanup"
 
+    # The wip branch's commits now live on the batch branch and the PR.
+    # Delete the wip from remote so any leftover module-cleanup-wip-*
+    # branch is, by definition, an orphan from an interrupted chain --
+    # which the next chain's dispatch step can adopt.
+    git push origin --delete "$WIP_BRANCH" || true
+
     OPENED_PR=true
 fi
 

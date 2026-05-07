@@ -98,13 +98,46 @@ jobs:
       - name: Resolve wip branch for this chain
         id: wip
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INHERITED_WIP: ${{ inputs.wip_branch }}
         run: |
           set -euo pipefail
           if [ -n "$INHERITED_WIP" ]; then
+            echo "Inheriting wip from chain: $INHERITED_WIP"
             echo "wip_branch=$INHERITED_WIP" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # No inherited wip -> this run is starting a chain. Before
+          # creating a fresh wip, look for an orphan wip on remote.
+          # An orphan exists when a prior chain was interrupted (e.g.
+          # cancelled by GitHub's concurrency "queue length 1" rule)
+          # before its wip reached the flush threshold. The chain-alive
+          # gate (in the pick step) ensures we never adopt a wip that
+          # belongs to a still-running chain.
+          orphan=""
+          while read -r _sha ref; do
+            [ -z "$ref" ] && continue
+            name="${ref#refs/heads/}"
+            chain_id="${name#module-cleanup-wip-}"
+            # Skip wips whose chain is still alive.
+            if [ -n "$chain_id" ] && [ "$chain_id" != "manual" ]; then
+              status=$(gh run view "$chain_id" --repo "$GITHUB_REPOSITORY" \
+                         --json status --jq .status 2>/dev/null || echo "")
+              if [ "$status" = "queued" ] || [ "$status" = "in_progress" ]; then
+                continue
+              fi
+            fi
+            orphan="$name"
+            echo "Adopting orphan wip: $orphan"
+            break
+          done < <(git ls-remote --heads origin 'module-cleanup-wip-*' || true)
+
+          if [ -n "$orphan" ]; then
+            echo "wip_branch=$orphan" >> "$GITHUB_OUTPUT"
           else
-            echo "wip_branch=module-cleanup-wip-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+            fresh="module-cleanup-wip-${GITHUB_RUN_ID}"
+            echo "Starting fresh wip: $fresh"
+            echo "wip_branch=$fresh" >> "$GITHUB_OUTPUT"
           fi
       - name: Pick next module
         id: pick

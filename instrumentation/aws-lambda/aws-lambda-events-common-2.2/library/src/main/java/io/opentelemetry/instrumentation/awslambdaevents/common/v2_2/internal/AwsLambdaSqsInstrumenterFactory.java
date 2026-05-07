@@ -11,6 +11,7 @@ import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.instrumentation.api.instrumenter.Instrumenter;
 import io.opentelemetry.instrumentation.api.instrumenter.SpanKindExtractor;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class is internal and is hence not for public use. Its APIs are unstable and can change at
@@ -43,7 +44,7 @@ public final class AwsLambdaSqsInstrumenterFactory {
       String messageSource = records.get(0).getEventSource();
       for (int i = 1; i < records.size(); i++) {
         SQSMessage message = records.get(i);
-        if (!message.getEventSource().equals(messageSource)) {
+        if (!Objects.equals(message.getEventSource(), messageSource)) {
           messageSource = null;
           break;
         }

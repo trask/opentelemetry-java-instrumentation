@@ -28,8 +28,9 @@ public final class Experimental {
    */
   public static void setEmitExperimentalTelemetry(
       ApacheHttpClientTelemetryBuilder builder, boolean emitExperimentalTelemetry) {
-    if (setEmitExperimentalTelemetry != null) {
-      setEmitExperimentalTelemetry.accept(builder, emitExperimentalTelemetry);
+    BiConsumer<ApacheHttpClientTelemetryBuilder, Boolean> callback = setEmitExperimentalTelemetry;
+    if (callback != null) {
+      callback.accept(builder, emitExperimentalTelemetry);
     }
   }
 

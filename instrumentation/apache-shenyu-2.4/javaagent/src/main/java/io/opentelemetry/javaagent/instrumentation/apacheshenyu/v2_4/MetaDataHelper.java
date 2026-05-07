@@ -63,8 +63,6 @@ public class MetaDataHelper {
             .getBoolean("experimental_span_attributes/development", false);
   }
 
-  private MetaDataHelper() {}
-
   public static void extractAttributes(MetaData metadata, Context context) {
     if (!CAPTURE_EXPERIMENTAL_SPAN_ATTRIBUTES) {
       return;
@@ -84,4 +82,6 @@ public class MetaDataHelper {
     serverSpan.setAttribute(RPC_EXT_ATTRIBUTE, metadata.getRpcExt());
     serverSpan.setAttribute(META_ENABLED_ATTRIBUTE, metadata.getEnabled());
   }
+
+  private MetaDataHelper() {}
 }

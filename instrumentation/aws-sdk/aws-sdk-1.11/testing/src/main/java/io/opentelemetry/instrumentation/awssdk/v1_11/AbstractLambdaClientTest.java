@@ -113,7 +113,7 @@ public abstract class AbstractLambdaClientTest extends AbstractBaseAwsClientTest
           + " }"
           + "}";
 
-  public abstract AWSLambdaClientBuilder configureClient(AWSLambdaClientBuilder client);
+  protected abstract AWSLambdaClientBuilder configureClient(AWSLambdaClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

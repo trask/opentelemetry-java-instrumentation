@@ -70,7 +70,7 @@ public abstract class AbstractBaseAwsClientTest {
     server.stop();
   }
 
-  public void assertRequestWithMockedResponse(
+  protected void assertRequestWithMockedResponse(
       Object response,
       Object client,
       String service,

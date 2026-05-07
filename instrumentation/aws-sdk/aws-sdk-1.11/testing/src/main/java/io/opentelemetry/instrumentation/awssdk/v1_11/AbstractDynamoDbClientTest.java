@@ -33,7 +33,8 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractDynamoDbClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AmazonDynamoDBClientBuilder configureClient(AmazonDynamoDBClientBuilder client);
+  protected abstract AmazonDynamoDBClientBuilder configureClient(
+      AmazonDynamoDBClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

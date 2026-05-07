@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSecretsManagerClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AWSSecretsManagerClientBuilder configureClient(
+  protected abstract AWSSecretsManagerClientBuilder configureClient(
       AWSSecretsManagerClientBuilder client);
 
   @Override

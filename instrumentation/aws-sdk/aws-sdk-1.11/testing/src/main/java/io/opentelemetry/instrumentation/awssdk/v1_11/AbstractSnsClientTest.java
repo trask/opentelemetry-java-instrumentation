@@ -47,7 +47,7 @@ public abstract class AbstractSnsClientTest extends AbstractBaseAwsClientTest {
           + "    </ResponseMetadata>"
           + "</CreateTopicResponse>";
 
-  public abstract AmazonSNSClientBuilder configureClient(AmazonSNSClientBuilder client);
+  protected abstract AmazonSNSClientBuilder configureClient(AmazonSNSClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

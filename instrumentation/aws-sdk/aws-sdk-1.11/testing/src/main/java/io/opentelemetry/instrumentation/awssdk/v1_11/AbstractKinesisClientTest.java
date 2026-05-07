@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public abstract class AbstractKinesisClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AmazonKinesisClientBuilder configureClient(AmazonKinesisClientBuilder client);
+  protected abstract AmazonKinesisClientBuilder configureClient(AmazonKinesisClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractRdsClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AmazonRDSClientBuilder configureClient(AmazonRDSClientBuilder client);
+  protected abstract AmazonRDSClientBuilder configureClient(AmazonRDSClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractEc2ClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AmazonEC2ClientBuilder configureClient(AmazonEC2ClientBuilder client);
+  protected abstract AmazonEC2ClientBuilder configureClient(AmazonEC2ClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

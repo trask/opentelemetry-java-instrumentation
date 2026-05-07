@@ -50,7 +50,7 @@ public abstract class AbstractS3ClientTest extends AbstractBaseAwsClientTest {
   private final AmazonS3ClientBuilder clientBuilder =
       AmazonS3ClientBuilder.standard().withPathStyleAccessEnabled(true);
 
-  public abstract AmazonS3ClientBuilder configureClient(AmazonS3ClientBuilder client);
+  protected abstract AmazonS3ClientBuilder configureClient(AmazonS3ClientBuilder client);
 
   @Override
   protected boolean hasRequestId() {

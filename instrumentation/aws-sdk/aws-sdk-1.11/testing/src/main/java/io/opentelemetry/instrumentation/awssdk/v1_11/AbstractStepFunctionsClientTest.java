@@ -27,7 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public abstract class AbstractStepFunctionsClientTest extends AbstractBaseAwsClientTest {
 
-  public abstract AWSStepFunctionsClientBuilder configureClient(
+  protected abstract AWSStepFunctionsClientBuilder configureClient(
       AWSStepFunctionsClientBuilder client);
 
   @Override

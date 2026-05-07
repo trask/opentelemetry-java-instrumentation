@@ -139,14 +139,17 @@ jobs:
 
 if: ${{ needs.dispatch.outputs.has_work == 'true' }}
 
-env:
-  MODULE_SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
-  MODULE_DIR: ${{ needs.dispatch.outputs.module_dir }}
-
 steps:
   - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     with:
       persist-credentials: false
+  - name: Export module identifiers to env
+    # Top-level frontmatter `env:` would land at workflow scope where
+    # `needs.*` is not available. Export via GITHUB_ENV instead so the
+    # LLM step (and its bash tool) sees MODULE_SHORT_NAME / MODULE_DIR.
+    run: |
+      echo "MODULE_SHORT_NAME=${{ needs.dispatch.outputs.short_name }}" >> "$GITHUB_ENV"
+      echo "MODULE_DIR=${{ needs.dispatch.outputs.module_dir }}" >> "$GITHUB_ENV"
   - name: Set up JDK for running Gradle
     uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
     with:

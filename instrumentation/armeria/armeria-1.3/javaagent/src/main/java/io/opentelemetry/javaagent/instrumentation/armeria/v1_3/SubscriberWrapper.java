@@ -7,16 +7,18 @@ package io.opentelemetry.javaagent.instrumentation.armeria.v1_3;
 
 import io.opentelemetry.context.Context;
 import io.opentelemetry.context.Scope;
+import javax.annotation.Nullable;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 public class SubscriberWrapper<T> implements Subscriber<T> {
-  private static final Class<?> abortingSubscriberClass = getAbortingSubscriberClass();
-  private static final Class<?> noopSubscriberClass = getNoopSubscriberClass();
+  @Nullable private static final Class<?> ABORTING_SUBSCRIBER_CLASS = getAbortingSubscriberClass();
+  @Nullable private static final Class<?> NOOP_SUBSCRIBER_CLASS = getNoopSubscriberClass();
 
   private final Subscriber<T> delegate;
   private final Context context;
 
+  @Nullable
   private static Class<?> getAbortingSubscriberClass() {
     // AbortingSubscriber is package private
     try {
@@ -26,6 +28,7 @@ public class SubscriberWrapper<T> implements Subscriber<T> {
     }
   }
 
+  @Nullable
   private static Class<?> getNoopSubscriberClass() {
     // NoopSubscriber is package private
     try {
@@ -41,8 +44,8 @@ public class SubscriberWrapper<T> implements Subscriber<T> {
   }
 
   private static <T> boolean isIgnored(Subscriber<T> delegate) {
-    return (abortingSubscriberClass != null && abortingSubscriberClass.isInstance(delegate))
-        || (noopSubscriberClass != null && noopSubscriberClass.isInstance(delegate));
+    return (ABORTING_SUBSCRIBER_CLASS != null && ABORTING_SUBSCRIBER_CLASS.isInstance(delegate))
+        || (NOOP_SUBSCRIBER_CLASS != null && NOOP_SUBSCRIBER_CLASS.isInstance(delegate));
   }
 
   public static <T> Subscriber<T> wrap(Subscriber<T> delegate) {

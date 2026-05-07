@@ -8,17 +8,16 @@
 #      agent failed, also append to failed.txt. This guarantees a failing
 #      module is recorded as "processed" (so it isn't retried in a loop)
 #      AND logged as a failure for diagnostics.
-#   2. If the agent produced a cleanup patch, apply it onto
-#      module-cleanup-wip and push.
+#   2. If the agent produced a cleanup patch, apply it onto the fixed
+#      module-cleanup-wip branch and push.
 #   3. If wip diff vs origin/main has reached FLUSH_THRESHOLD files OR
-#      the queue is empty, cut a batch branch from wip and open the PR.
-#      Wip is NOT reset — each chain has its own wip branch, so the next
-#      chain starts fresh on a different wip.
-#   4. Self-dispatch the workflow unless the queue is empty. After a
-#      PR is opened, dispatch WITHOUT inherited WIP_BRANCH so the next
-#      run starts a fresh chain on a fresh wip. The chain stops on its
-#      own once MAX_OPEN_PRS is reached (matrix script returns
-#      has_work=false and finalize is skipped).
+#      the queue is empty, atomically rename wip to a
+#      module-cleanup-batch-<run_id> branch and open the PR. The wip
+#      branch ceases to exist on remote until the next run recreates
+#      it from main.
+#   4. Self-dispatch the workflow unless the queue is empty. The chain
+#      stops on its own once MAX_OPEN_PRS is reached (matrix script
+#      returns has_work=false and finalize is skipped).
 #
 # No rebase-retry loops on push: the workflow uses
 # concurrency.group=module-cleanup with cancel-in-progress=false, so this
@@ -39,13 +38,12 @@
 #   FLUSH_THRESHOLD   - file count that triggers a PR (default 10)
 #   WORKFLOW_FILE     - workflow file name for self-dispatch
 #   MEMORY_BRANCH     - default: memory/module-cleanup
-#   WIP_BRANCH        - per-chain wip branch (passed in by the workflow;
-#                       defaults to module-cleanup-wip-<GITHUB_RUN_ID>)
+#   WIP_BRANCH        - default: module-cleanup-wip
 
 set -euo pipefail
 
 MEMORY_BRANCH="${MEMORY_BRANCH:-memory/module-cleanup}"
-WIP_BRANCH="${WIP_BRANCH:-module-cleanup-wip-${GITHUB_RUN_ID:-manual}}"
+WIP_BRANCH="${WIP_BRANCH:-module-cleanup-wip}"
 THRESHOLD="${FLUSH_THRESHOLD:-10}"
 QUEUE_REMAINING="${QUEUE_REMAINING:-0}"
 REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY required}"
@@ -170,8 +168,6 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
     RUN_ID="${GITHUB_RUN_ID:-$(date -u +%Y%m%d%H%M%S)}"
     BATCH_BRANCH="module-cleanup-batch-$RUN_ID"
 
-    git push origin "refs/remotes/origin/$WIP_BRANCH:refs/heads/$BATCH_BRANCH"
-
     BODY_FILE=$(mktemp)
     {
         echo "Automated module-cleanup batch."
@@ -188,6 +184,13 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
             --reverse --format='## %s%n%n%b%n'
     } > "$BODY_FILE"
 
+    # Atomic rename: in one push, create the batch branch at wip's tip
+    # and delete the wip branch. Either both succeed or both fail, so we
+    # never leave wip and batch pointing at the same commits.
+    git push --atomic origin \
+        "refs/remotes/origin/$WIP_BRANCH:refs/heads/$BATCH_BRANCH" \
+        ":refs/heads/$WIP_BRANCH"
+
     gh pr create \
         --repo "$REPO" \
         --base main \
@@ -196,34 +199,23 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
         --body-file "$BODY_FILE" \
         --label "module cleanup"
 
-    # The wip branch's commits now live on the batch branch and the PR.
-    # Delete the wip from remote so any leftover module-cleanup-wip-*
-    # branch is, by definition, an orphan from an interrupted chain --
-    # which the next chain's dispatch step can adopt.
-    git push origin --delete "$WIP_BRANCH" || true
-
     OPENED_PR=true
 fi
 
 # ---- 4. Self-dispatch ----
 
-# The chain auto-continues past PR open: after flushing, we self-dispatch
-# WITHOUT inheriting WIP_BRANCH so the next run starts on a fresh
-# per-chain wip (we don't want subsequent commits piling onto a wip that
-# already underlies an open PR). The chain naturally terminates when
-# build-cleanup-matrix.py sees MAX_OPEN_PRS reached and returns
-# has_work=false, at which point neither agent nor finalize runs and no
-# self-dispatch fires. Cron picks back up later.
+# Always self-dispatch when there's more queued work. The next run will
+# pick up wherever wip is: if we just flushed, wip is gone and the run
+# starts a fresh wip from main; otherwise it appends to the same wip.
+# The chain stops on its own when build-cleanup-matrix.py sees
+# MAX_OPEN_PRS reached and returns has_work=false (no agent, no
+# finalize, no self-dispatch). Cron picks back up later.
 
-if [ "$QUEUE_REMAINING" -le 0 ] && [ "$OPENED_PR" != "true" ]; then
+if [ "$QUEUE_REMAINING" -le 0 ]; then
     echo "Queue empty; nothing to dispatch."
-elif [ "$OPENED_PR" = "true" ]; then
-    echo "Opened a PR; self-dispatching to start a fresh chain (new wip)."
-    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main
 else
-    echo "Self-dispatching workflow for next module on $WIP_BRANCH."
-    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main \
-        --field "wip_branch=$WIP_BRANCH"
+    echo "Self-dispatching workflow for next module."
+    gh workflow run "$WORKFLOW_FILE" --repo "$REPO" --ref main
 fi
 
 git worktree remove --force "$MEM_WT" 2>/dev/null || true

@@ -1,41 +1,35 @@
 ---
 description: |
   Walks instrumentation modules one-at-a-time, processing exactly one
-  module per run. Each successful run's commit is appended to a per-chain
-  `module-cleanup-wip-<run_id>` branch and the workflow self-dispatches
-  one module at a time. When the wip branch reaches FILE_THRESHOLD
+  module per run. Each successful run's commit is appended to the fixed
+  `module-cleanup-wip` branch. When that branch reaches FILE_THRESHOLD
   modified files (or when the unprocessed-module queue empties), the
-  finalize job promotes wip to a `module-cleanup-batch-<run_id>` branch,
-  opens a PR against main, and self-dispatches a fresh chain (new wip).
-  The chain terminates naturally once MAX_OPEN_PRS is reached: the
-  matrix script returns has_work=false and no further runs are
-  Cron (every 1h) picks back up after PRs merge: when a PR merges and
-  the open-PR count drops below MAX_OPEN_PRS, the next hourly tick
-  starts a fresh chain. A cron tick that fires while a chain is alive
-  is gated to a no-op so chains never fork in parallel.
+  finalize job atomically renames wip to `module-cleanup-batch-<run_id>`
+  and opens a PR against main. The next run, finding no wip on remote,
+  starts a fresh wip from main.
+
+  After each successful run, the workflow self-dispatches so chains keep
+  moving without waiting for cron. The chain stops on its own once
+  MAX_OPEN_PRS is reached (matrix returns has_work=false; finalize
+  doesn't run; no self-dispatch). Cron (every 1h) restarts work after
+  a PR merges and the open-PR count drops below MAX_OPEN_PRS.
+
+  Because state lives on a fixed branch (not in any one run's identity),
+  GitHub Actions concurrency cancellations of queued runs are harmless:
+  the wip branch survives, and the next run picks up where it was.
 
   State:
     - `memory/module-cleanup` branch holds `processed.txt` (modules already
       attempted; never re-picked automatically) and `failed.txt` (a
       diagnostic log of timeouts and patch-conflict failures).
-    - `module-cleanup-wip-<chain_id>` branches hold not-yet-PR'd commits
-      for an in-flight chain.
+    - `module-cleanup-wip` branch holds not-yet-PR'd commits. Exists only
+      while there is uncommitted work; deleted when promoted to a batch.
     - Open PRs labeled `module cleanup` count toward MAX_OPEN_PRS; while at
       cap, dispatch exits and waits for cron to retry.
 
 on:
   workflow_dispatch:
-    inputs:
-      wip_branch:
-        description: "Per-chain wip branch (set automatically by self-dispatch; leave blank for manual chains)."
-        required: false
-        type: string
   schedule:
-    # Cron is the primary chain driver. Each tick attempts to start a new
-    # chain, but the dispatch job exits if another module-cleanup run is
-    # already queued or in progress, so we never fork parallel chains.
-    # Inside a chain, the workflow self-dispatches one module at a time
-    # until a PR is opened, the open-PR cap is hit, or the queue empties.
     - cron: "every 1h"
 
 permissions: read-all
@@ -89,97 +83,18 @@ jobs:
       short_name: ${{ steps.pick.outputs.short_name }}
       module_dir: ${{ steps.pick.outputs.module_dir }}
       queue_remaining: ${{ steps.pick.outputs.queue_remaining }}
-      wip_branch: ${{ steps.wip.outputs.wip_branch }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Resolve wip branch for this chain
-        id: wip
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          INHERITED_WIP: ${{ inputs.wip_branch }}
-        run: |
-          set -euo pipefail
-          if [ -n "$INHERITED_WIP" ]; then
-            echo "Inheriting wip from chain: $INHERITED_WIP"
-            echo "wip_branch=$INHERITED_WIP" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # No inherited wip -> this run is starting a chain. Before
-          # creating a fresh wip, look for an orphan wip on remote.
-          # An orphan exists when a prior chain was interrupted (e.g.
-          # cancelled by GitHub's concurrency "queue length 1" rule)
-          # before its wip reached the flush threshold. The chain-alive
-          # gate (in the pick step) ensures we never adopt a wip that
-          # belongs to a still-running chain.
-          orphan=""
-          while read -r _sha ref; do
-            [ -z "$ref" ] && continue
-            name="${ref#refs/heads/}"
-            chain_id="${name#module-cleanup-wip-}"
-            # Skip wips whose chain is still alive.
-            if [ -n "$chain_id" ] && [ "$chain_id" != "manual" ]; then
-              status=$(gh run view "$chain_id" --repo "$GITHUB_REPOSITORY" \
-                         --json status --jq .status 2>/dev/null || echo "")
-              if [ "$status" = "queued" ] || [ "$status" = "in_progress" ]; then
-                continue
-              fi
-            fi
-            orphan="$name"
-            echo "Adopting orphan wip: $orphan"
-            break
-          done < <(git ls-remote --heads origin 'module-cleanup-wip-*' || true)
-
-          if [ -n "$orphan" ]; then
-            echo "wip_branch=$orphan" >> "$GITHUB_OUTPUT"
-          else
-            fresh="module-cleanup-wip-${GITHUB_RUN_ID}"
-            echo "Starting fresh wip: $fresh"
-            echo "wip_branch=$fresh" >> "$GITHUB_OUTPUT"
-          fi
       - name: Pick next module
         id: pick
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MEMORY_BRANCH: memory/module-cleanup
-          EVENT_NAME: ${{ github.event_name }}
-          WORKFLOW_FILE: module-cleanup.lock.yml
         run: |
           set -euo pipefail
-          # Limit concurrency to one chain alive at a time. Cron fires
-          # hourly so that PRs merging mid-day promptly reopen the
-          # MAX_OPEN_PRS slot, but we don't want a hourly cron tick to
-          # fork a parallel chain on top of an already-running one. If
-          # any other module-cleanup run is queued or in progress, the
-          # cron tick exits cleanly. Self-dispatched runs (which carry
-          # an inherited wip_branch) skip this gate so an in-flight
-          # chain always makes forward progress.
-          #
-          # GitHub's run-state is the source of truth here, so there's
-          # no stale-lock problem: a dead/cancelled run is reported as
-          # completed and the next cron tick passes the gate.
-          if [ "$EVENT_NAME" = "schedule" ]; then
-            others=$(gh run list --repo "$GITHUB_REPOSITORY" \
-                       --workflow "$WORKFLOW_FILE" \
-                       --status queued --status in_progress \
-                       --limit 50 --json databaseId \
-                     | jq --arg me "$GITHUB_RUN_ID" \
-                         '[.[] | select((.databaseId|tostring) != $me)] | length')
-            echo "other queued/in_progress runs: $others"
-            if [ "$others" -gt 0 ]; then
-              echo "Chain already alive; cron exiting to avoid fork."
-              {
-                echo "has_work=false"
-                echo "short_name="
-                echo "module_dir="
-                echo "queue_remaining=0"
-              } >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-
           # processed.txt lives at the root of the memory branch.
           processed=""
           if git fetch origin "$MEMORY_BRANCH" --depth=1 2>/dev/null; then
@@ -226,7 +141,6 @@ jobs:
           SHORT_NAME: ${{ needs.dispatch.outputs.short_name }}
           AGENT_RESULT: ${{ needs.agent.result }}
           QUEUE_REMAINING: ${{ needs.dispatch.outputs.queue_remaining }}
-          WIP_BRANCH: ${{ needs.dispatch.outputs.wip_branch }}
           ARTIFACT_DIR: ./agent-artifact
           WORKFLOW_FILE: module-cleanup.lock.yml
         run: bash .github/scripts/module-cleanup/finalize.sh

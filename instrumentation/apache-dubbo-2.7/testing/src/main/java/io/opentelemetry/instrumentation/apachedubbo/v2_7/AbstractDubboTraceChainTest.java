@@ -70,7 +70,7 @@ public abstract class AbstractDubboTraceChainTest {
 
   protected abstract boolean hasServicePeerName();
 
-  ReferenceConfig<HelloService> configureClient(int port) {
+  private static ReferenceConfig<HelloService> configureClient(int port) {
     ReferenceConfig<HelloService> reference = new ReferenceConfig<>();
     reference.setInterface(HelloService.class);
     reference.setGeneric("true");
@@ -78,7 +78,7 @@ public abstract class AbstractDubboTraceChainTest {
     return reference;
   }
 
-  ReferenceConfig<HelloService> configureLocalClient(int port) {
+  private static ReferenceConfig<HelloService> configureLocalClient(int port) {
     ReferenceConfig<HelloService> reference = new ReferenceConfig<>();
     reference.setInterface(HelloService.class);
     reference.setGeneric("true");
@@ -86,7 +86,7 @@ public abstract class AbstractDubboTraceChainTest {
     return reference;
   }
 
-  ReferenceConfig<MiddleService> configureMiddleClient(int port) {
+  private static ReferenceConfig<MiddleService> configureMiddleClient(int port) {
     ReferenceConfig<MiddleService> reference = new ReferenceConfig<>();
     reference.setInterface(MiddleService.class);
     reference.setGeneric("true");
@@ -94,7 +94,7 @@ public abstract class AbstractDubboTraceChainTest {
     return reference;
   }
 
-  ServiceConfig<HelloService> configureServer() {
+  private static ServiceConfig<HelloService> configureServer() {
     RegistryConfig registerConfig = new RegistryConfig();
     registerConfig.setAddress("N/A");
     ServiceConfig<HelloService> service = new ServiceConfig<>();
@@ -104,7 +104,7 @@ public abstract class AbstractDubboTraceChainTest {
     return service;
   }
 
-  ServiceConfig<MiddleService> configureMiddleServer(
+  private static ServiceConfig<MiddleService> configureMiddleServer(
       ReferenceConfig<HelloService> referenceConfig) {
     RegistryConfig registerConfig = new RegistryConfig();
     registerConfig.setAddress("N/A");
@@ -116,7 +116,8 @@ public abstract class AbstractDubboTraceChainTest {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  ReferenceConfig<GenericService> convertReference(ReferenceConfig<MiddleService> config) {
+  private static ReferenceConfig<GenericService> convertReference(
+      ReferenceConfig<MiddleService> config) {
     return (ReferenceConfig) config;
   }
 

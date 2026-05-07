@@ -12,7 +12,7 @@ import org.apache.dubbo.config.bootstrap.DubboBootstrap;
 /** compatible with dubbo3.x and dubbo 2.7 */
 class DubboTestUtil {
 
-  static Object newFrameworkModel() {
+  private static Object newFrameworkModel() {
     try {
       // only present in latest dep
       return Class.forName("org.apache.dubbo.rpc.model.FrameworkModel")

@@ -72,7 +72,7 @@ public abstract class AbstractDubboTest {
     System.clearProperty("dubbo.application.qos-enable");
   }
 
-  ReferenceConfig<HelloService> configureClient(int port) {
+  private static ReferenceConfig<HelloService> configureClient(int port) {
     ReferenceConfig<HelloService> reference = new ReferenceConfig<>();
     reference.setInterface(HelloService.class);
     reference.setGeneric("true");
@@ -80,7 +80,7 @@ public abstract class AbstractDubboTest {
     return reference;
   }
 
-  ServiceConfig<HelloServiceImpl> configureServer() {
+  private static ServiceConfig<HelloServiceImpl> configureServer() {
     RegistryConfig registerConfig = new RegistryConfig();
     registerConfig.setAddress("N/A");
     ServiceConfig<HelloServiceImpl> service = new ServiceConfig<>();
@@ -91,7 +91,8 @@ public abstract class AbstractDubboTest {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  ReferenceConfig<GenericService> convertReference(ReferenceConfig<HelloService> config) {
+  private static ReferenceConfig<GenericService> convertReference(
+      ReferenceConfig<HelloService> config) {
     return (ReferenceConfig) config;
   }
 

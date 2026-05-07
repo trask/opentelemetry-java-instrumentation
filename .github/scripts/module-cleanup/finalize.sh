@@ -183,13 +183,18 @@ if [ "$SHOULD_FLUSH" = "true" ]; then
             --reverse --format='## %s%n%n%b%n'
     } > "$BODY_FILE"
 
-    gh pr create \
+    # Don't let a transient `gh pr create` failure (e.g. label not found,
+    # rate limiting) abort before we reset wip and self-dispatch — the batch
+    # branch is already pushed and a PR can be opened manually.
+    if ! gh pr create \
         --repo "$REPO" \
         --base main \
         --head "$BATCH_BRANCH" \
         --title "Module cleanup: batch (run $RUN_ID)" \
         --body-file "$BODY_FILE" \
-        --label "module cleanup"
+        --label "module cleanup"; then
+        echo "WARNING: gh pr create failed; batch branch $BATCH_BRANCH still pushed."
+    fi
 
     git push --force origin "origin/main:refs/heads/$WIP_BRANCH"
 

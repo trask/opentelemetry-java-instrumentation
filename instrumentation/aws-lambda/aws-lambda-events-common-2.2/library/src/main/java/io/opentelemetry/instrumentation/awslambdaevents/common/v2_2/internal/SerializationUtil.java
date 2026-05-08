@@ -40,7 +40,7 @@ public final class SerializationUtil {
         return LambdaEventSerializers.serializerFor(clazz, clazz.getClassLoader());
       }
       return JacksonFactory.getInstance().getSerializer(clazz);
-    } catch (NoClassDefFoundError e) {
+    } catch (NoClassDefFoundError ignored) {
       // For "java8" runtime, "aws-lambda-java-serialization" library
       // is not available in the classpath by default.
       // So fall back to object mapper based legacy serialization.
@@ -63,7 +63,7 @@ public final class SerializationUtil {
     return serializer.fromJson(inputStream);
   }
 
-  public static <T> void toJson(OutputStream outputStream, T obj) {
+  public static <T> void toJson(OutputStream outputStream, @Nullable T obj) {
     if (obj != null) {
       PojoSerializer<T> serializer = getSerializer(obj.getClass());
       serializer.toJson(obj, outputStream);
@@ -71,7 +71,7 @@ public final class SerializationUtil {
   }
 
   @Nullable
-  public static <T> String toJson(T obj) {
+  public static <T> String toJson(@Nullable T obj) {
     if (obj == null) {
       return null;
     }
@@ -81,7 +81,7 @@ public final class SerializationUtil {
     return new String(outputStream.toByteArray(), UTF_8);
   }
 
-  public static <T> byte[] toJsonData(T obj) {
+  public static <T> byte[] toJsonData(@Nullable T obj) {
     if (obj == null) {
       return new byte[] {};
     }

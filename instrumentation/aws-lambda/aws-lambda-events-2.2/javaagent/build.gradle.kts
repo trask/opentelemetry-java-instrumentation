@@ -22,7 +22,7 @@ dependencies {
   }
 
   library("com.amazonaws:aws-lambda-java-core:1.0.0")
-  // First version to includes support for SQSEvent, currently the most popular message queue used
+  // First version to include support for SQSEvent, currently the most popular message queue used
   // with lambda.
   // NB: 2.2.0 includes a class called SQSEvent but isn't usable due to it returning private classes
   // in public API.

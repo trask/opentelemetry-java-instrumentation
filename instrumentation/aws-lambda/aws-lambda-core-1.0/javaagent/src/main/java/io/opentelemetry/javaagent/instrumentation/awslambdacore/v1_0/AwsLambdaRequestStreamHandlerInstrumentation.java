@@ -41,9 +41,9 @@ class AwsLambdaRequestStreamHandlerInstrumentation implements TypeInstrumentatio
     return implementsInterface(named("com.amazonaws.services.lambda.runtime.RequestStreamHandler"))
         .and(not(nameStartsWith("com.amazonaws.services.lambda.runtime.api.client")))
         // In Java 8 and Java 11 runtimes,
-        // AWS Lambda runtime is packaged under `lambdainternal` package.
+        // the AWS Lambda runtime is packaged under the `lambdainternal` package.
         // But it is `com.amazonaws.services.lambda.runtime.api.client`
-        // for new runtime likes Java 17 and Java 21.
+        // for new runtimes like Java 17 and Java 21.
         .and(not(nameStartsWith("lambdainternal")));
   }
 

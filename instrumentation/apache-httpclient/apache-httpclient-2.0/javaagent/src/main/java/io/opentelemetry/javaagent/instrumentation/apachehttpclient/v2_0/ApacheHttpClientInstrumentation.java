@@ -51,9 +51,9 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
       private final Scope scope;
       private final HttpMethod httpMethod;
 
-      private AdviceScope(Context context, Scope scope, HttpMethod httpMethod) {
+      private AdviceScope(Context context, HttpMethod httpMethod) {
         this.context = context;
-        this.scope = scope;
+        this.scope = context.makeCurrent();
         this.httpMethod = httpMethod;
       }
 
@@ -64,7 +64,7 @@ class ApacheHttpClientInstrumentation implements TypeInstrumentation {
           return null;
         }
         Context context = instrumenter().start(parentContext, httpMethod);
-        return new AdviceScope(context, context.makeCurrent(), httpMethod);
+        return new AdviceScope(context, httpMethod);
       }
 
       public void end(@Nullable Throwable throwable) {

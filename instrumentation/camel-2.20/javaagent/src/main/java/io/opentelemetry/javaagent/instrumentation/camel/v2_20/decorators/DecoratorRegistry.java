@@ -18,7 +18,7 @@ public class DecoratorRegistry {
   private static Map<String, SpanDecorator> loadDecorators() {
     Map<String, SpanDecorator> result = new HashMap<>();
     result.put("ahc", new HttpSpanDecorator());
-    result.put("ampq", new MessagingSpanDecorator("ampq"));
+    result.put("amqp", new MessagingSpanDecorator("amqp"));
     result.put("aws-s3", new S3SpanDecorator());
     result.put("aws-sns", new MessagingSpanDecorator("aws-sns"));
     result.put("aws-sqs", new MessagingSpanDecorator("aws-sqs"));

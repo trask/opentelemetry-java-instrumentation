@@ -11,12 +11,12 @@ muzzle {
   }
 }
 
-val camelversion = "2.20.1" // first version that the tests pass on
+val camelVersion = "2.20.1" // first version that the tests pass on
 
 description = "camel-2-20"
 
 dependencies {
-  compileOnly("org.apache.camel:camel-core:$camelversion")
+  compileOnly("org.apache.camel:camel-core:$camelVersion")
   implementation("io.opentelemetry.contrib:opentelemetry-aws-xray-propagator")
 
   // without adding this dependency, javadoc fails:
@@ -35,15 +35,15 @@ dependencies {
 
   testInstrumentation(project(":instrumentation:cassandra:cassandra-3.0:javaagent"))
 
-  testImplementation("org.apache.camel:camel-core:$camelversion")
-  testImplementation("org.apache.camel:camel-spring-boot-starter:$camelversion")
-  testImplementation("org.apache.camel:camel-jetty-starter:$camelversion")
-  testImplementation("org.apache.camel:camel-http-starter:$camelversion")
-  testImplementation("org.apache.camel:camel-jaxb-starter:$camelversion")
-  testImplementation("org.apache.camel:camel-undertow:$camelversion")
-  testImplementation("org.apache.camel:camel-aws:$camelversion")
-  testImplementation("org.apache.camel:camel-cassandraql:$camelversion")
-  testImplementation("org.apache.camel:camel-jms:$camelversion")
+  testImplementation("org.apache.camel:camel-core:$camelVersion")
+  testImplementation("org.apache.camel:camel-spring-boot-starter:$camelVersion")
+  testImplementation("org.apache.camel:camel-jetty-starter:$camelVersion")
+  testImplementation("org.apache.camel:camel-http-starter:$camelVersion")
+  testImplementation("org.apache.camel:camel-jaxb-starter:$camelVersion")
+  testImplementation("org.apache.camel:camel-undertow:$camelVersion")
+  testImplementation("org.apache.camel:camel-aws:$camelVersion")
+  testImplementation("org.apache.camel:camel-cassandraql:$camelVersion")
+  testImplementation("org.apache.camel:camel-jms:$camelVersion")
   testImplementation("org.apache.activemq:activemq-broker:5.16.5")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test:1.5.17.RELEASE")

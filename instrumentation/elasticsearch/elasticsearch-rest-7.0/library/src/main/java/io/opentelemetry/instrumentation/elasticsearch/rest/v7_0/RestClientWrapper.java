@@ -48,6 +48,7 @@ class RestClientWrapper {
         .intercept(
             InvocationHandlerAdapter.of(
                 (proxy, method, args) -> {
+                  Object[] methodArgs = args == null ? new Object[0] : args;
                   RestClient target = (RestClient) targetField.get(proxy);
                   Instrumenter<ElasticsearchRestRequest, Response> instrumenter =
                       getInstrumenter(proxy);
@@ -58,22 +59,22 @@ class RestClientWrapper {
 
                   // instrument performRequest and performRequestAsync methods
                   if ("performRequest".equals(method.getName())
-                      && args.length == 1
-                      && args[0] instanceof Request
+                      && methodArgs.length == 1
+                      && methodArgs[0] instanceof Request
                       && Response.class == method.getReturnType()) {
-                    Request request = (Request) args[0];
+                    Request request = (Request) methodArgs[0];
                     Context parentContext = Context.current();
                     ElasticsearchRestRequest otelRequest =
                         ElasticsearchRestRequest.create(request.getMethod(), request.getEndpoint());
                     if (!instrumenter.shouldStart(parentContext, otelRequest)) {
-                      return method.invoke(target, args);
+                      return method.invoke(target, methodArgs);
                     }
 
                     Context context = instrumenter.start(parentContext, otelRequest);
 
                     Response response;
                     try (Scope ignored = context.makeCurrent()) {
-                      response = (Response) method.invoke(target, args);
+                      response = (Response) method.invoke(target, methodArgs);
                     } catch (Throwable t) {
                       instrumenter.end(context, otelRequest, null, t);
                       throw t;
@@ -82,25 +83,25 @@ class RestClientWrapper {
                     return response;
 
                   } else if ("performRequestAsync".equals(method.getName())
-                      && args.length == 2
-                      && args[0] instanceof Request
-                      && args[1] instanceof ResponseListener) {
+                      && methodArgs.length == 2
+                      && methodArgs[0] instanceof Request
+                      && methodArgs[1] instanceof ResponseListener) {
 
-                    Request request = (Request) args[0];
-                    ResponseListener responseListener = (ResponseListener) args[1];
+                    Request request = (Request) methodArgs[0];
+                    ResponseListener responseListener = (ResponseListener) methodArgs[1];
                     Context parentContext = Context.current();
                     ElasticsearchRestRequest otelRequest =
                         ElasticsearchRestRequest.create(request.getMethod(), request.getEndpoint());
                     if (!instrumenter.shouldStart(parentContext, otelRequest)) {
-                      return method.invoke(target, args);
+                      return method.invoke(target, methodArgs);
                     }
 
                     Context context = instrumenter.start(parentContext, otelRequest);
-                    args[1] =
+                    methodArgs[1] =
                         new RestResponseListener(
                             responseListener, parentContext, instrumenter, context, otelRequest);
                     try (Scope ignored = context.makeCurrent()) {
-                      return method.invoke(target, args);
+                      return method.invoke(target, methodArgs);
                     } catch (Throwable t) {
                       instrumenter.end(context, otelRequest, null, t);
                       throw t;
@@ -109,7 +110,7 @@ class RestClientWrapper {
                   }
 
                   // delegate to wrapped RestClient
-                  return method.invoke(target, args);
+                  return method.invoke(target, methodArgs);
                 }))
         .make()
         .load(RestClient.class.getClassLoader(), ClassLoadingStrategy.Default.INJECTION)

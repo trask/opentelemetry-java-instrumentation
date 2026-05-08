@@ -23,20 +23,20 @@ final class DubboRpcAttributesGetter implements RpcAttributesGetter<DubboRequest
 
   @Override
   public String getService(DubboRequest request) {
-    return request.invocation().getInvoker().getInterface().getName();
+    return request.getInvocation().getInvoker().getInterface().getName();
   }
 
   @Deprecated
   @Override
   public String getMethod(DubboRequest request) {
-    return request.invocation().getMethodName();
+    return request.getInvocation().getMethodName();
   }
 
   @Override
   @Nullable
   public String getRpcMethod(DubboRequest request) {
     String service = getService(request);
-    String method = request.invocation().getMethodName();
+    String method = request.getInvocation().getMethodName();
     if (service != null && method != null) {
       return service + "/" + method;
     }

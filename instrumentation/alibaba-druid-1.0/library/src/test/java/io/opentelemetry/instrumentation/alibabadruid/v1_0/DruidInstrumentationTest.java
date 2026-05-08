@@ -9,6 +9,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import io.opentelemetry.instrumentation.alibabadruid.AbstractDruidInstrumentationTest;
 import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.LibraryInstrumentationExtension;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -31,14 +32,15 @@ class DruidInstrumentationTest extends AbstractDruidInstrumentationTest {
   }
 
   @Override
-  protected void configure(DruidDataSource dataSource, String name) throws Exception {
+  protected void configure(DruidDataSource dataSource, String name)
+      throws MalformedObjectNameException {
     ObjectName objectName = new ObjectName("com.alibaba.druid:type=DruidDataSource,id=" + name);
     telemetry.registerMetrics(
         dataSource, objectName.getKeyProperty("type") + "-" + objectName.getKeyProperty("id"));
   }
 
   @Override
-  protected void shutdown(DruidDataSource dataSource) throws Exception {
+  protected void shutdown(DruidDataSource dataSource) {
     telemetry.unregisterMetrics(dataSource);
   }
 }

@@ -33,7 +33,7 @@ final class DubboHeadersGetter implements TextMapGetter<DubboRequest> {
   @Override
   @SuppressWarnings("unchecked") // casting MethodHandle.invoke result
   public Iterable<String> keys(DubboRequest request) {
-    RpcInvocation invocation = request.invocation();
+    RpcInvocation invocation = request.getInvocation();
     try {
       // In 2.7.6, 2.7.7, the StringToObjectMap implementation does not correctly retrieve the
       // keySet. Therefore, it's advisable to always call getObjectAttachments when it is available.
@@ -53,6 +53,6 @@ final class DubboHeadersGetter implements TextMapGetter<DubboRequest> {
     if (request == null) {
       return null;
     }
-    return request.invocation().getAttachment(key);
+    return request.getInvocation().getAttachment(key);
   }
 }

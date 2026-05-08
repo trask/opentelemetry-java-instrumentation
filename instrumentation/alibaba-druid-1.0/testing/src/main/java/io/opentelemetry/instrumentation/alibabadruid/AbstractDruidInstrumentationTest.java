@@ -13,6 +13,7 @@ import io.opentelemetry.instrumentation.testing.junit.InstrumentationExtension;
 import io.opentelemetry.instrumentation.testing.junit.db.DbConnectionPoolMetricsAssertions;
 import io.opentelemetry.instrumentation.testing.junit.db.MockDriver;
 import java.sql.SQLException;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,9 +25,9 @@ public abstract class AbstractDruidInstrumentationTest {
   protected abstract InstrumentationExtension testing();
 
   protected abstract void configure(DruidDataSource dataSource, String dataSourceName)
-      throws Exception;
+      throws MalformedObjectNameException;
 
-  protected abstract void shutdown(DruidDataSource dataSource) throws Exception;
+  protected abstract void shutdown(DruidDataSource dataSource);
 
   @BeforeAll
   static void setUpMocks() throws SQLException {
@@ -34,7 +35,7 @@ public abstract class AbstractDruidInstrumentationTest {
   }
 
   @Test
-  void shouldReportMetrics() throws Exception {
+  void shouldReportMetrics() throws MalformedObjectNameException {
     String name = "dataSourceName";
     DruidDataSource dataSource = new DruidDataSource();
     dataSource.setDriverClassName(MockDriver.class.getName());

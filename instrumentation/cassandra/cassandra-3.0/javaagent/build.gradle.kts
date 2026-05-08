@@ -18,7 +18,8 @@ muzzle {
     module.set("cassandra-driver-core")
     versions.set("[3.0,4.0)")
     assertInverse.set(true)
-    // While com.datastax.cassandra uses old versions of Guava, users may depends themselves on newer versions of Guava
+    // While com.datastax.cassandra uses old versions of Guava, users may depend on newer versions
+    // of Guava
     extraDependency("com.google.guava:guava:27.0-jre")
   }
 }

@@ -20,7 +20,7 @@ import net.bytebuddy.matcher.ElementMatcher;
 class CassandraManagerInstrumentation implements TypeInstrumentation {
   @Override
   public ElementMatcher<TypeDescription> typeMatcher() {
-    // Note: Cassandra has a large driver and we instrument single class in it.
+    // Note: Cassandra has a large driver and we instrument a single class in it.
     // The rest is ignored in AdditionalLibraryIgnoresMatcher
     return named("com.datastax.driver.core.Cluster$Manager");
   }
@@ -40,12 +40,12 @@ class CassandraManagerInstrumentation implements TypeInstrumentation {
      * com.datastax.driver.core.Cluster$Manager.newSession() method is called. The opentracing
      * contribution is a simple wrapper, so we just have to wrap the new session.
      *
-     * @param session The fresh session to patch. This session is replaced with new session
+     * @param session The fresh session to patch. This session is replaced with a new session
      */
     @AssignReturned.ToReturned
     @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
     public static Session injectTracingSession(@Advice.Return Session session) {
-      // This should cover ours and OT's TracingSession
+      // This should cover our TracingSession and OpenTracing's TracingSession
       if (session.getClass().getName().endsWith("cassandra.TracingSession")) {
         return session;
       }

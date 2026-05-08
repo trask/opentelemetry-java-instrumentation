@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.opentelemetry.api.baggage.Baggage;
 import io.opentelemetry.context.Scope;
+import io.opentelemetry.instrumentation.testing.internal.AutoCleanupExtension;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -19,11 +20,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 // regression test for:
 // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/9175
 // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/14805
 class LambdaContextPropagationTest {
+
+  @RegisterExtension static final AutoCleanupExtension cleanup = AutoCleanupExtension.create();
 
   // must be static! the lambda that uses that must be non-capturing
   private static final AtomicInteger failureCounter = new AtomicInteger();
@@ -36,6 +40,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextExecuteRunnable() throws InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -45,7 +50,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }
@@ -53,6 +58,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextSubmitRunnable() throws InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -62,7 +68,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }
@@ -70,6 +76,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextSubmitRunnableAndResult() throws InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -79,7 +86,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }
@@ -87,6 +94,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextSubmitCallable() throws InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -101,7 +109,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }
@@ -109,6 +117,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextInvokeAll() throws InterruptedException {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -127,7 +136,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }
@@ -135,6 +144,7 @@ class LambdaContextPropagationTest {
   @Test
   void propagateContextInvokeAny() throws Exception {
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    cleanup.deferCleanup(executor::shutdownNow);
 
     Baggage baggage = Baggage.builder().put("test", "test").build();
     try (Scope ignored = baggage.makeCurrent()) {
@@ -149,7 +159,7 @@ class LambdaContextPropagationTest {
     }
 
     executor.shutdown();
-    executor.awaitTermination(30, SECONDS);
+    assertThat(executor.awaitTermination(30, SECONDS)).isTrue();
 
     assertThat(failureCounter).hasValue(0);
   }

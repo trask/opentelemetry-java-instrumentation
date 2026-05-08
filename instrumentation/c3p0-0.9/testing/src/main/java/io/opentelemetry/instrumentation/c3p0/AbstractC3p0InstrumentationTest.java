@@ -5,8 +5,8 @@
 
 package io.opentelemetry.instrumentation.c3p0;
 
-import static io.opentelemetry.instrumentation.api.internal.SemconvStability.emitStableDatabaseSemconv;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mchange.v2.c3p0.PooledDataSource;
@@ -15,7 +15,6 @@ import io.opentelemetry.instrumentation.testing.junit.db.DbConnectionPoolMetrics
 import io.opentelemetry.instrumentation.testing.junit.db.MockDriver;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.assertj.core.api.AbstractIterableAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -55,20 +54,17 @@ public abstract class AbstractC3p0InstrumentationTest {
     testing().clearData();
 
     // then
-    testing()
-        .waitAndAssertMetrics(
-            INSTRUMENTATION_NAME,
-            emitStableDatabaseSemconv()
-                ? "db.client.connection.count"
-                : "db.client.connections.usage",
-            AbstractIterableAssert::isEmpty);
-    testing()
-        .waitAndAssertMetrics(
-            INSTRUMENTATION_NAME,
-            emitStableDatabaseSemconv()
-                ? "db.client.connection.pending_requests"
-                : "db.client.connections.pending_requests",
-            AbstractIterableAssert::isEmpty);
+    await()
+        .untilAsserted(
+            () ->
+                assertThat(testing().metrics())
+                    .filteredOn(
+                        metricData ->
+                            metricData
+                                .getInstrumentationScopeInfo()
+                                .getName()
+                                .equals(INSTRUMENTATION_NAME))
+                    .isEmpty());
   }
 
   private void assertDataSourceMetrics(PooledDataSource dataSource) {

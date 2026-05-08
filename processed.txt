@@ -1,2 +1,3 @@
 couchbase-3.2:javaagent
 activej-http-6.0:javaagent
+akka-actor-2.3:javaagent

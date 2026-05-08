@@ -43,7 +43,7 @@ class ThreadPoolExecutorTest {
     try (Scope ignored = baggage.makeCurrent()) {
       executor.execute(task);
     }
-    latch.await(10, SECONDS);
+    assertThat(latch.await(10, SECONDS)).isTrue();
 
     assertThat(executor.sameTaskBefore).isTrue();
     await().untilAsserted(() -> assertThat(executor.sameTaskAfter).isTrue());

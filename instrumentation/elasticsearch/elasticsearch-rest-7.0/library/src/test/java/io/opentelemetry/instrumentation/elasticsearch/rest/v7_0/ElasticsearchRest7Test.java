@@ -99,6 +99,11 @@ class ElasticsearchRest7Test {
   }
 
   @Test
+  void delegatesNoArgMethods() {
+    assertThat(client.getNodes()).isNotEmpty();
+  }
+
+  @Test
   void elasticsearchStatusAsync() throws Exception {
     AsyncRequest asyncRequest = new AsyncRequest();
     CountDownLatch countDownLatch = new CountDownLatch(1);

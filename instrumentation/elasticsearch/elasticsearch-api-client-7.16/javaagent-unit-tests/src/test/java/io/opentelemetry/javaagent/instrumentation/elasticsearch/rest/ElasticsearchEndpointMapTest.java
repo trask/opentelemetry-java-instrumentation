@@ -6,6 +6,7 @@
 package io.opentelemetry.javaagent.instrumentation.elasticsearch.rest;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,16 +24,17 @@ import org.junit.jupiter.api.Test;
 class ElasticsearchEndpointMapTest {
 
   private static final Set<String> SEARCH_ENDPOINTS =
-      new HashSet<>(
-          asList(
-              "search",
-              "async_search.submit",
-              "msearch",
-              "eql.search",
-              "terms_enum",
-              "search_template",
-              "msearch_template",
-              "render_search_template"));
+      unmodifiableSet(
+          new HashSet<>(
+              asList(
+                  "search",
+                  "async_search.submit",
+                  "msearch",
+                  "eql.search",
+                  "terms_enum",
+                  "search_template",
+                  "msearch_template",
+                  "render_search_template")));
 
   @Test
   void testIsSearchEndpoint() {

@@ -138,8 +138,7 @@ class ClickHouseClientV1Test {
     testing.runWithSpan(
         "parent",
         () -> {
-          ClickHouseResponse response;
-          response =
+          ClickHouseResponse response =
               client
                   .write(server)
                   .query("insert into " + TABLE_NAME + " values('1')('2')('3')")
@@ -497,9 +496,9 @@ class ClickHouseClientV1Test {
 
   // regression test for
   // https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/13019
-  // {s:String} used in the query really a syntax error, should be {s: String}. This test verifies
-  // that this syntax error isn't detected when running with the agent as it is also ignored when
-  // running without the agent.
+  // {s:String} used in the query is really a syntax error; it should be {s: String}.
+  // This test verifies that this syntax error isn't detected when running with the agent, as it is
+  // also ignored when running without the agent.
   @Test
   void testPlaceholderQueryInput() {
     ClickHouseRequest<?> request =
@@ -509,7 +508,7 @@ class ClickHouseClientV1Test {
         () -> {
           ClickHouseResponse response =
               request
-                  // {s:String} is really a syntax error should be {s: String}
+                  // {s:String} is really a syntax error; it should be {s: String}
                   .query("select * from " + TABLE_NAME + " where s={s:String}")
                   .settings(ImmutableMap.of("param_s", "" + Instant.now().getEpochSecond()))
                   .execute()

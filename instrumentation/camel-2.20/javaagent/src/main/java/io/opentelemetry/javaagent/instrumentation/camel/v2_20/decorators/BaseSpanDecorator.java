@@ -56,7 +56,7 @@ class BaseSpanDecorator implements SpanDecorator {
    * @param endpoint The endpoint
    * @return The stripped value from the URI
    */
-  public static String stripSchemeAndOptions(Endpoint endpoint) {
+  static String stripSchemeAndOptions(Endpoint endpoint) {
     int start = endpoint.getEndpointUri().indexOf(':');
     start++;
     // Remove any leading '/'
@@ -69,7 +69,7 @@ class BaseSpanDecorator implements SpanDecorator {
         : endpoint.getEndpointUri().substring(start, end);
   }
 
-  public static Map<String, String> toQueryParameters(String uri) {
+  static Map<String, String> toQueryParameters(String uri) {
     int index = uri.indexOf('?');
     if (index != -1) {
       String queryString = uri.substring(index + 1);

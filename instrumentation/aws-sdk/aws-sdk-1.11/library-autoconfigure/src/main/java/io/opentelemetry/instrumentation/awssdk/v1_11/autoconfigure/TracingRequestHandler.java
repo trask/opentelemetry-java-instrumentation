@@ -17,6 +17,7 @@ import io.opentelemetry.api.incubator.config.DeclarativeConfigProperties;
 import io.opentelemetry.instrumentation.api.incubator.config.internal.DeclarativeConfigUtil;
 import io.opentelemetry.instrumentation.api.internal.ConfigPropertiesUtil;
 import io.opentelemetry.instrumentation.awssdk.v1_11.AwsSdkTelemetry;
+import javax.annotation.Nullable;
 
 /**
  * A {@link RequestHandler2} for use as an SPI by the AWS SDK to automatically trace all requests.
@@ -70,7 +71,7 @@ public final class TracingRequestHandler extends RequestHandler2 {
   }
 
   @Override
-  public void afterError(Request<?> request, Response<?> response, Exception e) {
+  public void afterError(Request<?> request, @Nullable Response<?> response, Exception e) {
     delegate.afterError(request, response, e);
   }
 }

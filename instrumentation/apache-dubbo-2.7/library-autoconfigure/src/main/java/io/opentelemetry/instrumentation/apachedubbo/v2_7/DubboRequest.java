@@ -26,15 +26,49 @@ public abstract class DubboRequest {
         context.getLocalAddress());
   }
 
-  abstract RpcInvocation invocation();
+  abstract RpcInvocation getInvocation();
 
-  public abstract RpcContext context();
+  public abstract RpcContext getContext();
 
-  public abstract URL url();
-
-  @Nullable
-  public abstract InetSocketAddress remoteAddress();
+  public abstract URL getUrl();
 
   @Nullable
-  public abstract InetSocketAddress localAddress();
+  public abstract InetSocketAddress getRemoteAddress();
+
+  @Nullable
+  public abstract InetSocketAddress getLocalAddress();
+
+  /**
+   * @deprecated Use {@link #getContext()} instead. Will be removed in a future release.
+   */
+  @Deprecated
+  public final RpcContext context() {
+    return getContext();
+  }
+
+  /**
+   * @deprecated Use {@link #getUrl()} instead. Will be removed in a future release.
+   */
+  @Deprecated
+  public final URL url() {
+    return getUrl();
+  }
+
+  /**
+   * @deprecated Use {@link #getRemoteAddress()} instead. Will be removed in a future release.
+   */
+  @Deprecated
+  @Nullable
+  public final InetSocketAddress remoteAddress() {
+    return getRemoteAddress();
+  }
+
+  /**
+   * @deprecated Use {@link #getLocalAddress()} instead. Will be removed in a future release.
+   */
+  @Deprecated
+  @Nullable
+  public final InetSocketAddress localAddress() {
+    return getLocalAddress();
+  }
 }

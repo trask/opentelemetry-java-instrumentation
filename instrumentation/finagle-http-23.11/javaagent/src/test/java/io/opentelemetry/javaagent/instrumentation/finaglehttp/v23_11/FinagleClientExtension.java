@@ -32,14 +32,14 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * the underlying {@link EventLoopGroup} for the duration of the test class. Clients and services
  * are created lazily on first use and torn down once in {@code afterAll}.
  */
-public class FinagleClientExtension implements AfterAllCallback {
+class FinagleClientExtension implements AfterAllCallback {
 
   private final UnaryOperator<Http.Client> configurer;
 
   private final Map<ClientType, Http.Client> clients = new ConcurrentHashMap<>();
   private final Map<ServiceKey, Service<Request, Response>> services = new ConcurrentHashMap<>();
 
-  public FinagleClientExtension(UnaryOperator<Http.Client> configurer) {
+  FinagleClientExtension(UnaryOperator<Http.Client> configurer) {
     this.configurer = configurer;
   }
 
@@ -52,11 +52,11 @@ public class FinagleClientExtension implements AfterAllCallback {
     clients.clear();
   }
 
-  public Service<Request, Response> getService(URI uri) {
+  Service<Request, Response> getService(URI uri) {
     return getService(uri, "https".equals(uri.getScheme()) ? ClientType.TLS : ClientType.DEFAULT);
   }
 
-  public Service<Request, Response> getService(URI uri, ClientType type) {
+  Service<Request, Response> getService(URI uri, ClientType type) {
     String dest = uri.getHost() + ":" + Utils.safePort(uri);
     ServiceKey key = new ServiceKey(dest, type);
     // Build the client and bind the service under the root OTel context so no test-trace context

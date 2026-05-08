@@ -7,7 +7,7 @@ package io.opentelemetry.javaagent.instrumentation.executors;
 
 import java.util.concurrent.Callable;
 
-public interface TestTask extends Runnable, Callable<Object> {
+interface TestTask extends Runnable, Callable<Object> {
 
   void unblock();
 

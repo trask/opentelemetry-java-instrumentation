@@ -32,9 +32,9 @@ public abstract class AbstractExecutorServiceTest<T extends ExecutorService, U e
     this.testing = testing;
   }
 
-  protected abstract U newTask(boolean doTraceableWork, boolean blockThread);
+  abstract U newTask(boolean doTraceableWork, boolean blockThread);
 
-  protected T executor() {
+  T executor() {
     return executor;
   }
 
@@ -110,7 +110,7 @@ public abstract class AbstractExecutorServiceTest<T extends ExecutorService, U e
     executeAndCancelTasks(task -> executor.submit((Callable<?>) task));
   }
 
-  protected void executeTwoTasks(ThrowingConsumer<U> task) {
+  void executeTwoTasks(ThrowingConsumer<U> task) {
     testing.runWithSpan(
         "parent",
         () -> {
@@ -137,7 +137,7 @@ public abstract class AbstractExecutorServiceTest<T extends ExecutorService, U e
                         .hasParent(trace.getSpan(0))));
   }
 
-  protected void executeAndCancelTasks(Function<U, Future<?>> task) {
+  void executeAndCancelTasks(Function<U, Future<?>> task) {
     List<U> children = new ArrayList<>();
     List<Future<?>> jobFutures = new ArrayList<>();
 

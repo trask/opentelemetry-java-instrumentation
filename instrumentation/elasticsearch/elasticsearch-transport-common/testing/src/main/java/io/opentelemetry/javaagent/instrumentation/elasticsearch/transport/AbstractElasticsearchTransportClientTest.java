@@ -133,18 +133,17 @@ public abstract class AbstractElasticsearchTransportClientTest
         .hasMessage(expectedException.getMessage());
 
     List<AttributeAssertion> assertions =
-        new ArrayList<>(
-            asList(
-                equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                equalTo(maybeStable(DB_OPERATION), "GetAction"),
-                equalTo(stringKey("elasticsearch.action"), experimental("GetAction")),
-                equalTo(stringKey("elasticsearch.request"), experimental("GetRequest")),
-                equalTo(
-                    stringKey("elasticsearch.request.indices"), experimental("invalid-index"))));
-
-    if (emitStableDatabaseSemconv()) {
-      assertions.add(equalTo(ERROR_TYPE, "org.elasticsearch.transport.RemoteTransportException"));
-    }
+        asList(
+            equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
+            equalTo(maybeStable(DB_OPERATION), "GetAction"),
+            equalTo(stringKey("elasticsearch.action"), experimental("GetAction")),
+            equalTo(stringKey("elasticsearch.request"), experimental("GetRequest")),
+            equalTo(stringKey("elasticsearch.request.indices"), experimental("invalid-index")),
+            equalTo(
+                ERROR_TYPE,
+                emitStableDatabaseSemconv()
+                    ? "org.elasticsearch.transport.RemoteTransportException"
+                    : null));
 
     testing.waitAndAssertTraces(
         trace ->

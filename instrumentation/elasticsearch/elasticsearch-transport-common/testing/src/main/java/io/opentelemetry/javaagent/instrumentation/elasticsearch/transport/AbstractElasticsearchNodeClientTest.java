@@ -111,18 +111,17 @@ public abstract class AbstractElasticsearchNodeClientTest extends AbstractElasti
         .hasMessage(expectedException.getMessage());
 
     List<AttributeAssertion> assertions =
-        new ArrayList<>(
-            asList(
-                equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
-                equalTo(maybeStable(DB_OPERATION), "GetAction"),
-                equalTo(stringKey("elasticsearch.action"), experimental("GetAction")),
-                equalTo(stringKey("elasticsearch.request"), experimental("GetRequest")),
-                equalTo(
-                    stringKey("elasticsearch.request.indices"), experimental("invalid-index"))));
-
-    if (emitStableDatabaseSemconv()) {
-      assertions.add(equalTo(ERROR_TYPE, "org.elasticsearch.index.IndexNotFoundException"));
-    }
+        asList(
+            equalTo(maybeStable(DB_SYSTEM), ELASTICSEARCH),
+            equalTo(maybeStable(DB_OPERATION), "GetAction"),
+            equalTo(stringKey("elasticsearch.action"), experimental("GetAction")),
+            equalTo(stringKey("elasticsearch.request"), experimental("GetRequest")),
+            equalTo(stringKey("elasticsearch.request.indices"), experimental("invalid-index")),
+            equalTo(
+                ERROR_TYPE,
+                emitStableDatabaseSemconv()
+                    ? "org.elasticsearch.index.IndexNotFoundException"
+                    : null));
 
     testing.waitAndAssertTraces(
         trace ->

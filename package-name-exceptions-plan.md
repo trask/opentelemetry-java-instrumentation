@@ -8,6 +8,8 @@ Updated again on 2026-05-14 to plan faster batches: up to 20 changed files per P
 Updated again on 2026-05-14 to bump the target to up to 40 changed files per PR and plan all remaining historical package renames.
 Updated on 2026-05-17 after PRs 15-16 merged, and after deciding to handle Akka/Scala forkjoin as a module-name cleanup instead of a package-only cleanup.
 Updated on 2026-05-18 after PRs 13, 18, 20, and 21 merged and their historical package exceptions were removed from the checker.
+Updated again on 2026-05-18 after deciding that leading `java` is meaningful for JDK instrumentation packages.
+Updated again on 2026-05-18 after applying #16090's `*-common` module naming convention and planning PRs 23-26.
 
 ## Goal
 
@@ -19,7 +21,7 @@ The remaining exceptions fall into four buckets:
 
 | Bucket | Current signal | Recommendation |
 | --- | --- | --- |
-| Module-wide skips | `java-*` has 39 files, `jmx-metrics` has 43 files | Do not start here; these need broader naming decisions. |
+| Module-wide skips | `jmx-metrics` has 43 files | Do not start here; this needs a broader naming decision. |
 | Library packages under third-party namespaces | `grpc`, `lettuce`, `nats`, `rxjava` each have 1 file | Leave for later; these are likely compatibility/shim packages. |
 | Javaagent advice under instrumented library namespaces | mostly 1 file each | Leave for later; the script already says these must live in the instrumented library namespace. |
 | Historical javaagent packages | many one-dir modules remain, usually with one source directory | Best place to keep chipping away. |
@@ -111,7 +113,12 @@ For common-module package moves, search for downstream versioned modules importi
 
 ## Open Cleanup PRs
 
-PR 14 is open as #18747 and PR 17 is open as #18772. Keep `.github/scripts/check-package-names.sh` and checker exception removals on `next` until cleanup PRs merge.
+PR 14 is open as #18747, PR 17 is open as #18772, and PR 22 is open as #18784. Keep `.github/scripts/check-package-names.sh` and checker exception removals on `next` until cleanup PRs merge.
+
+For JDK instrumentation modules, keep the leading `java` token in package paths. For example,
+`java-util-logging` maps to `io.opentelemetry.javaagent.instrumentation.java.util.logging`, while
+embedded `java` tokens in third-party library names are still elided, e.g. `graphql-java-20.0` maps
+to `graphql.v20_0`.
 
 ### PR 14: OpenTelemetry annotation and instrumentation API modules (open #18747)
 
@@ -189,16 +196,145 @@ Suggested verification:
 ./gradlew :instrumentation:opentelemetry-api:opentelemetry-api-1.0:javaagent:test
 ```
 
+### PR 22: Java util logging package
+
+Module:
+
+- `java-util-logging`
+
+Expected package change:
+
+- `io.opentelemetry.javaagent.instrumentation.jul` -> `io.opentelemetry.javaagent.instrumentation.java.util.logging`
+
+Notes:
+
+- Javaagent-only package move.
+- Keep the module name and instrumentation name `java-util-logging`.
+
+Suggested verification:
+
+```bash
+.github/scripts/check-package-names.sh
+./gradlew :instrumentation:java-util-logging:javaagent:test
+```
+
+### PR 23: Jetty and Tomcat common module names
+
+Modules:
+
+- `jetty-common` -> `jetty-common-8.0`
+- `tomcat-common` -> `tomcat-common-7.0`
+
+Expected package changes:
+
+- `io.opentelemetry.javaagent.instrumentation.jetty.common` -> `io.opentelemetry.javaagent.instrumentation.jetty.common.v8_0`
+- `io.opentelemetry.javaagent.instrumentation.tomcat.common` -> `io.opentelemetry.javaagent.instrumentation.tomcat.common.v7_0`
+
+Notes:
+
+- This is a #16090 common-module convention cleanup: the version suffix is the minimum supported library version, not an exclusive version.
+- Estimated changed files: about 32 in the PR branch, excluding the later checker update on `next`.
+- Update `settings.gradle.kts`, the Jetty and Tomcat READMEs, dependent Gradle project references, package declarations, and imports in the versioned Jetty/Tomcat modules.
+- Keep instrumentation names unchanged in the consuming versioned modules.
+
+Suggested verification:
+
+```bash
+.github/scripts/check-package-names.sh
+./gradlew :instrumentation:jetty:jetty-common-8.0:javaagent:test :instrumentation:jetty:jetty-8.0:javaagent:test :instrumentation:jetty:jetty-11.0:javaagent:test :instrumentation:tomcat:tomcat-common-7.0:javaagent:test :instrumentation:tomcat:tomcat-7.0:javaagent:test :instrumentation:tomcat:tomcat-10.0:javaagent:test
+```
+
+### PR 24: OpenSearch REST common module name
+
+Module:
+
+- `opensearch-rest-common` -> `opensearch-rest-common-1.0`
+
+Expected package change:
+
+- `io.opentelemetry.javaagent.instrumentation.opensearch.rest.common` -> `io.opentelemetry.javaagent.instrumentation.opensearch.rest.common.v1_0`
+
+Notes:
+
+- This is a #16090 common-module convention cleanup. The common javaagent module compiles against `org.opensearch.client:opensearch-rest-client:1.3.6` and is shared by `opensearch-rest-1.0` and `opensearch-rest-3.0`.
+- Estimated changed files: about 23 in the PR branch, excluding the later checker update on `next`.
+- Update `settings.gradle.kts`, dependent Gradle project references, package declarations, and imports.
+- Keep the `testing` project path with the module rename, but audit whether testing package declarations should move in the same PR or stay as public testing API.
+
+Suggested verification:
+
+```bash
+.github/scripts/check-package-names.sh
+./gradlew :instrumentation:opensearch:opensearch-rest-common-1.0:javaagent:test :instrumentation:opensearch:opensearch-rest-1.0:javaagent:test :instrumentation:opensearch:opensearch-rest-3.0:javaagent:test :instrumentation:opensearch:opensearch-java-3.0:javaagent:compileTestJava
+```
+
+### PR 25: Spring WebMVC common module name
+
+Module:
+
+- `spring-webmvc-common` -> `spring-webmvc-common-3.1`
+
+Expected package change:
+
+- `io.opentelemetry.javaagent.instrumentation.spring.webmvc.common` -> `io.opentelemetry.javaagent.instrumentation.spring.webmvc.common.v3_1`
+
+Notes:
+
+- This is a #16090 common-module convention cleanup. The common javaagent module compiles against `org.springframework:spring-webmvc:3.1.0.RELEASE` and is shared by `spring-webmvc-3.1` and `spring-webmvc-6.0`.
+- Estimated changed files: about 27 in the PR branch, excluding the later checker update on `next`.
+- Update `settings.gradle.kts`, dependent Gradle project references, package declarations, and imports.
+- Keep the `testing` project path with the module rename, but treat testing package changes under `spring.webmvc.boot` and `spring.webmvc.filter` as a separate public testing API decision unless the audit shows they are private-only.
+
+Suggested verification:
+
+```bash
+.github/scripts/check-package-names.sh
+./gradlew :instrumentation:spring:spring-webmvc:spring-webmvc-common-3.1:javaagent:test :instrumentation:spring:spring-webmvc:spring-webmvc-3.1:javaagent:test :instrumentation:spring:spring-webmvc:spring-webmvc-6.0:javaagent:test
+```
+
+### PR 26: Spring Cloud Gateway common testing package decision
+
+Module:
+
+- `spring-cloud-gateway-common`
+
+Expected package decision:
+
+- Keep `spring-cloud-gateway-common` unversioned for the javaagent helper unless a deeper audit finds a direct Spring Cloud Gateway API dependency.
+- Decide whether testing packages should move from `io.opentelemetry.instrumentation.spring.gateway.common` to `io.opentelemetry.instrumentation.spring.cloud.gateway.common`.
+
+Notes:
+
+- The javaagent helper has no direct Spring Cloud Gateway compile dependency and is shared by WebFlux/WebMVC instrumentations, so #16090 does not obviously require a versioned module name.
+- Estimated changed files: about 7 if this is only the testing package rename; more if the audit expands scope beyond testing packages.
+- The likely cleanup is only the testing package name, and this may be public testing API. Keep it separate from the module-name PRs above.
+
+Suggested verification:
+
+```bash
+.github/scripts/check-package-names.sh
+./gradlew :instrumentation:spring:spring-cloud-gateway:spring-cloud-gateway-common:javaagent:test :instrumentation:spring:spring-cloud-gateway:spring-cloud-gateway-2.0:javaagent:test :instrumentation:spring:spring-cloud-gateway:spring-cloud-gateway-webmvc-4.3:javaagent:test
+```
+
 ## Do Later
 
 These are probably not the next easiest wins:
 
-- `java-*` module skip: the current packages use names like `javahttpclient`, while the checker would expect `http.client` after eliding `java`. This touches 39 files and needs a naming decision.
+- `java-http-client` and `java-http-server`: these have published library/testing packages, so package renames need a dedicated public API decision instead of a package-only javaagent cleanup.
 - `jmx-metrics`: current packages are under `jmx`, while the module says `jmx-metrics`. This touches 43 files and may be user-facing enough to deserve a dedicated PR.
 - Library-specific third-party packages: `io.grpc.override`, `io.lettuce.core.protocol`, `io.nats.client.impl`, and `rx` are likely intentional shims or package-private access points.
 - Advice-native package exceptions: packages under `com.clickhouse`, `com.twitter`, `io.netty`, `reactor.netty`, `org.springframework`, and `io.vertx` should stay until each one is proven not to need native package placement.
 - OpenTelemetry API and Akka/Scala forkjoin package/module renames are planned above; AWS SDK remains deferred.
-- Other unversioned module allowlist entries: these need package/module naming decisions beyond a package-only cleanup.
+- Remaining unversioned module allowlist entries split into policy buckets:
+  - JDK/platform modules such as `executors`, `http-url-connection`, `jdbc`, `methods`, `rmi`, and `runtime-telemetry` probably deserve explicit checker allowances instead of version suffixes.
+  - `internal-*` modules such as `internal-class-loader`, `internal-lambda`, `internal-reflection`, and `internal-url-class-loader` probably deserve explicit checker allowances; version suffixes would be misleading.
+  - `*-common` modules need case-by-case module naming review:
+    - Apply #16090's convention: `<library>-common` is for pure utility/abstraction code with no direct library version dependency, `<library>-common-<major.minor>` is for shared code that requires a minimum library version, and `<library>-common-<variant>` is for variants such as `javax`.
+    - `jetty-common`, `tomcat-common`, `opensearch-rest-common`, `spring-webmvc-common`, and the `spring-cloud-gateway-common` testing package decision are planned above as PRs 23-26.
+    - `jaxrs-common`: keep unversioned. The javaagent module has no direct JAX-RS API dependency and acts as cross-generation helper/bootstrap code used by JAX-RS 1.0, 2.0, 3.0, and Quarkus RESTEasy Reactive. Keep it separate from the already version-scoped `jaxrs-2.0-common`, `jaxrs-3.0-common`, `jaxrs-common-2.0`, and `jaxrs-common-3.0` modules.
+    - `servlet-common`: keep unversioned. This matches #16090's pure abstraction/variant shape: shared code for both `javax.servlet` and `jakarta.servlet`, with `servlet-common-javax` as the variant-specific module. Because it includes published `library` packages, treat any future package changes as public API policy, not package-only cleanup.
+  - App-server/framework entries such as `payara`, `quarkus-resteasy-reactive`, and `tomcat-jdbc` need individual naming decisions before any checker tightening.
+  - Treat this as a checker-policy cleanup first: document legitimate unversioned javaagent module shapes, then only rename leftovers that are true module-name debt.
 
 ## Re-Audit Command
 

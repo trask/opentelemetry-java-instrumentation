@@ -23,8 +23,11 @@ public interface SqlClientAttributesGetter<REQUEST, RESPONSE>
     extends DbClientAttributesGetter<REQUEST, RESPONSE> {
 
   /**
-   * SqlClientAttributesExtractor will try to populate db.operation.name based on {@link
-   * #getRawQueryTexts(REQUEST)}, but this can be used to explicitly provide the operation name.
+   * SQL instrumentations should provide raw query text through {@link #getRawQueryTexts(REQUEST)}
+   * instead of overriding this method. When the instrumentation knows that its SQL-like language or
+   * request shape is limited to a single operation and collection, enable {@link
+   * SqlClientAttributesExtractorBuilder#setSingleOperationAndCollection(boolean)} and {@link
+   * SqlClientAttributesExtractor} will derive {@code db.operation.name} from the raw query text.
    */
   @Override
   @Nullable
@@ -49,6 +52,21 @@ public interface SqlClientAttributesGetter<REQUEST, RESPONSE>
   @Override
   @Nullable
   default String getDbQuerySummary(REQUEST request) {
+    return null;
+  }
+
+  /**
+   * SQL instrumentations should provide raw query text through {@link #getRawQueryTexts(REQUEST)}
+   * instead of overriding this method. When the instrumentation knows that its SQL-like language or
+   * request shape is limited to a single operation and collection, enable {@link
+   * SqlClientAttributesExtractorBuilder#setSingleOperationAndCollection(boolean)} and {@link
+   * SqlClientAttributesExtractor} will derive {@code db.collection.name} from the raw query text.
+   * Do not enable that option when the database system supports query text with multiple
+   * collections in non-batch operations.
+   */
+  @Override
+  @Nullable
+  default String getDbCollectionName(REQUEST request) {
     return null;
   }
 

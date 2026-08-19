@@ -1550,12 +1550,16 @@ public abstract class AbstractGrpcTest {
 
                             executor.execute(
                                 () -> {
-                                  try {
-                                    backendStub.sayHello(request);
-                                  } catch (Throwable t) {
-                                    error.set(t);
-                                  }
-                                  clientCallDone.countDown();
+                                  // Execute in ROOT context to avoid cancelled context propagation
+                                  io.grpc.Context.ROOT.run(
+                                      () -> {
+                                        try {
+                                          backendStub.sayHello(request);
+                                        } catch (Throwable t) {
+                                          error.set(t);
+                                        }
+                                        clientCallDone.countDown();
+                                      });
                                 });
                           }
                         }))
@@ -1575,7 +1579,9 @@ public abstract class AbstractGrpcTest {
     // for the two cases due to lack of context propagation in the library case, but that isn't what
     // we're testing here.
 
-    clientCallDone.await(10, SECONDS);
+    assertThat(clientCallDone.await(10, SECONDS))
+        .as("client call should complete within timeout")
+        .isTrue();
 
     assertThat(error).hasValue(null);
   }

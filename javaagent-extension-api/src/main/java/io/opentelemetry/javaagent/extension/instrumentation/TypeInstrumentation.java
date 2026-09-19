@@ -20,8 +20,8 @@ import net.bytebuddy.matcher.ElementMatchers;
  */
 public interface TypeInstrumentation {
   /**
-   * An optimization to short circuit matching in the case where the instrumented library is not
-   * even present on the class path.
+   * An optimization to short-circuit matching when the instrumented library is not even present on
+   * the class path.
    *
    * <p>Most applications have only a small subset of libraries on their class path, so this ends up
    * being a very useful optimization.

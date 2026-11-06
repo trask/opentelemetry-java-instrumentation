@@ -5,6 +5,7 @@
 
 package io.opentelemetry.javaagent.instrumentation.kotlinxcoroutines.v1_0
 
+import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import io.opentelemetry.extension.kotlin.asContextElement
 import io.opentelemetry.instrumentation.annotations.WithSpan
@@ -12,7 +13,9 @@ import io.opentelemetry.instrumentation.testing.junit.AgentInstrumentationExtens
 import io.opentelemetry.sdk.testing.assertj.TraceAssert
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -204,6 +207,39 @@ class TailCallWithSpanDispatcherTest {
 
   private suspend fun unannotatedIoValue(value: Int): Int = withContext(Dispatchers.IO) { value * 2 }
 
+  @Test
+  fun `inline interceptor restores parent context after a tail delegated call`() {
+    val parent = tracer.spanBuilder("parent").startSpan()
+    try {
+      assertThat(
+        runWith(CountingInterceptor()) {
+          withContext(parent.storeInContext(Context.root()).asContextElement()) {
+            annotatedNonCancellableDelay()
+            tracedChild("after-tail")
+            Span.current().spanContext
+          }
+        }
+      ).isEqualTo(parent.spanContext)
+    } finally {
+      parent.end()
+    }
+
+    testing.waitAndAssertTraces(
+      { trace ->
+        trace.hasSpansSatisfyingExactly(
+          { it.hasName("parent").hasNoParent() },
+          { it.hasName("non-cancellable-delay").hasParent(trace.getSpan(0)) },
+          { it.hasName("after-tail").hasParent(trace.getSpan(0)) },
+        )
+      },
+    )
+  }
+
+  @WithSpan("non-cancellable-delay")
+  private suspend fun annotatedNonCancellableDelay() = withContext(NonCancellable) {
+    delay(10)
+  }
+
   // The frame intercepts when it is created, before it is known whether the callee suspends; the
   // interceptor must still see one release for each interception.
   @Test
@@ -234,8 +270,8 @@ class TailCallWithSpanDispatcherTest {
     )
   }
 
-  private fun runWith(interceptor: ContinuationInterceptor, block: suspend () -> Int): Int {
-    val result = CompletableFuture<Int>()
+  private fun <T> runWith(interceptor: ContinuationInterceptor, block: suspend () -> T): T {
+    val result = CompletableFuture<T>()
     block.startCoroutine(Continuation(interceptor) { result.complete(it.getOrThrow()) })
     return result.get(10, TimeUnit.SECONDS)
   }

@@ -255,8 +255,11 @@ public class AnnotationInstrumentationHelper {
       // When the runtime resumed the callee with its context, resuming the caller here switches the
       // thread context in the middle of that task. Under an undispatched withContext the runtime
       // may restore the task's context later, out of order with the switch, so let the caller's
-      // interceptor resume it with its own context instead.
-      if (Context.current() == spanContext && UndispatchedMarker.mayBeIn(delegate.getContext())) {
+      // dispatcher resume it with its own context instead. Other interceptors do not apply thread
+      // context elements, so they still need the explicit parent context below.
+      if (Context.current() == spanContext
+          && delegate.getContext().get(ContinuationInterceptor.Key) instanceof CoroutineDispatcher
+          && UndispatchedMarker.mayBeIn(delegate.getContext())) {
         Continuation<T> intercepted = IntrinsicsKt.intercepted(delegate);
         if (intercepted != delegate) {
           if (!dispatchedAnyway(result)) {
